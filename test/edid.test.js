@@ -5,18 +5,18 @@ describe('Constuctor', () => {
   const constEdid = new edid(1920,1080,60,true,2)
 
   it('should set horizontal pixels', () => {
-    assert.equal(constEdid.input.hor, 1920);
+    assert.equal(constEdid.params.hor, 1920);
   });
   it('should set vertical pixels', () => {
-    assert.equal(constEdid.input.ver, 1080);
+    assert.equal(constEdid.params.ver, 1080);
   });
   it('should set refresh rate', () => {
-    assert.equal(constEdid.input.refresh, 60);
+    assert.equal(constEdid.params.refresh, 60);
   });
   it('should set reduced blanking', () => {
-    assert.equal(constEdid.input.redBlnk, true);
+    assert.equal(constEdid.params.redBlnk, true);
   });
   it('should set reduced blanking version', () => {
-    assert.equal(constEdid.input.redBlnkV, 2);
+    assert.equal(constEdid.params.redBlnkV, 2);
   });
 });
