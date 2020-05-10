@@ -15,10 +15,10 @@ describe('Constuctor', () => {
 })
 
 describe('Calculate EDID', () => {
-  it('1920x1080@60 // no margins // no reduced blanking', () => {
+  it('1920x1080@60 // no margins // no reduced blanking // v1', () => {
     const calcEdid = new edid(1920,1080,60,false,false,1)
 
-    var result = calcEdid.calcEdid()
+    const result = calcEdid.calcEdid()
 
     assert.equal(result.links, 'DL')
 
@@ -33,10 +33,32 @@ describe('Calculate EDID', () => {
     assert.equal(result.vTotal, 1120)
     assert.equal(result.vFrontPorch, 3)
     assert.equal(result.vActive, 1080)
-    assert.equal(result.vPolarity, true)
     assert.equal(result.vSync, 5)
+    assert.equal(result.vPolarity, true)
     assert.equal(result.vRate, 60)
-    
+  })
+
+  it('4096x2160@30 // margins // no reduced blanking // v2', () => {
+    const calcEdid = new edid(4096,2160,30,true,false,2)
+
+    const result = calcEdid.calcEdid()
+
+    assert.equal(result.links, '4K')
+
+    assert.equal(result.freq, 389.429)
+
+    assert.equal(result.hTotal, 5702)
+    assert.equal(result.hFrontPorch, 274)
+    assert.equal(result.hActive, 4096)
+    assert.equal(result.hSync, 456)
+    assert.equal(result.hPolarity, false)
+
+    assert.equal(result.vTotal, 2277)
+    assert.equal(result.vFrontPorch, 3)
+    assert.equal(result.vActive, 2160)
+    assert.equal(result.vSync, 10)
+    assert.equal(result.vPolarity, true)
+    assert.equal(result.vRate, 30)
   })
 })
 
