@@ -37,6 +37,45 @@ describe('Calculate EDID', () => {
     
   });
 });
+describe('Link Capacity', () => {
+  const linkEdid = new edid(1920,1080,60,true,2)
+
+  it('single link', () => {
+    assert.equal(linkEdid.calcLinks(1920,133.320), 'SL')
+  })
+
+  it('single link - low edge case', () => {
+    assert.equal(linkEdid.calcLinks(2048,141.852), 'SL')
+    assert.equal(linkEdid.calcLinks(1920,165.000), 'SL')
+  })
+
+  it('dual link', () => {
+    assert.equal(linkEdid.calcLinks(2560,251.289), 'DL')
+  })
+  it('dual link - low edge case', () => {
+    assert.equal(linkEdid.calcLinks(1280,250.000), 'DL')
+    assert.equal(linkEdid.calcLinks(1280,165.001), 'DL')
+    assert.equal(linkEdid.calcLinks(2560,164.000), 'DL')
+  })
+  it('dual link - high edge case', () => {
+    assert.equal(linkEdid.calcLinks(2560,330.000), 'DL')
+    assert.equal(linkEdid.calcLinks(4096,200.000), 'DL')
+    assert.equal(linkEdid.calcLinks(4096,330.000), 'DL')
+  })
+
+  it('4K', () => {
+    assert.equal(linkEdid.calcLinks(2560,400.000), '4K')
+  })
+
+  it('4K - low edge case', () => {
+    assert.equal(linkEdid.calcLinks(2560,330.001), '4K')
+  })
+
+  it('4K - high edge case', () => {
+    assert.equal(linkEdid.calcLinks(2560,660.000), '4K')
+    assert.equal(linkEdid.calcLinks(4096,500.000), '4K')
+  })
+})
 
 describe('Aspect Ratio', () => {
   const aspectEdid = new edid(1920,1080,60,true,2)

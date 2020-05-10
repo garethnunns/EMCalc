@@ -78,6 +78,27 @@ class edid {
     }
   }
   /**
+   * Returns connector capacity as a string
+   * @param {number} hPx - active horizontal pixels (px)
+   * @param {number} freq - pixel clock (MHz)
+   * @returns {string} string value, *e.g. 'SL'*
+   */
+  calcLinks(hPx,freq) {
+    if(hPx > 4096 && freq > 660) {
+      // above 4K capacity
+      return ''
+    }
+    if(hPx <= 2048 && freq <= 165) {
+      return 'SL'
+    }
+    if(freq <= 330) {
+      return 'DL'
+    }
+    
+    return '4K'
+  }
+
+  /**
    * Returns the VESA aspect ratio as a string
    * @param {number} hPix - horizontal pixels
    * @param {number} vPix - vertical pixels
