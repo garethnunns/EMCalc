@@ -77,6 +77,34 @@ class edid {
       redBlnkV: redBlnkV
     }
   }
+  /**
+   * Returns the VESA aspect ratio as a string
+   * @param {number} hPix - horizontal pixels
+   * @param {number} vPix - vertical pixels
+   * @returns {string}
+   */
+  aspectRatio(hPix, vPix) {
+    switch (hPix / vPix) {
+      case 4/3:
+        return '4:3'
+        break;
+      case 16/9:
+        return '16:9'
+        break;
+      case 16/10:
+        return '16:10'
+        break;
+      case 5/4:
+        return '5:4'
+        break;
+      case 15/9:
+        return '15:9'
+        break;
+      default:
+        return 'custom'
+        break;
+    }
+  }
 }
 
 module.exports = edid
