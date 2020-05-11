@@ -4,68 +4,7 @@ class edid {
    * Inspired by the spreadsheet: https://www.facebook.com/groups/Barcofolsom/permalink/2524750314238262/
    * Spreadsheet credits:
    * Graham Loveridge & Syed Athar Hussain
-   */
-
-  // standard timings
-  timings = {
-    // top & bottom margin
-    marginSize: 0.018, // (1.8%)
-
-    // cell horizontal granularity for each reduced blanking version
-    hCellGranularity: {
-      1: 8, // (px)
-      2: 1 // (px)
-    },
-
-    // V Sync width lines for aspect ratio
-    vSyncWidth: {
-      '4:3': 4,
-      '16:9': 5,
-      '16:10': 6,
-      '5:4': 7,
-      '15:9': 7,
-      'CVT-RB V2': 8,
-      'reserved': 9,
-      'custom': 10
-    },
-
-    // H Sync width
-    hSyncWidth: 0.08, // (8%)
-
-    // analog vertical blanking limitations
-    vMinSyncInterval: 550, // (μs)
-    vMinBackPorch: 6, // (lines)
-    vMinPorch: 3, // (lines)
-
-    // horizontal blanking timing
-    hGradient: 600, // (%/kHz)
-    hOffset: 40, // (%)
-    hBlankingTimeScalingFactor: 128,
-    hScalingFactorWeighting: 20,
-
-    // reduced blanking timing
-    hBlanking: { // for each reduced blanking version
-      1: 160, // (clocks)
-      2: 80 // (clocks)
-    },
-    hSync: 32, // (clocks)
-    vMinBlankingInterval: 460, // (μs)
-    vFrontPorch: { // for each reduced blanking version
-      1: 3, // (lines)
-      2: 1 // (lines)
-    },
-    vBackPorch: { // for each reduced blanking version
-      1: 6, // (lines)
-      2: 6 // (lines)
-    },
-    clockStep: { // for each reduced blanking version
-      1: .25,
-      2: .001
-    },
-    interlaced: false
-  }
-
-  /**
+   *
    * Initialise edid class with desired properties
    * @param {number} hPx - active horizontal pixels
    * @param {number} vPx - active vertical pixels
@@ -75,6 +14,65 @@ class edid {
    * @param {number=2} (optional) redBlnkV - reduce blanking version to use
    */
   constructor(hPx, vPx, refresh, margins = false, redBlnk = true, redBlnkV = 2) {
+    // standard timings
+    this.timings = {
+      // top & bottom margin
+      marginSize: 0.018, // (1.8%)
+
+      // cell horizontal granularity for each reduced blanking version
+      hCellGranularity: {
+        1: 8, // (px)
+        2: 1 // (px)
+      },
+
+      // V Sync width lines for aspect ratio
+      vSyncWidth: {
+        '4:3': 4,
+        '16:9': 5,
+        '16:10': 6,
+        '5:4': 7,
+        '15:9': 7,
+        'CVT-RB V2': 8,
+        'reserved': 9,
+        'custom': 10
+      },
+
+      // H Sync width
+      hSyncWidth: 0.08, // (8%)
+
+      // analog vertical blanking limitations
+      vMinSyncInterval: 550, // (μs)
+      vMinBackPorch: 6, // (lines)
+      vMinPorch: 3, // (lines)
+
+      // horizontal blanking timing
+      hGradient: 600, // (%/kHz)
+      hOffset: 40, // (%)
+      hBlankingTimeScalingFactor: 128,
+      hScalingFactorWeighting: 20,
+
+      // reduced blanking timing
+      hBlanking: { // for each reduced blanking version
+        1: 160, // (clocks)
+        2: 80 // (clocks)
+      },
+      hSync: 32, // (clocks)
+      vMinBlankingInterval: 460, // (μs)
+      vFrontPorch: { // for each reduced blanking version
+        1: 3, // (lines)
+        2: 1 // (lines)
+      },
+      vBackPorch: { // for each reduced blanking version
+        1: 6, // (lines)
+        2: 6 // (lines)
+      },
+      clockStep: { // for each reduced blanking version
+        1: .25,
+        2: .001
+      },
+      interlaced: false
+    }
+
     // calculate timings
     this.timings.hGradientPrime = this.timings.hBlankingTimeScalingFactor / 256 * this.timings.hGradient
     this.timings.hOffsetPrime = 
