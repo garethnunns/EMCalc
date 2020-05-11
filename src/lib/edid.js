@@ -131,13 +131,13 @@ class edid {
       // no reduced blanking
 
       // estimate horizontal period (μs)
-      const hEstPeriod = ((1 / vFieldRate) - this.timings.vMinSyncInterval / 1000000) / (vLines + 2 * vMargin + this.timings.vMinPorchRounded + interlace) * 1000000
+      var hEstPeriod = ((1 / vFieldRate) - this.timings.vMinSyncInterval / 1000000) / (vLines + 2 * vMargin + this.timings.vMinPorchRounded + interlace) * 1000000
 
       // estimate num vertical lines
-      const vEstSyncBackPorch = Math.floor(this.timings.vMinSyncInterval / hEstPeriod) + 1
+      var vEstSyncBackPorch = Math.floor(this.timings.vMinSyncInterval / hEstPeriod) + 1
 
       // num vertical lines
-      const vSyncBackPorch = Math.min(this.timings.vMinSyncInterval + this.timings.vMinBackPorch, vEstSyncBackPorch)
+      var vSyncBackPorch = Math.min(this.timings.vMinSyncInterval + this.timings.vMinBackPorch, vEstSyncBackPorch)
 
       // aspect ratio
       var aspect
@@ -148,10 +148,10 @@ class edid {
         aspect = this.aspectRatio(params.hPx,params.vPx)
       }
 
-      const vSync = this.timings.vSyncWidth[aspect]
+      var vSync = this.timings.vSyncWidth[aspect]
 
       // lines in back porch
-      const vBackPorch = vSyncBackPorch - this.timings.vSyncWidth[aspect]
+      var vBackPorch = vSyncBackPorch - this.timings.vSyncWidth[aspect]
 
       // total lines in vertical field
       var vTotal = vLines + 2 * vMargin + vSyncBackPorch + interlace + this.timings.vMinPorchRounded
@@ -160,7 +160,7 @@ class edid {
       }
 
       // ideal blanking duty cycle (%)
-      const idealBlankingCycle = this.timings.hOffsetPrime - (this.timings.hGradientPrime * hEstPeriod / 1000)
+      var idealBlankingCycle = this.timings.hOffsetPrime - (this.timings.hGradientPrime * hEstPeriod / 1000)
 
       var hBlankingTime
       // find blanking time to nearest char cell
@@ -172,57 +172,56 @@ class edid {
       }
 
       // total horizontal pixels in lines
-      const hTotal = hActivePx + hBlankingTime
+      var hTotal = hActivePx + hBlankingTime
 
       // pixel clock frequency
-      const freq = hTotal / hEstPeriod
+      var freq = hTotal / hEstPeriod
 
       // horizontal sync
-      const hSyncRounded = Math.floor( this.timings.hSyncWidth * hTotal / hCellGranularityRounded ) * hCellGranularityRounded
+      var hSyncRounded = Math.floor( this.timings.hSyncWidth * hTotal / hCellGranularityRounded ) * hCellGranularityRounded
 
       // vertical front porch
-      const vFrontPorch = this.timings.vMinPorchRounded + interlace
+      var vFrontPorch = this.timings.vMinPorchRounded + interlace
+    }
 
-      // process independent
+    // blanking independent
 
-      // barco links
-      const links = this.calcLinks(params.hPx, freq)
+    // barco links
+    const links = this.calcLinks(params.hPx, freq)
 
-      // horizontal back porch
-      const hBackPorch = hBlankingTime / 2
+    // horizontal back porch
+    const hBackPorch = hBlankingTime / 2
 
-      // horizontal front porch
-      const hFrontPorch = hBlankingTime - hBackPorch - hSyncRounded
+    // horizontal front porch
+    const hFrontPorch = hBlankingTime - hBackPorch - hSyncRounded
 
-      // horizontal sync polarity
-      const hPolarity = params.redBlnk
+    // horizontal sync polarity
+    const hPolarity = params.redBlnk
 
-      // vertical active lines correct interlaced
-      if(this.timings.interlaced) {
-        vLines *= 2
-      }
+    // vertical active lines correct interlaced
+    if(this.timings.interlaced) {
+      vLines *= 2
+    }
 
-      // vertical sync polarity
-      const vPolarity = !params.redBlnk
+    // vertical sync polarity
+    const vPolarity = !params.redBlnk
 
+    return {
+      links: links,
+      freq: freq.toFixed(3),
 
-      return {
-        links: links,
-        freq: freq.toFixed(3),
+      hTotal: hTotal,
+      hFrontPorch: hFrontPorch,
+      hActive: hPxRounded,
+      hSync: hSyncRounded,
+      hPolarity: hPolarity,
 
-        hTotal: hTotal,
-        hFrontPorch: hFrontPorch,
-        hActive: hPxRounded,
-        hSync: hSyncRounded,
-        hPolarity: hPolarity,
-  
-        vTotal: vTotal,
-        vFrontPorch: vFrontPorch,
-        vActive: vLines,
-        vPolarity: vPolarity,
-        vSync: vSync,
-        vRate: params.refresh
-      }
+      vTotal: vTotal,
+      vFrontPorch: vFrontPorch,
+      vActive: vLines,
+      vPolarity: vPolarity,
+      vSync: vSync,
+      vRate: params.refresh
     }
   }
 
