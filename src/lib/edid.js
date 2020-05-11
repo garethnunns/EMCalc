@@ -277,6 +277,32 @@ class edid {
         break;
     }
   }
+
+  /**
+   * Returns possible I/O connections as object
+   * @param {number} hPx - active horizontal pixels (px)
+   * @param {number} hTotal - total horizontal pixels (px)
+   * @param {number} freq - pixel clock (MHz)
+   * @returns {Object} Object
+   */
+  possConns(hPx,hTotal,freq) {
+    return {
+      'input': {
+        'dvid': hPx < 4096 && freq <= 330,
+        'hdmi14': hPx < 4096 && freq <= 300,
+        'hdmi20': hPx <= 4096 && freq <= 600,
+        'dp11': hTotal <= 4096 && freq <= 300,
+        'dp12': hPx <= 4096 && freq <= 660
+      },
+      'output': {
+        'dvid': hPx < 4096 && freq <= 330 && hPx % 8 == 0,
+        'hdmi14': hPx < 4096 && freq <= 300 && hPx % 8 == 0,
+        'hdmi20': hPx <= 4096 && ( (freq <= 330 && hPx % 8 == 0) || (freq > 330 && freq < 600 && hPx % 16 == 0) ),
+        'dp11': hTotal <= 4096 && freq <= 300 && hPx % 4 == 0,
+        'dp12': hPx <= 4096 && ( (freq <= 330 && hPx % 8 == 0) || (freq > 330 && freq <= 660 && hPx % 16 == 0) )
+      }
+    }
+  }
 }
 
 module.exports = edid
