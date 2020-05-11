@@ -60,6 +60,29 @@ describe('Calculate EDID', () => {
     assert.equal(result.vPolarity, true)
     assert.equal(result.vRate, 30)
   })
+
+  it('3840x2160@60 // margins // reduced blanking // v2', () => {
+    const calcEdid = new edid(3840,2160,60,true,true,2)
+
+    const result = calcEdid.calcEdid()
+
+    assert.equal(result.links, '4K')
+
+    assert.equal(result.freq, 576.804)
+
+    assert.equal(result.hTotal, 4058)
+    assert.equal(result.hFrontPorch, 8)
+    assert.equal(result.hActive, 3840)
+    assert.equal(result.hSync, 32)
+    assert.equal(result.hPolarity, true)
+
+    assert.equal(result.vTotal, 2369)
+    assert.equal(result.vFrontPorch, 53)
+    assert.equal(result.vActive, 2160)
+    assert.equal(result.vSync, 8)
+    assert.equal(result.vPolarity, false)
+    assert.equal(result.vRate, 60)
+  })
 })
 
 describe('Link Capacity', () => {
