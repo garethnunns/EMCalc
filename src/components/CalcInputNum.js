@@ -13,6 +13,7 @@ export default class CalcInputNum extends React.Component {
           name={this.props.name}
           label={this.props.label}
           value={this.props.value}
+          onChangeText={this.props.onChange}
           keyboardType={'numeric'}
           style={styles.numInput}
         />
