@@ -68,7 +68,7 @@ describe('Calculate EDID', () => {
 
     assert.equal(result.links, '4K')
 
-    assert.equal(result.freq, 576.804)
+    assert.equal(result.freq, 560.004)
 
     assert.equal(result.hTotal, 4058)
     assert.equal(result.hFrontPorch, 8)
@@ -76,8 +76,8 @@ describe('Calculate EDID', () => {
     assert.equal(result.hSync, 32)
     assert.equal(result.hPolarity, true)
 
-    assert.equal(result.vTotal, 2369)
-    assert.equal(result.vFrontPorch, 53)
+    assert.equal(result.vTotal, 2300)
+    assert.equal(result.vFrontPorch, 50)
     assert.equal(result.vActive, 2160)
     assert.equal(result.vSync, 8)
     assert.equal(result.vPolarity, false)

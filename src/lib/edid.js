@@ -127,34 +127,34 @@ class edid {
     // interlace factor
     const interlace = this.timings.interlaced ? 0.5 : 0
 
-    if(!params.redBlnk) {
-      // no reduced blanking
+    // aspect ratio
+    var aspect
+    if(params.redBlnk && params.redBlnkV) {
+      aspect = 'CVT-RB V2'
+    }
+    else {
+      aspect = this.aspectRatio(params.hPx,params.vPx)
+    }
 
+    var vSync = this.timings.vSyncWidth[aspect]
+
+    var hEstPeriod, vTotal, vFrontPorch, hTotal, hBlankingTime, hSyncRounded, freq
+
+    if(!params.redBlnk) {// no reduced blanking
       // estimate horizontal period (μs)
-      var hEstPeriod = ((1 / vFieldRate) - this.timings.vMinSyncInterval / 1000000) / (vLines + 2 * vMargin + this.timings.vMinPorchRounded + interlace) * 1000000
+      hEstPeriod = ((1 / vFieldRate) - this.timings.vMinSyncInterval / 1000000) / (vLines + 2 * vMargin + this.timings.vMinPorchRounded + interlace) * 1000000
 
       // estimate num vertical lines
-      var vEstSyncBackPorch = Math.floor(this.timings.vMinSyncInterval / hEstPeriod) + 1
+      var vEstSyncBackPorch = Math.ceil(this.timings.vMinSyncInterval / hEstPeriod)
 
       // num vertical lines
       var vSyncBackPorch = Math.min(this.timings.vMinSyncInterval + this.timings.vMinBackPorch, vEstSyncBackPorch)
-
-      // aspect ratio
-      var aspect
-      if(params.redBlnk && redBlnkV) {
-        aspect = 'CVT-RB V2'
-      }
-      else {
-        aspect = this.aspectRatio(params.hPx,params.vPx)
-      }
-
-      var vSync = this.timings.vSyncWidth[aspect]
 
       // lines in back porch
       var vBackPorch = vSyncBackPorch - this.timings.vSyncWidth[aspect]
 
       // total lines in vertical field
-      var vTotal = vLines + 2 * vMargin + vSyncBackPorch + interlace + this.timings.vMinPorchRounded
+      vTotal = vLines + 2 * vMargin + vSyncBackPorch + interlace + this.timings.vMinPorchRounded
       if(this.timings.interlaced) {
         vTotal *= 2
       }
@@ -162,7 +162,6 @@ class edid {
       // ideal blanking duty cycle (%)
       var idealBlankingCycle = this.timings.hOffsetPrime - (this.timings.hGradientPrime * hEstPeriod / 1000)
 
-      var hBlankingTime
       // find blanking time to nearest char cell
       if(idealBlankingCycle < 20) {
         hBlankingTime = Math.floor( (hActivePx * 20 / (100-20) / (2 * hCellGranularityRounded) ) ) * (2 * hCellGranularityRounded)
@@ -172,16 +171,51 @@ class edid {
       }
 
       // total horizontal pixels in lines
-      var hTotal = hActivePx + hBlankingTime
+      hTotal = hActivePx + hBlankingTime
 
       // pixel clock frequency
-      var freq = hTotal / hEstPeriod
+      freq = hTotal / hEstPeriod
 
       // horizontal sync
-      var hSyncRounded = Math.floor( this.timings.hSyncWidth * hTotal / hCellGranularityRounded ) * hCellGranularityRounded
+      hSyncRounded = Math.floor( this.timings.hSyncWidth * hTotal / hCellGranularityRounded ) * hCellGranularityRounded
 
       // vertical front porch
-      var vFrontPorch = this.timings.vMinPorchRounded + interlace
+      vFrontPorch = this.timings.vMinPorchRounded
+    }
+    else { // reduced blanking
+      // estimate horizontal period (μs)
+      hEstPeriod = ((1000000 / vFieldRate) - this.timings.vMinBlankingInterval) / (vLines + 2 * vMargin)
+      
+      // vertical blanking lines
+      var vBlankingLines = Math.ceil(this.timings.vMinBlankingInterval / hEstPeriod)
+
+      // check enough vertical blanking
+      vBlankingLines = Math.max(vBlankingLines, (this.timings.vFrontPorch[params.redBlnkV] + vSync + this.timings.vMinBackPorch) )
+      
+      // total lines in vertical field
+      vTotal = vBlankingLines + vLines + 2 * vMargin + interlace
+
+      // vertical front porch
+      switch (params.redBlnkV) {
+        case 1:
+          vFrontPorch = this.timings.vFrontPorch[1]
+          break
+        case 2:
+          vFrontPorch = vBlankingLines - this.timings.vBackPorch[2] - vSync
+          break
+      }
+
+      // horizontal blanking pixels
+      hBlankingTime = this.timings.hBlanking[params.redBlnkV]
+
+      // horizontal sync
+      hSyncRounded = this.timings.hSync
+
+      // total horizontal pixels in lines
+      hTotal = this.timings.hBlanking[params.redBlnkV] + hActivePx
+
+      // pixel clock frequency
+      freq = vFieldRate * vTotal * hTotal / 1000000
     }
 
     // blanking independent
