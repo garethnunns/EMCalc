@@ -1,11 +1,12 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Button, Divider, Text, Switch, TextInput } from 'react-native-paper'
+import { Button, Switch, Text, TextInput } from 'react-native-paper'
 
 import styles from './../style/styles'
 import theme from './../style/theme'
 
 import ResultsTable from './ResultsTable'
+import CapacityAndClock from './CapacityAndClock'
 
 class CalcInputNum extends React.Component {
   render () {
@@ -118,7 +119,12 @@ export default class Calc extends React.Component {
           label="Reduce Blanking"
         />
 
-        <Divider />
+        <CapacityAndClock 
+          links="4K"
+          linksNote="Pixel Clock too high for ALL Gen 1 Cards"
+          freq="560.004"
+          freqNote="Above DVI, HDMI 1.4 and DP 1.1 Spec"
+        />
 
         <ResultsTable 
           value={{

@@ -257,7 +257,7 @@ class edid {
       vPolarity: vPolarity,
       vRate: params.refresh,
 
-      possConns: possConns(hPxRounded,hTotal,freq)
+      possConns: this.possConns(hPxRounded,hTotal,freq)
     }
   }
 

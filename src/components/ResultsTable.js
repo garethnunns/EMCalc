@@ -2,7 +2,8 @@ import React from 'react';
 import { View } from 'react-native'
 import { Colors, DataTable, IconButton, Text } from 'react-native-paper'
 
-import styles from './../style/styles'
+import styles from '../style/styles'
+import theme from '../style/theme';
 
 export default class ResultsTable extends React.Component {
   constructor(props) {
@@ -104,7 +105,7 @@ export default class ResultsTable extends React.Component {
         <DataTable.Cell>{result.name}</DataTable.Cell>
         <IconButton
           icon={result.value ? 'check-circle' : 'close-circle'}
-          color={result.value ? Colors.green200 : Colors.red200}
+          color={result.value ? theme.colors.green : theme.colors.red}
           size={20}
         />
       </DataTable.Row>
