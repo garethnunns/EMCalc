@@ -18,7 +18,7 @@ export default StyleSheet.create({
   },
 
   numInput: {
-    flex: 1
+    flex: 1,
   },
 
   switchContainer: {
@@ -35,10 +35,18 @@ export default StyleSheet.create({
 
   switchText: {
     flex: 0.7,
-    //paddingHorizontal: inputPaddingH
   },
 
-  switchInput: {
-    
+  resultsTableHeadingContainer: {
+    flexDirection: "row",
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: inputPaddingV,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.colors.disabled,
+  },
+  
+  resultsTableHeading: {
+    paddingHorizontal: 15,
   },
 });

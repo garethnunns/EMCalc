@@ -253,9 +253,11 @@ class edid {
       vTotal: vTotal,
       vFrontPorch: vFrontPorch,
       vActive: vLines,
-      vPolarity: vPolarity,
       vSync: vSync,
-      vRate: params.refresh
+      vPolarity: vPolarity,
+      vRate: params.refresh,
+
+      possConns: possConns(hPxRounded,hTotal,freq)
     }
   }
 

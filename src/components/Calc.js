@@ -1,9 +1,11 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Button, Divider, Text, DataTable, Switch, TextInput } from 'react-native-paper';
+import React from 'react'
+import { View } from 'react-native'
+import { Button, Divider, Text, Switch, TextInput } from 'react-native-paper'
 
 import styles from './../style/styles'
 import theme from './../style/theme'
+
+import ResultsTable from './ResultsTable'
 
 class CalcInputNum extends React.Component {
   render () {
@@ -118,36 +120,42 @@ export default class Calc extends React.Component {
 
         <Divider />
 
-        <DataTable>
-          <DataTable.Header>
-            <DataTable.Title>EDID Timing</DataTable.Title>
-          </DataTable.Header>
+        <ResultsTable 
+          value={{
+            links: '4K',
+            freq: '560.004',
 
-          <DataTable.Row>
-            <DataTable.Cell>H Total</DataTable.Cell>
-            <DataTable.Cell numeric>2080</DataTable.Cell>
-          </DataTable.Row>
+            hTotal: 4058,
+            hFrontPorch: 8,
+            hActive: 3840,
+            hSync: 32,
+            hPolarity: true,
 
-          <DataTable.Row>
-            <DataTable.Cell>H Front Porch</DataTable.Cell>
-            <DataTable.Cell numeric>48</DataTable.Cell>
-          </DataTable.Row>
+            vTotal: 2300,
+            vFrontPorch: 50,
+            vActive: 2160,
+            vSync: 8,
+            vPolarity: false,
+            vRate: 60,
 
-          <DataTable.Row>
-            <DataTable.Cell>H Active</DataTable.Cell>
-            <DataTable.Cell numeric>1920</DataTable.Cell>
-          </DataTable.Row>
-
-          <DataTable.Row>
-            <DataTable.Cell>H Sync</DataTable.Cell>
-            <DataTable.Cell numeric>32</DataTable.Cell>
-          </DataTable.Row>
-
-          <DataTable.Row>
-            <DataTable.Cell>H Polarity</DataTable.Cell>
-            <DataTable.Cell numeric>+</DataTable.Cell>
-          </DataTable.Row>
-        </DataTable>
+            possConns: {
+              input: {
+                dvid: false,
+                hdmi14: false,
+                hdmi20: true,
+                dp11: false,
+                dp12: true
+              },
+              output: {
+                dvid: false,
+                hdmi14: false,
+                hdmi20: false,
+                dp11: false,
+                dp12: true
+              }
+            }
+          }}
+        />
       </View>
     )
   }
