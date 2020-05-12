@@ -277,9 +277,9 @@ class edid {
    * @returns {string} string value, *e.g. 'SL'*
    */
   calcLinks(hPx,freq) {
-    if(hPx > 4096 && freq > 660) {
+    if(hPx > 4096 || freq > 660) {
       // above 4K capacity
-      return ''
+      return 'Over 4K'
     }
     if(hPx <= 2048 && freq <= 165) {
       return 'SL'

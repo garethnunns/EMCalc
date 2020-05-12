@@ -123,6 +123,11 @@ describe('Link Capacity', () => {
     assert.equal(linkEdid.calcLinks(2560,660.000), '4K')
     assert.equal(linkEdid.calcLinks(4096,500.000), '4K')
   })
+
+  it('Over 4K', () => {
+    assert.equal(linkEdid.calcLinks(2560,661.000), 'Over 4K')
+    assert.equal(linkEdid.calcLinks(4097,500.000), 'Over 4K')
+  })
 })
 
 describe('Aspect Ratio', () => {
