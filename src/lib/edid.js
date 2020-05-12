@@ -80,13 +80,22 @@ class edid {
     this.timings.vMinPorchRounded = Math.floor(this.timings.vMinPorch)
 
 
-    this.params = {
-      hPx: hPx,
-      vPx: vPx,
-      margins: margins,
-      refresh: refresh,
-      redBlnk: redBlnk,
-      redBlnkV: redBlnkV
+    this.hPx = hPx
+    this.vPx = vPx
+    this.margins = margins
+    this.refresh = refresh
+    this.redBlnk = redBlnk
+    this.redBlnkV = redBlnkV
+  }
+
+  get params() {
+    return {
+      hPx: this.hPx,
+      vPx: this.vPx,
+      margins: this.margins,
+      refresh: this.refresh,
+      redBlnk: this.redBlnk,
+      redBlnkV: this.redBlnkV
     }
   }
 

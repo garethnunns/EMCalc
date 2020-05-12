@@ -9,7 +9,7 @@ import CalcInputBlanking from './CalcInputBlanking'
 import ResultsTable from './ResultsTable'
 import CapacityAndClock from './CapacityAndClock'
 
-import { edid } from '../lib/edid'
+import edid from '../lib/edid'
 
 export default class Calc extends React.Component {
   constructor (props) {
@@ -35,6 +35,17 @@ export default class Calc extends React.Component {
 
   render () {
     console.log(this.state)
+
+    const Edid = new edid(
+      this.state.hPx,
+      this.state.vPx,
+      this.state.refresh,
+      this.state.margins,
+      this.state.redBlnk.enabled,
+      this.state.redBlnk.version
+    )
+
+    var customEdid = Edid.calcEdid()
 
     return (
       <View style={styles.container}>
@@ -71,47 +82,14 @@ export default class Calc extends React.Component {
         />
 
         <CapacityAndClock 
-          links="4K"
+          links={customEdid.links}
           linksNote="Pixel Clock too high for ALL Gen 1 Cards"
-          freq="560.004"
+          freq={customEdid.freq}
           freqNote="Above DVI, HDMI 1.4 and DP 1.1 Spec"
         />
 
         <ResultsTable 
-          value={{
-            links: '4K',
-            freq: '560.004',
-
-            hTotal: 4058,
-            hFrontPorch: 8,
-            hActive: 3840,
-            hSync: 32,
-            hPolarity: true,
-
-            vTotal: 2300,
-            vFrontPorch: 50,
-            vActive: 2160,
-            vSync: 8,
-            vPolarity: false,
-            vRate: 60,
-
-            possConns: {
-              input: {
-                dvid: false,
-                hdmi14: false,
-                hdmi20: true,
-                dp11: false,
-                dp12: true
-              },
-              output: {
-                dvid: false,
-                hdmi14: false,
-                hdmi20: false,
-                dp11: false,
-                dp12: true
-              }
-            }
-          }}
+          value={customEdid}
         />
       </View>
     )
