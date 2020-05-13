@@ -1,3 +1,5 @@
+name: release
+
 on:
   release:
     types:
@@ -28,4 +30,3 @@ jobs:
         ftp-username: e2@garethnunns.com
         ftp-password: ${{ secrets.gn_ftp_password }}
         local-dir: web-build
-        git-ftp-args: --dry-run
