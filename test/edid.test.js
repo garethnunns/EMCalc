@@ -1,5 +1,5 @@
 const assert = require('assert')
-const edid = require('./../src/lib/edid')
+import edid from './../src/lib/edid'
 
 describe('Constuctor', () => {
   const constEdid = new edid(1920,1080,60,false,true,2)

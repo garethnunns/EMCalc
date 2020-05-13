@@ -1,9 +1,9 @@
-class edid {
+export default class edid {
   /**
    * Written by Gareth Nunns
    * Inspired by the spreadsheet: https://www.facebook.com/groups/Barcofolsom/permalink/2524750314238262/
    * Spreadsheet credits:
-   * Graham Loveridge & Syed Athar Hussain
+   * Graham Loveridge, Syed Athar Hussain & Scott Gershick
    *
    * Initialise edid class with desired properties
    * @param {number} hPx - active horizontal pixels
@@ -421,5 +421,3 @@ class edid {
     }
   }
 }
-
-module.exports = edid
