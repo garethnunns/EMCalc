@@ -78,6 +78,10 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  warningItem: {
+    lineHeight: 25,
+  },
+
   resultsTableHeadingContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

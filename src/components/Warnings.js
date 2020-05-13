@@ -36,12 +36,13 @@ export default class Warnings extends React.Component {
         <Text
           style={styles.warningTitle}
         >
-          Warning
+          Warning{this.props.warnings.length > 1 ? 's' : ''}
         </Text>
         {this.props.warnings.map((warning, index) => {
           return (
             <Text
               key={index}
+              style={styles.warningItem}
             >
               {"\n"}{warning}
             </Text>)

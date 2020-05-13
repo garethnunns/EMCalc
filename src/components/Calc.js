@@ -25,8 +25,6 @@ export default class Calc extends React.Component {
         enabled: true,
         version: 2
       },
-
-      warning: []
     }
   }
 
@@ -35,9 +33,6 @@ export default class Calc extends React.Component {
       [name]: value
     })
   }
-
-  _onDismissSnackBar = () => this.setState({ visible: false });
-
 
   render () {
     const customEdid = new edid(
@@ -51,8 +46,7 @@ export default class Calc extends React.Component {
 
     const customFormat = customEdid.calcEdid()
 
-    console.log(customFormat.warnings)
-    console.log(this.state)
+    console.log(customFormat)
 
     return (
       <View style={styles.container}>
