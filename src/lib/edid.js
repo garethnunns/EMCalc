@@ -229,6 +229,9 @@ class edid {
 
     // blanking independent
 
+    // round the frequency to 3 d.p.
+    const freqRounded = freq.toFixed(3)
+
     // barco links
     const links = this.calcLinks(params.hPx, freq)
 
@@ -249,9 +252,11 @@ class edid {
     // vertical sync polarity
     const vPolarity = !params.redBlnk
 
+
     return {
       links: links,
-      freq: freq.toFixed(3),
+      linksNote: this.linksNote(freqRounded),
+      freq: freqRounded,
 
       hTotal: hTotal,
       hFrontPorch: hFrontPorch,
@@ -343,6 +348,24 @@ class edid {
         'dp11': hTotal <= 4096 && freq <= 300 && hPx % 4 == 0,
         'dp12': hPx <= 4096 && ( (freq <= 330 && hPx % 8 == 0) || (freq > 330 && freq <= 660 && hPx % 16 == 0) )
       }
+    }
+  }
+
+  /**
+   * Return note for frequency
+   * @param {number} freq - pixel clock (MHz)
+   * @returns {string} string - e.g. 'Single Link Signal Bandwidth'
+   */
+  linksNote(freq) {
+    switch (true) {
+      case freq < 165:
+        return 'Single Link Signal Bandwidth'
+      case freq <= 330:
+        return 'Dual Link Signal Bandwidth'
+      case freq <= 660:
+        return 'Pixel Clock too high for all Gen 1 Cards'
+      default:
+        return 'Pixel Clock too high for all cards'
     }
   }
 }

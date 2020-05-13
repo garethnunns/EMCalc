@@ -83,7 +83,7 @@ export default class Calc extends React.Component {
 
         <CapacityAndClock 
           links={customEdid.links}
-          linksNote="Pixel Clock too high for ALL Gen 1 Cards"
+          linksNote={customEdid.linksNote}
           freq={customEdid.freq}
           freqNote="Above DVI, HDMI 1.4 and DP 1.1 Spec"
         />

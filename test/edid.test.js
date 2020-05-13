@@ -296,4 +296,30 @@ describe('Possible Connections', () => {
     assert.equal(conns.output.dp11, false)
     assert.equal(conns.output.dp12, false)
   })
-});
+})
+
+describe('Links Note', () => {
+  const linksNoteEdid = new edid(1920,1080,60,true,2)
+
+  it('Single Link Signal Bandwidth', () => {
+    assert.equal(linksNoteEdid.linksNote(100), 'Single Link Signal Bandwidth')
+    assert.equal(linksNoteEdid.linksNote(164), 'Single Link Signal Bandwidth')
+  })
+
+  it('Dual Link Signal Bandwidth', () => {
+    assert.equal(linksNoteEdid.linksNote(165), 'Dual Link Signal Bandwidth')
+    assert.equal(linksNoteEdid.linksNote(200), 'Dual Link Signal Bandwidth')
+    assert.equal(linksNoteEdid.linksNote(330), 'Dual Link Signal Bandwidth')
+  })
+
+  it('Pixel Clock too high for all Gen 1 Cards', () => {
+    assert.equal(linksNoteEdid.linksNote(331), 'Pixel Clock too high for all Gen 1 Cards')
+    assert.equal(linksNoteEdid.linksNote(400), 'Pixel Clock too high for all Gen 1 Cards')
+    assert.equal(linksNoteEdid.linksNote(660), 'Pixel Clock too high for all Gen 1 Cards')
+  })
+
+  it('Pixel Clock too high for all cards', () => {
+    assert.equal(linksNoteEdid.linksNote(661), 'Pixel Clock too high for all cards')
+    assert.equal(linksNoteEdid.linksNote(1000), 'Pixel Clock too high for all cards')
+  })
+})
