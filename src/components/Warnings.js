@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Banner, Title } from 'react-native-paper'
+import { Banner, Text } from 'react-native-paper'
 
 import styles from '../style/styles'
 

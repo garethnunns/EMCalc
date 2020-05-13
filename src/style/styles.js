@@ -94,4 +94,13 @@ export default StyleSheet.create({
   resultsTableHeading: {
     paddingHorizontal: 15,
   },
+
+  aboutDialog: {
+    maxWidth: 600,
+    marginHorizontal: 'auto'
+  },
+
+  link: {
+    color: theme.colors.primary,
+  },
 });
