@@ -6,7 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "mocha"
+    "test": "mocha",
+    "build": "expo build:web"
   },
   "dependencies": {
     "color": "^3.1.2",
