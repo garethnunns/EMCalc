@@ -3,11 +3,12 @@ import { View } from 'react-native'
 
 import styles from '../style/styles'
 
+import CalcInputBlanking from './CalcInputBlanking'
 import CalcInputNum from './CalcInputNum'
 import CalcInputSwitch from './CalcInputSwitch'
-import CalcInputBlanking from './CalcInputBlanking'
-import ResultsTable from './ResultsTable'
 import CapacityAndFreq from './CapacityAndFreq'
+import ResultsTable from './ResultsTable'
+import Warnings from './Warnings'
 
 import edid from '../lib/edid'
 
@@ -23,7 +24,9 @@ export default class Calc extends React.Component {
       redBlnk: {
         enabled: true,
         version: 2
-      }
+      },
+
+      warning: []
     }
   }
 
@@ -33,10 +36,11 @@ export default class Calc extends React.Component {
     })
   }
 
-  render () {
-    console.log(this.state)
+  _onDismissSnackBar = () => this.setState({ visible: false });
 
-    const Edid = new edid(
+
+  render () {
+    const customEdid = new edid(
       this.state.hPx,
       this.state.vPx,
       this.state.refresh,
@@ -45,7 +49,10 @@ export default class Calc extends React.Component {
       this.state.redBlnk.version
     )
 
-    var customEdid = Edid.calcEdid()
+    const customFormat = customEdid.calcEdid()
+
+    console.log(customFormat.warnings)
+    console.log(this.state)
 
     return (
       <View style={styles.container}>
@@ -56,6 +63,7 @@ export default class Calc extends React.Component {
           onChange={value => this.onChange('hPx',value)}
           min="1"
           max="4096"
+          helperText="Must be ≤4096 for EM spec"
         />
         <CalcInputNum
           name="vPx"
@@ -64,6 +72,7 @@ export default class Calc extends React.Component {
           onChange={value => this.onChange('vPx',value)}
           min="1"
           max="4096"
+          helperText="Must be ≤4096 for EM spec"
         />
         <CalcInputNum
           name="refresh"
@@ -71,6 +80,7 @@ export default class Calc extends React.Component {
           value={this.state.refresh}
           onChange={value => this.onChange('refresh',value)}
           min="1"
+          helperText=""
         />
 
         <CalcInputSwitch
@@ -87,14 +97,18 @@ export default class Calc extends React.Component {
         />
 
         <CapacityAndFreq 
-          links={customEdid.links}
-          linksNote={customEdid.linksNote}
-          freq={customEdid.freq}
-          freqNote={customEdid.freqNote}
+          links={customFormat.links}
+          linksNote={customFormat.linksNote}
+          freq={customFormat.freq}
+          freqNote={customFormat.freqNote}
+        />
+
+        <Warnings
+          warnings={customFormat.warnings}
         />
 
         <ResultsTable 
-          value={customEdid}
+          value={customFormat}
         />
       </View>
     )

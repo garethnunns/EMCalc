@@ -1,13 +1,13 @@
 import React from 'react'
 import { View } from 'react-native'
-import { TextInput } from 'react-native-paper'
+import { HelperText, TextInput } from 'react-native-paper'
 
 import styles from '../style/styles'
 
 export default class CalcInputNum extends React.Component {
   render () {
-    const value = this.props.value
-    const invalid = isNaN(value) || value < this.props.min || value > this.props.max
+    const value = Number(this.props.value)
+    const invalid = value == NaN || value < this.props.min || value > this.props.max
 
     return (
       <View 
@@ -15,12 +15,20 @@ export default class CalcInputNum extends React.Component {
         <TextInput
           name={this.props.name}
           label={this.props.label}
-          value={value}
+          value={this.props.value}
           onChangeText={this.props.onChange}
           keyboardType={'numeric'}
           style={styles.numInput}
           error={invalid}
         />
+        {this.props.helperText.length > 0 && invalid &&
+          <HelperText
+            type="error"
+            visible={invalid}
+          >
+            {this.props.helperText}
+          </HelperText>
+        }
       </View>
     )
   }

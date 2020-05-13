@@ -14,7 +14,7 @@ export default StyleSheet.create({
   numContainer: {
     paddingHorizontal: inputPaddingH,
     paddingVertical: inputPaddingV,
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
 
   numInput: {
@@ -73,6 +73,10 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
 
+  warningTitle: {
+    lineHeight: 30,
+    fontWeight: 'bold',
+  },
 
   resultsTableHeadingContainer: {
     flexDirection: 'row',

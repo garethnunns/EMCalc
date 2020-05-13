@@ -79,6 +79,7 @@ class edid {
       ( (this.timings.hOffset - this.timings.hScalingFactorWeighting) * this.timings.hBlankingTimeScalingFactor / 256 ) + this.timings.hScalingFactorWeighting
     this.timings.vMinPorchRounded = Math.floor(this.timings.vMinPorch)
 
+    this.standardRefresh = [50,60,75,85]
 
     this.hPx = hPx
     this.vPx = vPx
@@ -252,6 +253,33 @@ class edid {
     // vertical sync polarity
     const vPolarity = !params.redBlnk
 
+    // warnings
+    let warnings = []
+
+    // warn if horizontal pixels were rounded
+    if(params.hPx != hPxRounded) {
+      warnings.push("Horizontal pixel count rounded to nearest character cell")
+    }
+
+    // warn if vertical pixels were rounded
+    if(params.hPx != hPxRounded) {
+      warnings.push("Vertical pixel count rounded to nearest integer")
+    }
+
+    // warn if custom aspect ratio
+    if(aspect == 'custom') {
+      warnings.push("Aspect ratio is not a CVT standard")
+    }
+
+    // warn if non-standard refresh rate
+    if((!params.redBlnk || params.redBlnkV != 2) && !this.standardRefresh.includes(Number(params.refresh))) {
+      warnings.push("Refresh rate is not a CVT standard")
+    }
+
+    // warn for recommended v1 reduced blanking refresh rate
+    if((params.redBlnk && params.redBlnkV == 1) && params.refresh != 60) {
+      warnings.push("60Hz recommended for reduced blanking v1")
+    }
 
     return {
       links: links,
@@ -272,7 +300,9 @@ class edid {
       vPolarity: vPolarity,
       vRate: params.refresh,
 
-      possConns: this.possConns(hPxRounded,hTotal,freq)
+      possConns: this.possConns(hPxRounded,hTotal,freq),
+
+      warnings: warnings,
     }
   }
 
