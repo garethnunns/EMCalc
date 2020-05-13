@@ -20,7 +20,9 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - run: npm ci
+    - run: |
+        npm ci
+        npm install -g expo-cli
 
     - name: Test
       run: npm test
@@ -38,4 +40,3 @@ jobs:
         ftp-username: e2@garethnunns.com
         ftp-password: ${{ secrets.gn_ftp_password }}
         local-dir: web-build
-        git-ftp-args: --dry-run
