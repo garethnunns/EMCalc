@@ -1,0 +1,31 @@
+on:
+  release:
+    types:
+      - created
+
+env:
+  NODE_VERSION: '12.x'                # set this to the node version to use
+
+jobs:
+  build:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    - run: npm ci
+    - name: Test
+      run: npm test
+    - name: Build
+      run: npm run build
+    - name: gn deploy
+      uses: SamKirkland/FTP-Deploy-Action@3.1.0
+      with:
+        ftp-server: ftp://ftp.garethnunns.com/
+        ftp-username: e2@garethnunns.com
+        ftp-password: ${{ secrets.gn_ftp_password }}
+        local-dir: web-build
+        git-ftp-args: --dry-run
