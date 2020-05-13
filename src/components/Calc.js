@@ -54,18 +54,23 @@ export default class Calc extends React.Component {
           label="Horizontal Pixels"
           value={this.state.hPx}
           onChange={value => this.onChange('hPx',value)}
+          min="1"
+          max="4096"
         />
         <CalcInputNum
           name="vPx"
           label="Vertical Pixels"
           value={this.state.vPx}
           onChange={value => this.onChange('vPx',value)}
+          min="1"
+          max="4096"
         />
         <CalcInputNum
           name="refresh"
           label="Refresh Rate"
           value={this.state.refresh}
           onChange={value => this.onChange('refresh',value)}
+          min="1"
         />
 
         <CalcInputSwitch
