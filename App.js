@@ -6,6 +6,7 @@ import About from './src/components/About'
 import Calc from './src/components/Calc'
 
 import theme from './src/style/theme'
+import styles from './src/style/styles'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -28,6 +29,7 @@ export default class App extends React.Component {
         <Appbar.Header>
           <Appbar.Content
             title="EM Calc"
+            style={styles.appBarTitle}
           />
           <Appbar.Action
             icon="information"

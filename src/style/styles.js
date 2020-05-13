@@ -5,6 +5,10 @@ const inputPaddingH = 10
 const inputPaddingV = 5
 
 export default StyleSheet.create({
+  appBarTitle: {
+    alignItems: 'center',
+  },
+
   container: {
     width: '100%',
     maxWidth: 600,
