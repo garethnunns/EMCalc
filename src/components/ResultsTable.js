@@ -44,7 +44,7 @@ export default class ResultsTable extends React.Component {
       },
       {
         name: 'V Total',
-        value: edid.hFrontPorch
+        value: edid.vTotal
       },
       {
         name: 'V Front Porch',
