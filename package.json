@@ -7,7 +7,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "mocha",
-    "build": "expo build:web"
+    "build": "expo build:web --no-pwa"
   },
   "dependencies": {
     "color": "^3.1.2",
