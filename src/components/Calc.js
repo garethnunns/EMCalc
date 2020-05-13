@@ -7,7 +7,7 @@ import CalcInputNum from './CalcInputNum'
 import CalcInputSwitch from './CalcInputSwitch'
 import CalcInputBlanking from './CalcInputBlanking'
 import ResultsTable from './ResultsTable'
-import CapacityAndClock from './CapacityAndClock'
+import CapacityAndFreq from './CapacityAndFreq'
 
 import edid from '../lib/edid'
 
@@ -81,11 +81,11 @@ export default class Calc extends React.Component {
           onChange={value => this.onChange('redBlnk',value)}
         />
 
-        <CapacityAndClock 
+        <CapacityAndFreq 
           links={customEdid.links}
           linksNote={customEdid.linksNote}
           freq={customEdid.freq}
-          freqNote="Above DVI, HDMI 1.4 and DP 1.1 Spec"
+          freqNote={customEdid.freqNote}
         />
 
         <ResultsTable 

@@ -257,6 +257,7 @@ class edid {
       links: links,
       linksNote: this.linksNote(freqRounded),
       freq: freqRounded,
+      freqNote: this.freqNote(freqRounded),
 
       hTotal: hTotal,
       hFrontPorch: hFrontPorch,
@@ -352,7 +353,7 @@ class edid {
   }
 
   /**
-   * Return note for frequency
+   * Return note for bandwidth
    * @param {number} freq - pixel clock (MHz)
    * @returns {string} string - e.g. 'Single Link Signal Bandwidth'
    */
@@ -366,6 +367,27 @@ class edid {
         return 'Pixel Clock too high for all Gen 1 Cards'
       default:
         return 'Pixel Clock too high for all cards'
+    }
+  }
+
+  /**
+   * Return note for frequency
+   * @param {number} freq - pixel clock (MHz)
+   * @returns {string} string - *e.g. 'Above DP 1.1 & HDMI 1.4 Spec'*
+   *  Returns empty string if no note
+   */
+  freqNote(freq) {
+    switch (true) {
+      case freq > 660:
+        return 'Not supported on any single connector'
+      case freq > 600:
+        return 'DisplayPort 1.2 Only'
+      case freq > 330:
+        return 'Above DVI, HDMI 1.4 and DP 1.1 spec'
+      case freq > 300:
+        return 'Above HDMI 1.4 & DP 1.1 spec'
+      default:
+        return ''
     }
   }
 }

@@ -323,3 +323,35 @@ describe('Links Note', () => {
     assert.equal(linksNoteEdid.linksNote(1000), 'Pixel Clock too high for all cards')
   })
 })
+
+describe('Frequency Note', () => {
+  const freqNoteEdid = new edid(1920,1080,60,true,2)
+
+  it('No note', () => {
+    assert.equal(freqNoteEdid.freqNote(150), '')
+    assert.equal(freqNoteEdid.freqNote(300), '')
+  })
+
+  it('Above HDMI 1.4 & DP 1.1 spec', () => {
+    assert.equal(freqNoteEdid.freqNote(301), 'Above HDMI 1.4 & DP 1.1 spec')
+    assert.equal(freqNoteEdid.freqNote(315), 'Above HDMI 1.4 & DP 1.1 spec')
+    assert.equal(freqNoteEdid.freqNote(330), 'Above HDMI 1.4 & DP 1.1 spec')
+  })
+
+  it('Above DVI, HDMI 1.4 and DP 1.1 spec', () => {
+    assert.equal(freqNoteEdid.freqNote(331), 'Above DVI, HDMI 1.4 and DP 1.1 spec')
+    assert.equal(freqNoteEdid.freqNote(450), 'Above DVI, HDMI 1.4 and DP 1.1 spec')
+    assert.equal(freqNoteEdid.freqNote(600), 'Above DVI, HDMI 1.4 and DP 1.1 spec')
+  })
+
+  it('DisplayPort 1.2 Only', () => {
+    assert.equal(freqNoteEdid.freqNote(601), 'DisplayPort 1.2 Only')
+    assert.equal(freqNoteEdid.freqNote(630), 'DisplayPort 1.2 Only')
+    assert.equal(freqNoteEdid.freqNote(660), 'DisplayPort 1.2 Only')
+  })
+
+  it('Not supported on any single connector', () => {
+    assert.equal(freqNoteEdid.freqNote(661), 'Not supported on any single connector')
+    assert.equal(freqNoteEdid.freqNote(1000), 'Not supported on any single connector')
+  })
+})

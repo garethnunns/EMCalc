@@ -37,12 +37,12 @@ export default StyleSheet.create({
     flex: 0.7,
   },
 
-  capacityAndClockContainer: {
+  capacityAndFreqContainer: {
     flexDirection: 'row',
     marginTop: 5,
   },
 
-  capacityAndClock: {
+  capacityAndFreq: {
     flexDirection: 'column',
     justifyContent: 'center',
     flex: 0.5,
@@ -55,20 +55,20 @@ export default StyleSheet.create({
     borderRightColor: theme.colors.primaryLight,
   },
 
-  capacityAndClockTitle: {
+  capacityAndFreqTitle: {
     fontSize: 10,
     textAlign: 'center',
     color: theme.colors.textDark
   },
 
-  capacityAndClockValue: {
+  capacityAndFreqValue: {
     paddingVertical: 10,
     fontSize: 30,
     textAlign: 'center',
     color: theme.colors.primaryLight,
   },
 
-  capacityAndClockNote: {
+  capacityAndFreqNote: {
     fontSize: 10,
     textAlign: 'center',
   },
