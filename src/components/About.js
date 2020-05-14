@@ -1,17 +1,22 @@
 import React from 'react'
-import { Linking } from 'react-native'
+import { Linking, Platform } from 'react-native'
 import { Button, Dialog, Paragraph, Portal, Text } from 'react-native-paper'
 
 import styles from '../style/styles'
 
 export default class About extends React.Component {
   render() {
+    let dialogStyle = [styles.aboutDialog]
+    if(Platform.OS == 'web') {
+      dialogStyle.push(styles.aboutDialogWeb)
+    }
+
     return (
       <Portal>
         <Dialog
           visible={this.props.visible}
           onDismiss={this.props.onCloseAbout}
-          style={styles.aboutDialog}
+          style={dialogStyle}
         >
           <Dialog.Title>About</Dialog.Title>
           <Dialog.Content>

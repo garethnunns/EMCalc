@@ -101,7 +101,12 @@ export default StyleSheet.create({
 
   aboutDialog: {
     maxWidth: 600,
-    marginHorizontal: 'auto'
+    marginHorizontal: 'auto',
+  },
+  
+  aboutDialogWeb: {
+    position: 'relative',
+    top: '-25%',
   },
 
   link: {
