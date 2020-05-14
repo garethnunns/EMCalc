@@ -1,8 +1,8 @@
 # EM Calc
 ### Barco Event Master Custom Format Calculator
 
-![iPhone Screenshot](README/iPhone-1.png) | ![iPhone Screenshot](README/iPhone-2.png) | ![iPhone Screenshot](README/iPhone-3.png) | ![Mac Screenshot](README/Mac-1.png)
-:---:|:---:|:---:|:---:
+![iPhone Screenshot](README/iPhone-1.png) | ![iPhone Screenshot](README/iPhone-3.png) | ![Mac Screenshot](README/Mac-1.png)
+:---:|:---:|:---:
 
 This tool is designed to help calculate custom formats for the Barco 
 Event Master range of products. This isn't a Barco product and 
