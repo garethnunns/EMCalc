@@ -6,7 +6,7 @@ on:
       - created
 
 env:
-  NODE_VERSION: '12.x'                # set this to the node version to use
+  NODE_VERSION: '12.x'
 
 jobs:
   web:
@@ -22,14 +22,14 @@ jobs:
 
     - name: Install
       run: |
-        npm ci
-        npm install -g expo-cli
+        yarn install --frozen-lockfile
+        yarn global add expo-cli
 
     - name: Test
-      run: npm test
+      run: yarn test
 
     - name: Build
-      run: npm run build-web
+      run: yarn run build-web
 
     - name: gn deploy
       uses: SamKirkland/FTP-Deploy-Action@3.1.0
@@ -64,7 +64,7 @@ jobs:
           yarn install
       
       - name: Build
-        run: npm run build-desktop
+        run: yarn run build-desktop
 
       - name: Cleanup artifacts
         if: matrix.os != 'windows-latest'
