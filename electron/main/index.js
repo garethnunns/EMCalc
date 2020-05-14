@@ -18,7 +18,8 @@ function createMainWindow() {
     webPreferences: {
       nodeIntegration: true
     },
-    backgroundColor: '#121212'
+    backgroundColor: '#121212',
+    show: false,
   });
 
   if (isDevelopment) {
@@ -60,6 +61,10 @@ function createMainWindow() {
   }
 
   browserWindow.webContents.on('will-navigate', handleExternal)
+
+  browserWindow.once('ready-to-show', () => {
+    browserWindow.show()
+  })
 
   browserWindow.webContents.once('did-finish-load', () => {
     browserWindow.setMenuBarVisibility(false);
