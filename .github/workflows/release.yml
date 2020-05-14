@@ -62,9 +62,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Check package version
-        uses: technote-space/package-version-check-action@v1
-
       - name: yarn install
         run: |
           yarn install

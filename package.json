@@ -1,7 +1,7 @@
 {
   "name": "emcalc",
   "description": "Barco Event Master Custom Format Calculator",
-  "version":"0.1.10",
+  "version":"1.0.0",
   "homepage": "https://e2.garethnunns.com",
   "license": "Copyright Gareth Nunns 2020",
   "author": "Gareth Nunns",
@@ -12,11 +12,11 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "desktop": "yarn expo-electron start",
+    "desktop": "expo-electron start",
     "eject": "expo eject",
     "test": "mocha --require @babel/register",
     "build-web": "expo build:web",
-    "build-desktop": "yarn electron-webpack && yarn electron-builder"
+    "build-desktop": "electron-webpack && electron-builder"
   },
   "dependencies": {
     "color": "^3.1.2",
