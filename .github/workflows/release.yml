@@ -73,7 +73,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           mkdir artifacts
-          mv dist/**/*.exe dist/**/*.deb dist/**/*.app dist/**/*.AppImage dist/**/*.dmg artifacts || true
+          mv dist/**/*.deb dist/**/*.AppImage dist/**/*.zip artifacts || true
 
       - name: Cleanup artifacts Win
         if: matrix.os == 'windows-latest'
