@@ -62,22 +62,27 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Check package version
+        uses: technote-space/package-version-check-action@v1
+
       - name: yarn install
         run: |
           yarn install
       
       - name: Build
-        run: GH_TOKEN=${{secrets.GITHUB_TOKEN}} yarn run build-desktop
+        run: 
 
-      - name: Cleanup artifacts
+      - name: Linux/Mac Build & Copy to artifacts
         if: matrix.os != 'windows-latest'
         run: |
+          GH_TOKEN=${{secrets.GITHUB_TOKEN}} yarn run build-desktop
           mkdir artifacts
-          mv dist/*.zip artifacts || true
+          mv dist/*.zip dist/*.AppImage artifacts || true
 
-      - name: Cleanup artifacts Win
+      - name: Windows Build & Copy to artifacts
         if: matrix.os == 'windows-latest'
         run: |
+          yarn run build-desktop
           mkdir artifacts
           mv dist/**/*.exe artifacts
 

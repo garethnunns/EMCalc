@@ -64,9 +64,7 @@
       "identity": null
     },
     "linux": {
-      "target": [
-        "zip"
-      ]
+      "target": "AppImage"
     },
     "win": {
       "target": "portable",
