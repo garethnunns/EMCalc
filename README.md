@@ -12,9 +12,14 @@ The logic is largely based from the
 [spreadsheet](https://www.facebook.com/groups/Barcofolsom/permalink/2524750314238262/)
 created by Graham Loveridge, Syed Athar Hussain & Scott Gershick.
 
-Please [open an issue](https://github.com/garethnunns/EMCalc/issues/new)
-to report a bug or request a feature.
-
 Download the latest version for your platform on the 
 [releases page](https://github.com/garethnunns/EMCalc/releases)
 or use the [web version](https://e2.garethnunns.com).
+
+It's written with [React Native](https://github.com/facebook/react-native) and 
+[Expo](https://expo.io/) so native Android and iOS apps could be created if
+there's demand, in the mean time, it's a PWA so you can add it to your home
+screen and it will still work offline.
+
+Please [open an issue](https://github.com/garethnunns/EMCalc/issues/new)
+to report a bug or request a feature.
