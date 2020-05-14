@@ -68,9 +68,6 @@ jobs:
       - name: yarn install
         run: |
           yarn install
-      
-      - name: Build
-        run: 
 
       - name: Linux/Mac Build & Copy to artifacts
         if: matrix.os != 'windows-latest'
