@@ -73,13 +73,13 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           mkdir artifacts
-          mv "dist/(*.exe,*.deb,*.AppImage,*.dmg)" artifacts || true
+          mv dist/**/*.exe dist/**/*.deb dist/**/*.app dist/**/*.AppImage dist/**/*.dmg artifacts || true
 
       - name: Cleanup artifacts Win
         if: matrix.os == 'windows-latest'
         run: |
           mkdir artifacts
-          mv dist/*.exe artifacts
+          mv dist/**/*.exe artifacts
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1

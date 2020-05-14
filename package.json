@@ -16,7 +16,7 @@
     "eject": "expo eject",
     "test": "mocha --require @babel/register",
     "build-web": "expo build:web",
-    "build-desktop": "yarn electron-webpack && yarn electron-builder --dir -c.compression=store -c.mac.identity=null"
+    "build-desktop": "yarn electron-webpack && yarn electron-builder --dir"
   },
   "dependencies": {
     "color": "^3.1.2",
@@ -39,6 +39,7 @@
   },
   "private": true,
   "build": {
+    "appId": "com.garethnunns.emcalc",
     "extraMetadata": {
       "main": "main.js"
     },
@@ -55,6 +56,21 @@
       },
       "package.json",
       "**/node_modules/**/*"
-    ]
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon.icns",
+      "identity": null
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.ico"
+    }
   }
 }
