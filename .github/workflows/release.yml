@@ -9,8 +9,8 @@ env:
   NODE_VERSION: '12.x'                # set this to the node version to use
 
 jobs:
-  build:
-    name: Build and Deploy
+  web:
+    name: Web Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -39,8 +39,8 @@ jobs:
         ftp-password: ${{ secrets.gn_ftp_password }}
         local-dir: web-build
   
-  build:
-    name: Desktop Build
+  desktop:
+    name: Desktop Release
 
     runs-on: ${{ matrix.os }}
 
