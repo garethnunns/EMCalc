@@ -1,6 +1,6 @@
 'use strict';
 
-import { BrowserWindow, app, shell } from 'electron';
+import { BrowserWindow, app, shell, Menu } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
 
@@ -51,15 +51,20 @@ function createMainWindow() {
   // external links
   const handleExternal = (e, reqUrl) => {
     if(!reqUrl.startsWith(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)) {
-      e.preventDefault()
-      shell.openExternal(reqUrl)
+      e.preventDefault();
+      shell.openExternal(reqUrl);
     }
     else {
-      browserWindow.webContents.webContents.loadURL(reqUrl)
+      browserWindow.webContents.webContents.loadURL(reqUrl);
     }
   }
 
   browserWindow.webContents.on('will-navigate', handleExternal)
+
+  browserWindow.webContents.once('did-finish-load', () => {
+    browserWindow.setMenuBarVisibility(false);
+    Menu.setApplicationMenu(null)
+  })
 
   return browserWindow;
 }
