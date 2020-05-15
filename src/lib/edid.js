@@ -6,14 +6,14 @@ export default class edid {
    * Graham Loveridge, Syed Athar Hussain & Scott Gershick
    *
    * Initialise edid class with desired properties
-   * @param {number} hPx - active horizontal pixels
-   * @param {number} vPx - active vertical pixels
-   * @param {number} refresh - refresh rate
+   * @param {number=} (optional) hPx - active horizontal pixels
+   * @param {number=} (optional) vPx - active vertical pixels
+   * @param {number=} (optional) refresh - refresh rate
    * @param {boolean=false} (optional) margins - if margins are required
    * @param {boolean=true} (optional) redBlnk - if reduced blanking is required
    * @param {number=2} (optional) redBlnkV - reduce blanking version to use
    */
-  constructor(hPx, vPx, refresh, margins = false, redBlnk = true, redBlnkV = 2) {
+  constructor(hPx=1920, vPx=1080, refresh=60, margins = false, redBlnk = true, redBlnkV = 2) {
     // standard timings
     this.timings = {
       // top & bottom margin
@@ -100,6 +100,10 @@ export default class edid {
     }
   }
 
+  /**
+   * Calculate the EDID for the given parameters
+   * @param {Object=} params (optional) - defaults to this.params
+   */
   calcEdid(params = this.params) {
     // horizontal cell granularity
     var hCellGranularityRounded = Math.floor(this.timings.hCellGranularity[params.redBlnkV])

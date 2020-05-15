@@ -26,6 +26,15 @@ export default class Calc extends React.Component {
         version: 2
       },
     }
+
+    this.edid = new edid(
+      this.state.hPx,
+      this.state.vPx,
+      this.state.refresh,
+      this.state.margins,
+      this.state.redBlnk.enabled,
+      this.state.redBlnk.version
+    )
   }
 
   onChange = (name,value) => {
@@ -34,17 +43,19 @@ export default class Calc extends React.Component {
     })
   }
 
-  render () {
-    const customEdid = new edid(
-      this.state.hPx,
-      this.state.vPx,
-      this.state.refresh,
-      this.state.margins,
-      this.state.redBlnk.enabled,
-      this.state.redBlnk.version
-    )
+  get edidParams() {
+    return {
+      hPx: this.state.hPx,
+      vPx: this.state.vPx,
+      refresh: this.state.refresh,
+      margins: this.state.margins,
+      redBlnk: this.state.redBlnk.enabled,
+      redBlnkV: this.state.redBlnk.version
+    }
+  }
 
-    const customFormat = customEdid.calcEdid()
+  render () {
+    const customFormat = this.edid.calcEdid(this.edidParams)
 
     console.log(customFormat)
 
