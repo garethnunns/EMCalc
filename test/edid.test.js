@@ -36,6 +36,8 @@ describe('Calculate EDID', () => {
     assert.equal(result.vSync, 5)
     assert.equal(result.vPolarity, true)
     assert.equal(result.vRate, 60)
+
+    assert.equal(result.warnings.length, 0)
   })
 
   it('4096x2160@30 // margins // no reduced blanking // v2', () => {
@@ -59,6 +61,10 @@ describe('Calculate EDID', () => {
     assert.equal(result.vSync, 10)
     assert.equal(result.vPolarity, true)
     assert.equal(result.vRate, 30)
+
+    assert.equal(result.warnings.length, 2)
+    assert(result.warnings.includes(calcEdid.warnings.aspect))
+    assert(result.warnings.includes(calcEdid.warnings.refresh))
   })
 
   it('3840x2160@60 // margins // reduced blanking // v2', () => {
@@ -82,11 +88,27 @@ describe('Calculate EDID', () => {
     assert.equal(result.vSync, 8)
     assert.equal(result.vPolarity, false)
     assert.equal(result.vRate, 60)
+
+    assert.equal(result.warnings.length, 0)
+  })
+
+  it('Warning strings', () => {
+    // check the defined warnings say the right thing
+    // then just refer to the defined warnings in other tests
+    // then only one test to update
+
+    const warningsEdid = new edid()
+
+    assert.equal(warningsEdid.warnings.hRounded, "Horizontal pixel count rounded to nearest character cell")
+    assert.equal(warningsEdid.warnings.vRounded, "Vertical pixel count rounded to nearest integer")
+    assert.equal(warningsEdid.warnings.aspect, "Aspect ratio is not a CVT standard")
+    assert.equal(warningsEdid.warnings.refresh, "Refresh rate is not a CVT standard")
+    assert.equal(warningsEdid.warnings.redBlnkRefresh, "60Hz recommended for reduced blanking v1")
   })
 })
 
 describe('Link Capacity', () => {
-  const linkEdid = new edid(1920,1080,60,true,2)
+  const linkEdid = new edid()
 
   it('single link', () => {
     assert.equal(linkEdid.calcLinks(1920,133.320), 'SL')
@@ -131,7 +153,7 @@ describe('Link Capacity', () => {
 })
 
 describe('Aspect Ratio', () => {
-  const aspectEdid = new edid(1920,1080,60,true,2)
+  const aspectEdid = new edid()
 
   it('1024x768 => 4:3', () => {
     assert.equal(aspectEdid.aspectRatio(1024,768), '4:3')
@@ -151,7 +173,7 @@ describe('Aspect Ratio', () => {
 })
 
 describe('Possible Connections', () => {
-  const connsEdid = new edid(1920,1080,60,true,2)
+  const connsEdid = new edid()
 
   it('1920 @ 180MHz', () => {
     const conns = connsEdid.possConns(1920,2576,180.000)
@@ -299,7 +321,7 @@ describe('Possible Connections', () => {
 })
 
 describe('Links Note', () => {
-  const linksNoteEdid = new edid(1920,1080,60,true,2)
+  const linksNoteEdid = new edid()
 
   it('Single Link Signal Bandwidth', () => {
     assert.equal(linksNoteEdid.linksNote(100), 'Single Link Signal Bandwidth')
@@ -325,7 +347,7 @@ describe('Links Note', () => {
 })
 
 describe('Frequency Note', () => {
-  const freqNoteEdid = new edid(1920,1080,60,true,2)
+  const freqNoteEdid = new edid()
 
   it('No note', () => {
     assert.equal(freqNoteEdid.freqNote(150), '')

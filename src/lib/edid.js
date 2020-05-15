@@ -81,6 +81,14 @@ export default class edid {
 
     this.standardRefresh = [50,60,75,85]
 
+    this.warnings = {
+      hRounded: "Horizontal pixel count rounded to nearest character cell",
+      vRounded: "Vertical pixel count rounded to nearest integer",
+      aspect: "Aspect ratio is not a CVT standard",
+      refresh: "Refresh rate is not a CVT standard",
+      redBlnkRefresh: "60Hz recommended for reduced blanking v1",
+    }
+
     this.hPx = hPx
     this.vPx = vPx
     this.margins = margins
@@ -262,27 +270,27 @@ export default class edid {
 
     // warn if horizontal pixels were rounded
     if(params.hPx != hPxRounded) {
-      warnings.push("Horizontal pixel count rounded to nearest character cell")
+      warnings.push(this.warnings.hRounded)
     }
 
     // warn if vertical pixels were rounded
-    if(params.hPx != hPxRounded) {
-      warnings.push("Vertical pixel count rounded to nearest integer")
+    if(params.vPx != vLines) {
+      warnings.push(this.warnings.vRounded)
     }
 
     // warn if custom aspect ratio
     if(aspect == 'custom') {
-      warnings.push("Aspect ratio is not a CVT standard")
+      warnings.push(this.warnings.aspect)
     }
 
     // warn if non-standard refresh rate
     if((!params.redBlnk || params.redBlnkV != 2) && !this.standardRefresh.includes(Number(params.refresh))) {
-      warnings.push("Refresh rate is not a CVT standard")
+      warnings.push(this.warnings.refresh)
     }
 
     // warn for recommended v1 reduced blanking refresh rate
     if((params.redBlnk && params.redBlnkV == 1) && params.refresh != 60) {
-      warnings.push("60Hz recommended for reduced blanking v1")
+      warnings.push(this.warnings.redBlnkRefresh)
     }
 
     return {
