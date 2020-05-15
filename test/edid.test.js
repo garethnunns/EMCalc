@@ -37,6 +37,25 @@ describe('Calculate EDID', () => {
     assert.equal(result.vPolarity, true)
     assert.equal(result.vRate, 60)
 
+    const expectedPossConns = {
+      input: {
+        dvid: true,
+        dp11: true,
+        hdmi14: true,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: true,
+        dp11: true,
+        hdmi14: true,
+        dp12: true,
+        hdmi20: true
+      }
+    }
+
+    assert.deepEqual(expectedPossConns,result.possConns)
+
     assert.equal(result.warnings.length, 0)
   })
 
@@ -61,6 +80,25 @@ describe('Calculate EDID', () => {
     assert.equal(result.vSync, 10)
     assert.equal(result.vPolarity, true)
     assert.equal(result.vRate, 30)
+
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      }
+    }
+
+    assert.deepEqual(expectedPossConns,result.possConns)
 
     assert.equal(result.warnings.length, 2)
     assert(result.warnings.includes(calcEdid.warnings.aspect))
@@ -88,6 +126,25 @@ describe('Calculate EDID', () => {
     assert.equal(result.vSync, 8)
     assert.equal(result.vPolarity, false)
     assert.equal(result.vRate, 60)
+
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      }
+    }
+
+    assert.deepEqual(expectedPossConns,result.possConns)
 
     assert.equal(result.warnings.length, 0)
   })
