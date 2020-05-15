@@ -87,6 +87,20 @@ export default class edid {
       aspect: "Aspect ratio is not a CVT standard",
       refresh: "Refresh rate is not a CVT standard",
       redBlnkRefresh: "60Hz recommended for reduced blanking v1",
+      
+      links: {
+        sl: 'Single Link Signal Bandwidth',
+        dl: 'Dual Link Signal Bandwidth',
+        gen1: 'Pixel Clock too high for all Gen 1 Cards',
+        all: 'Pixel Clock too high for all cards',
+      },
+
+      freq: {
+        above300: 'Above HDMI 1.4 & DP 1.1 spec',
+        above330: 'Above DVI, HDMI 1.4 and DP 1.1 spec',
+        dp12: 'DisplayPort 1.2 Only',
+        all: 'Not supported on any single connector',
+      },
     }
 
     this.hPx = hPx
@@ -402,13 +416,13 @@ export default class edid {
   linksNote(freq) {
     switch (true) {
       case freq < 165:
-        return 'Single Link Signal Bandwidth'
+        return this.warnings.links.sl
       case freq <= 330:
-        return 'Dual Link Signal Bandwidth'
+        return this.warnings.links.dl
       case freq <= 660:
-        return 'Pixel Clock too high for all Gen 1 Cards'
+        return this.warnings.links.gen1
       default:
-        return 'Pixel Clock too high for all cards'
+        return this.warnings.links.all
     }
   }
 
@@ -421,13 +435,13 @@ export default class edid {
   freqNote(freq) {
     switch (true) {
       case freq > 660:
-        return 'Not supported on any single connector'
+        return this.warnings.freq.all
       case freq > 600:
-        return 'DisplayPort 1.2 Only'
+        return this.warnings.freq.dp12
       case freq > 330:
-        return 'Above DVI, HDMI 1.4 and DP 1.1 spec'
+        return this.warnings.freq.above330
       case freq > 300:
-        return 'Above HDMI 1.4 & DP 1.1 spec'
+        return this.warnings.freq.above300
       default:
         return ''
     }

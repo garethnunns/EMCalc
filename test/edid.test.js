@@ -12,6 +12,32 @@ describe('Constuctor', () => {
     assert.equal(constEdid.params.redBlnk, true)
     assert.equal(constEdid.params.redBlnkV, 2)
   })
+
+  it('warning strings', () => {
+    // check the defined warnings say the right thing
+    // then just refer to the defined warnings in other tests
+    // then only one test to update
+
+    const warningsEdid = new edid()
+
+    assert.equal(warningsEdid.warnings.hRounded, "Horizontal pixel count rounded to nearest character cell")
+    assert.equal(warningsEdid.warnings.vRounded, "Vertical pixel count rounded to nearest integer")
+    assert.equal(warningsEdid.warnings.aspect, "Aspect ratio is not a CVT standard")
+    assert.equal(warningsEdid.warnings.refresh, "Refresh rate is not a CVT standard")
+    assert.equal(warningsEdid.warnings.redBlnkRefresh, "60Hz recommended for reduced blanking v1")
+
+    // links notes
+    assert.equal(warningsEdid.warnings.links.sl, 'Single Link Signal Bandwidth')
+    assert.equal(warningsEdid.warnings.links.dl, 'Dual Link Signal Bandwidth')
+    assert.equal(warningsEdid.warnings.links.gen1, 'Pixel Clock too high for all Gen 1 Cards')
+    assert.equal(warningsEdid.warnings.links.all, 'Pixel Clock too high for all cards')
+
+    // frequency notes
+    assert.equal(warningsEdid.warnings.freq.above300, 'Above HDMI 1.4 & DP 1.1 spec')
+    assert.equal(warningsEdid.warnings.freq.above330, 'Above DVI, HDMI 1.4 and DP 1.1 spec')
+    assert.equal(warningsEdid.warnings.freq.dp12, 'DisplayPort 1.2 Only')
+    assert.equal(warningsEdid.warnings.freq.all, 'Not supported on any single connector')
+  })
 })
 
 describe('Calculate EDID', () => {
@@ -21,8 +47,10 @@ describe('Calculate EDID', () => {
     const result = calcEdid.calcEdid()
 
     assert.equal(result.links, 'DL')
+    assert.equal(result.linksNote, calcEdid.warnings.links.dl)
 
     assert.equal(result.freq, 173.101)
+    assert.equal(result.freqNote, '')
 
     assert.equal(result.hTotal, 2576)
     assert.equal(result.hFrontPorch, 128)
@@ -54,7 +82,7 @@ describe('Calculate EDID', () => {
       }
     }
 
-    assert.deepEqual(expectedPossConns,result.possConns)
+    assert.deepEqual(result.possConns,expectedPossConns)
 
     assert.equal(result.warnings.length, 0)
   })
@@ -65,8 +93,10 @@ describe('Calculate EDID', () => {
     const result = calcEdid.calcEdid()
 
     assert.equal(result.links, '4K')
+    assert.equal(result.linksNote, calcEdid.warnings.links.gen1)
 
     assert.equal(result.freq, 389.429)
+    assert.equal(result.freqNote, calcEdid.warnings.freq.above330)
 
     assert.equal(result.hTotal, 5702)
     assert.equal(result.hFrontPorch, 274)
@@ -98,7 +128,7 @@ describe('Calculate EDID', () => {
       }
     }
 
-    assert.deepEqual(expectedPossConns,result.possConns)
+    assert.deepEqual(result.possConns,expectedPossConns)
 
     assert.equal(result.warnings.length, 2)
     assert(result.warnings.includes(calcEdid.warnings.aspect))
@@ -111,8 +141,10 @@ describe('Calculate EDID', () => {
     const result = calcEdid.calcEdid()
 
     assert.equal(result.links, '4K')
+    assert.equal(result.linksNote, calcEdid.warnings.links.gen1)
 
     assert.equal(result.freq, 560.004)
+    assert.equal(result.freqNote, calcEdid.warnings.freq.above330)
 
     assert.equal(result.hTotal, 4058)
     assert.equal(result.hFrontPorch, 8)
@@ -144,23 +176,9 @@ describe('Calculate EDID', () => {
       }
     }
 
-    assert.deepEqual(expectedPossConns,result.possConns)
+    assert.deepEqual(result.possConns,expectedPossConns)
 
     assert.equal(result.warnings.length, 0)
-  })
-
-  it('Warning strings', () => {
-    // check the defined warnings say the right thing
-    // then just refer to the defined warnings in other tests
-    // then only one test to update
-
-    const warningsEdid = new edid()
-
-    assert.equal(warningsEdid.warnings.hRounded, "Horizontal pixel count rounded to nearest character cell")
-    assert.equal(warningsEdid.warnings.vRounded, "Vertical pixel count rounded to nearest integer")
-    assert.equal(warningsEdid.warnings.aspect, "Aspect ratio is not a CVT standard")
-    assert.equal(warningsEdid.warnings.refresh, "Refresh rate is not a CVT standard")
-    assert.equal(warningsEdid.warnings.redBlnkRefresh, "60Hz recommended for reduced blanking v1")
   })
 })
 
@@ -381,25 +399,25 @@ describe('Links Note', () => {
   const linksNoteEdid = new edid()
 
   it('Single Link Signal Bandwidth', () => {
-    assert.equal(linksNoteEdid.linksNote(100), 'Single Link Signal Bandwidth')
-    assert.equal(linksNoteEdid.linksNote(164), 'Single Link Signal Bandwidth')
+    assert.equal(linksNoteEdid.linksNote(100), linksNoteEdid.warnings.links.sl)
+    assert.equal(linksNoteEdid.linksNote(164), linksNoteEdid.warnings.links.sl)
   })
 
   it('Dual Link Signal Bandwidth', () => {
-    assert.equal(linksNoteEdid.linksNote(165), 'Dual Link Signal Bandwidth')
-    assert.equal(linksNoteEdid.linksNote(200), 'Dual Link Signal Bandwidth')
-    assert.equal(linksNoteEdid.linksNote(330), 'Dual Link Signal Bandwidth')
+    assert.equal(linksNoteEdid.linksNote(165), linksNoteEdid.warnings.links.dl)
+    assert.equal(linksNoteEdid.linksNote(200), linksNoteEdid.warnings.links.dl)
+    assert.equal(linksNoteEdid.linksNote(330), linksNoteEdid.warnings.links.dl)
   })
 
   it('Pixel Clock too high for all Gen 1 Cards', () => {
-    assert.equal(linksNoteEdid.linksNote(331), 'Pixel Clock too high for all Gen 1 Cards')
-    assert.equal(linksNoteEdid.linksNote(400), 'Pixel Clock too high for all Gen 1 Cards')
-    assert.equal(linksNoteEdid.linksNote(660), 'Pixel Clock too high for all Gen 1 Cards')
+    assert.equal(linksNoteEdid.linksNote(331), linksNoteEdid.warnings.links.gen1)
+    assert.equal(linksNoteEdid.linksNote(400), linksNoteEdid.warnings.links.gen1)
+    assert.equal(linksNoteEdid.linksNote(660), linksNoteEdid.warnings.links.gen1)
   })
 
   it('Pixel Clock too high for all cards', () => {
-    assert.equal(linksNoteEdid.linksNote(661), 'Pixel Clock too high for all cards')
-    assert.equal(linksNoteEdid.linksNote(1000), 'Pixel Clock too high for all cards')
+    assert.equal(linksNoteEdid.linksNote(661), linksNoteEdid.warnings.links.all)
+    assert.equal(linksNoteEdid.linksNote(1000), linksNoteEdid.warnings.links.all)
   })
 })
 
@@ -412,25 +430,25 @@ describe('Frequency Note', () => {
   })
 
   it('Above HDMI 1.4 & DP 1.1 spec', () => {
-    assert.equal(freqNoteEdid.freqNote(301), 'Above HDMI 1.4 & DP 1.1 spec')
-    assert.equal(freqNoteEdid.freqNote(315), 'Above HDMI 1.4 & DP 1.1 spec')
-    assert.equal(freqNoteEdid.freqNote(330), 'Above HDMI 1.4 & DP 1.1 spec')
+    assert.equal(freqNoteEdid.freqNote(301), freqNoteEdid.warnings.freq.above300)
+    assert.equal(freqNoteEdid.freqNote(315), freqNoteEdid.warnings.freq.above300)
+    assert.equal(freqNoteEdid.freqNote(330), freqNoteEdid.warnings.freq.above300)
   })
 
   it('Above DVI, HDMI 1.4 and DP 1.1 spec', () => {
-    assert.equal(freqNoteEdid.freqNote(331), 'Above DVI, HDMI 1.4 and DP 1.1 spec')
-    assert.equal(freqNoteEdid.freqNote(450), 'Above DVI, HDMI 1.4 and DP 1.1 spec')
-    assert.equal(freqNoteEdid.freqNote(600), 'Above DVI, HDMI 1.4 and DP 1.1 spec')
+    assert.equal(freqNoteEdid.freqNote(331), freqNoteEdid.warnings.freq.above330)
+    assert.equal(freqNoteEdid.freqNote(450), freqNoteEdid.warnings.freq.above330)
+    assert.equal(freqNoteEdid.freqNote(600), freqNoteEdid.warnings.freq.above330)
   })
 
   it('DisplayPort 1.2 Only', () => {
-    assert.equal(freqNoteEdid.freqNote(601), 'DisplayPort 1.2 Only')
-    assert.equal(freqNoteEdid.freqNote(630), 'DisplayPort 1.2 Only')
-    assert.equal(freqNoteEdid.freqNote(660), 'DisplayPort 1.2 Only')
+    assert.equal(freqNoteEdid.freqNote(601), freqNoteEdid.warnings.freq.dp12)
+    assert.equal(freqNoteEdid.freqNote(630), freqNoteEdid.warnings.freq.dp12)
+    assert.equal(freqNoteEdid.freqNote(660), freqNoteEdid.warnings.freq.dp12)
   })
 
   it('Not supported on any single connector', () => {
-    assert.equal(freqNoteEdid.freqNote(661), 'Not supported on any single connector')
-    assert.equal(freqNoteEdid.freqNote(1000), 'Not supported on any single connector')
+    assert.equal(freqNoteEdid.freqNote(661), freqNoteEdid.warnings.freq.all)
+    assert.equal(freqNoteEdid.freqNote(1000), freqNoteEdid.warnings.freq.all)
   })
 })
