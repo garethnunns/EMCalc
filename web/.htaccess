@@ -1,0 +1,10 @@
+Options -Indexes
+
+DirectoryIndex index.html
+
+#Error Documents
+ErrorDocument 400 /
+ErrorDocument 401 /
+ErrorDocument 402 /
+ErrorDocument 403 /
+ErrorDocument 404 /
