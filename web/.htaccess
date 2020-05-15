@@ -2,9 +2,19 @@ Options -Indexes
 
 DirectoryIndex index.html
 
-#Error Documents
-ErrorDocument 400 /
-ErrorDocument 401 /
-ErrorDocument 402 /
-ErrorDocument 403 /
-ErrorDocument 404 /
+<IfModule mod_rewrite.c>
+  # HTTPS
+  RewriteEngine On
+  RewriteCond %{HTTPS} off          [OR]
+  RewriteCond %{HTTP_HOST} ^www\.   [NC]
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # 404
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . / [L,R=301]
+
+  # remove index.html
+  RewriteRule ^index\.html$ / [R=301,L]
+</IfModule>
