@@ -38,7 +38,7 @@ export default class About extends React.Component {
             </Paragraph>
 
             <Paragraph>
-              For the source code, to report bugs and for feature requests,&nbsp;
+              For the latest downloads, source code, to report bugs and for feature requests,&nbsp;
               <Text
                 style={styles.link}
                 onPress={() => Linking.openURL('https://github.com/garethnunns/EMCalc')}
