@@ -251,147 +251,210 @@ describe('Possible Connections', () => {
   const connsEdid = new edid()
 
   it('1920 @ 180MHz', () => {
-    const conns = connsEdid.possConns(1920,2576,180.000)
+    const result = connsEdid.possConns(1920,2576,180.000)
 
-    assert.equal(conns.input.dvid, true)
-    assert.equal(conns.input.hdmi14, true)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, true)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: true,
+        dp11: true,
+        hdmi14: true,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: true,
+        dp11: true,
+        hdmi14: true,
+        dp12: true,
+        hdmi20: true
+      }
+    }
 
-    assert.equal(conns.output.dp11, true)
-    assert.equal(conns.output.hdmi14, true)
-    assert.equal(conns.output.hdmi20, true)
-    assert.equal(conns.output.dp12, true)
-    assert.equal(conns.output.dvid, true)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('4096 @ 300MHz', () => {
-    const conns = connsEdid.possConns(4096,4176,300.000)
+    const result = connsEdid.possConns(4096,4176,300.000)
 
-    assert.equal(conns.input.dvid, false)
-    assert.equal(conns.input.hdmi14, false)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, true)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, true)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('4096 @ 300MHz', () => {
-    const conns = connsEdid.possConns(4096,4176,300.000)
+    const result = connsEdid.possConns(4096,4176,300.000)
 
-    assert.equal(conns.input.dvid, false)
-    assert.equal(conns.input.hdmi14, false)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, true)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, true)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('4088 @ 305MHz', () => {
-    const conns = connsEdid.possConns(4088,4168,305.000)
+    const result = connsEdid.possConns(4088,4168,305.000)
 
-    assert.equal(conns.input.dvid, true)
-    assert.equal(conns.input.hdmi14, false)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: true,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: true,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      }
+    }
 
-    assert.equal(conns.output.dvid, true)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, true)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, true)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('4095 @ 300MHz', () => {
-    const conns = connsEdid.possConns(4095,4175,300.000)
+    const result = connsEdid.possConns(4095,4175,300.000)
 
-    assert.equal(conns.input.dvid, true)
-    assert.equal(conns.input.hdmi14, true)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: true,
+        dp11: false,
+        hdmi14: true,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: false,
+        hdmi20: false
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, false)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, false)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('3996 @ 300MHz', () => {
-    const conns = connsEdid.possConns(3996,4076,300.000)
+    const result = connsEdid.possConns(3996,4076,300.000)
 
-    assert.equal(conns.input.dvid, true)
-    assert.equal(conns.input.hdmi14, true)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, true)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: true,
+        dp11: true,
+        hdmi14: true,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: true,
+        hdmi14: false,
+        dp12: false,
+        hdmi20: false
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, false)
-    assert.equal(conns.output.dp11, true)
-    assert.equal(conns.output.dp12, false)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('2560 @ 600MHz', () => {
-    const conns = connsEdid.possConns(2560,2640,600.000)
+    const result = connsEdid.possConns(2560,2640,600.000)
 
-    assert.equal(conns.input.dvid, false)
-    assert.equal(conns.input.hdmi14, false)
-    assert.equal(conns.input.hdmi20, true)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, true)
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: true
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: true,
+        hdmi20: false
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, false)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, true)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('2560 @ 661MHz', () => {
-    const conns = connsEdid.possConns(2560,2640,661.000)
+    const result = connsEdid.possConns(2560,2640,661.000)
 
-    assert.equal(conns.input.dvid, false)
-    assert.equal(conns.input.hdmi14, false)
-    assert.equal(conns.input.hdmi20, false)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, false)
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: false,
+        hdmi20: false
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: false,
+        hdmi20: false
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, false)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, false)
+    assert.deepEqual(result,expectedPossConns)
   })
 
   it('4097 @ 100MHz', () => {
-    const conns = connsEdid.possConns(4097,4177,100.000)
+    const result = connsEdid.possConns(4097,4177,100.000)
 
-    assert.equal(conns.input.dvid, false)
-    assert.equal(conns.input.hdmi14, false)
-    assert.equal(conns.input.hdmi20, false)
-    assert.equal(conns.input.dp11, false)
-    assert.equal(conns.input.dp12, false)
+    const expectedPossConns = {
+      input: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: false,
+        hdmi20: false
+      },
+      output: {
+        dvid: false,
+        dp11: false,
+        hdmi14: false,
+        dp12: false,
+        hdmi20: false
+      }
+    }
 
-    assert.equal(conns.output.dvid, false)
-    assert.equal(conns.output.hdmi14, false)
-    assert.equal(conns.output.hdmi20, false)
-    assert.equal(conns.output.dp11, false)
-    assert.equal(conns.output.dp12, false)
+    assert.deepEqual(result,expectedPossConns)
   })
 })
 
