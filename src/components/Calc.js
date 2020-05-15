@@ -17,8 +17,8 @@ export default class Calc extends React.Component {
     super(props)
 
     this.state = {
-      hPx: '1920',
-      vPx: '1080',
+      hPx: '2560',
+      vPx: '2000',
       refresh: '60',
       margins: false,
       redBlnk: {
