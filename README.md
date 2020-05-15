@@ -14,6 +14,8 @@ The logic is largely based from the
 [spreadsheet](https://www.facebook.com/groups/Barcofolsom/permalink/2524750314238262/)
 created by Graham Loveridge, Syed Athar Hussain & Scott Gershick.
 
+# Run
+
 Download the latest version for your platform on the 
 [releases page](https://github.com/garethnunns/EMCalc/releases)
 or use the [web version](https://e2.garethnunns.com).
@@ -25,3 +27,27 @@ screen and it will still work offline.
 
 Please [open an issue](https://github.com/garethnunns/EMCalc/issues/new)
 to report a bug or request a feature.
+
+## Build
+
+To run locally it's recommended to use [Yarn](https://yarnpkg.com/):
+
+````bash
+# clone this repo
+git clone https://github.com/garethnunns/EMCalc.git
+
+# go to cloned repo folder
+cd EMCalc
+
+# install expo-cli
+yarn global add expo-cli
+
+# install dependencies
+yarn install
+
+# run
+yarn start
+````
+
+This will launch the Expo DevTools in your browser from which you can
+run the project in the browser or with iOS/Android devices.

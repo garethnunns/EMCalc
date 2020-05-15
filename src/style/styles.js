@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 import theme from './theme'
 
 const inputPaddingH = 10
@@ -7,6 +7,7 @@ const inputPaddingV = 5
 export default StyleSheet.create({
   appBarTitle: {
     alignItems: 'center',
+    paddingLeft: Platform.OS == 'web' ? 68 : 0,
   },
 
   container: {

@@ -1,10 +1,10 @@
 {
   "name": "emcalc",
   "description": "Barco Event Master Custom Format Calculator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://e2.garethnunns.com",
   "license": "Copyright Gareth Nunns 2020",
-  "author": "Gareth Nunns",
+  "author": "Gareth Nunns <gareth@garethnunns.com>",
   "repository": "https://github.com/garethnunns/EMCalc",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -40,6 +40,7 @@
   "private": true,
   "build": {
     "appId": "com.garethnunns.emcalc",
+    "productName": "EM Calc",
     "extraMetadata": {
       "main": "main.js"
     },
