@@ -78,7 +78,7 @@ jobs:
         run: |
           yarn run build-desktop
           mkdir artifacts
-          mv dist/**/*.exe artifacts
+          mv dist/*.zip artifacts
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1

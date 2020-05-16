@@ -68,7 +68,7 @@
       "target": "AppImage"
     },
     "win": {
-      "target": "portable",
+      "target": "zip",
       "icon": "assets/icon.ico"
     }
   }
