@@ -11,7 +11,7 @@ export default StyleSheet.create({
   },
 
   container: {
-    width: '100%',
+    width: '95%',
     maxWidth: 600,
     marginHorizontal: 'auto',
   },
