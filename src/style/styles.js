@@ -110,6 +110,11 @@ export default StyleSheet.create({
     position: 'relative',
     top: '-25%',
   },
+  
+  aboutVersion: {
+    paddingBottom: 10,
+    color: theme.colors.disabled,
+  },
 
   link: {
     color: theme.colors.primary,

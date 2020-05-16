@@ -21,7 +21,11 @@ export default class About extends React.Component {
         >
           <Dialog.Title>{packageJson.build.productName}</Dialog.Title>
           <Dialog.Content>
-            <Subheading>{packageJson.version}</Subheading>
+            <Subheading
+              style={styles.aboutVersion}
+            >
+              {packageJson.version}
+            </Subheading>
             <Paragraph>
               This tool is designed to help calculate custom formats for the Barco 
               Event Master range of products. This isn't a Barco product and 
