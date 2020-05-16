@@ -11,7 +11,7 @@ export default StyleSheet.create({
   },
 
   container: {
-    width: '95%',
+    width: '100%',
     maxWidth: 600,
     marginHorizontal: 'auto',
   },
@@ -101,6 +101,7 @@ export default StyleSheet.create({
   },
 
   aboutDialog: {
+    width: '95%',
     maxWidth: 600,
     marginHorizontal: 'auto',
   },

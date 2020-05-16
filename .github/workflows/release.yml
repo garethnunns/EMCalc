@@ -76,6 +76,7 @@ jobs:
       - name: Windows Build & Copy to artifacts
         if: matrix.os == 'windows-latest'
         run: |
+          SET GH_TOKEN=${{secrets.GITHUB_TOKEN}}
           yarn run build-desktop
           mkdir artifacts
           mv dist/*.exe artifacts
