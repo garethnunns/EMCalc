@@ -1,7 +1,8 @@
 import React from 'react'
 import { Linking, Platform } from 'react-native'
-import { Button, Dialog, Paragraph, Portal, Text } from 'react-native-paper'
+import { Button, Dialog, Paragraph, Portal, Subheading, Text } from 'react-native-paper'
 
+import packageJson from '../../package.json'
 import styles from '../style/styles'
 
 export default class About extends React.Component {
@@ -18,8 +19,9 @@ export default class About extends React.Component {
           onDismiss={this.props.onCloseAbout}
           style={dialogStyle}
         >
-          <Dialog.Title>About</Dialog.Title>
+          <Dialog.Title>{packageJson.build.productName}</Dialog.Title>
           <Dialog.Content>
+            <Subheading>{packageJson.version}</Subheading>
             <Paragraph>
               This tool is designed to help calculate custom formats for the Barco 
               Event Master range of products. This isn't a Barco product and 
