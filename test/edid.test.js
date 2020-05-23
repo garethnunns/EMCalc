@@ -296,29 +296,6 @@ describe('Possible Connections', () => {
     assert.deepEqual(result,expectedPossConns)
   })
 
-  it('4096 @ 300MHz', () => {
-    const result = connsEdid.possConns(4096,4176,300.000)
-
-    const expectedPossConns = {
-      input: {
-        dvid: false,
-        dp11: false,
-        hdmi14: false,
-        dp12: true,
-        hdmi20: true
-      },
-      output: {
-        dvid: false,
-        dp11: false,
-        hdmi14: false,
-        dp12: true,
-        hdmi20: true
-      }
-    }
-
-    assert.deepEqual(result,expectedPossConns)
-  })
-
   it('4088 @ 305MHz', () => {
     const result = connsEdid.possConns(4088,4168,305.000)
 

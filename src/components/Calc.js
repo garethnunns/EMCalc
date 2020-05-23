@@ -68,7 +68,7 @@ export default class Calc extends React.Component {
           onChange={value => this.onChange('hPx',value)}
           min="1"
           max="4096"
-          helperText="Must be ≤4096 for EM spec"
+          helperText={this.state.hPx > 4096 ? "≥4096 only supported by DP 1.2 with EM ≥7.1" : ""}
         />
         <CalcInputNum
           name="vPx"
@@ -77,7 +77,7 @@ export default class Calc extends React.Component {
           onChange={value => this.onChange('vPx',value)}
           min="1"
           max="4096"
-          helperText="Must be ≤4096 for EM spec"
+          helperText={this.state.vPx > 4096 ? "Must be ≤4096 for EM spec" : ""}
         />
         <CalcInputNum
           name="refresh"
