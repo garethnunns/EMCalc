@@ -33,7 +33,7 @@
     "@expo/electron-adapter": "0.0.0-alpha.54",
     "@expo/webpack-config": "^0.12.6",
     "babel-preset-expo": "~8.1.0",
-    "electron": "^6.0.12",
+    "electron": "^15.5.5",
     "electron-builder": "^22.6.0",
     "mocha": "^7.1.2"
   },
