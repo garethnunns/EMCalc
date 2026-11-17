@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native'
+import { StyleSheet } from 'react-native'
 import theme from './theme'
 
 const inputPaddingH = 10
@@ -7,7 +7,20 @@ const inputPaddingV = 5
 export default StyleSheet.create({
   appBarTitle: {
     alignItems: 'center',
-    paddingLeft: Platform.OS == 'web' ? 68 : 0,
+  },
+
+  // same footprint as an Appbar.Action so the title stays centred
+  appBarIconWrap: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  appBarIcon: {
+    width: 32,
+    height: 32,
   },
 
   container: {
@@ -106,11 +119,11 @@ export default StyleSheet.create({
     marginHorizontal: 'auto',
   },
   
-  aboutDialogWeb: {
-    position: 'relative',
-    top: '-25%',
+  aboutBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    pointerEvents: 'none',
   },
-  
+
   aboutVersion: {
     paddingBottom: 10,
     color: theme.colors.disabled,

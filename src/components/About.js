@@ -1,23 +1,26 @@
 import React from 'react'
-import { Linking, Platform } from 'react-native'
+import { Linking, Platform, View } from 'react-native'
 import { Button, Dialog, Paragraph, Portal, Subheading, Text } from 'react-native-paper'
 
 import packageJson from '../../package.json'
 import styles from '../style/styles'
 
+// backdrop-filter only exists on web (incl. Electron); passed inline to skip StyleSheet validation
+const backdropBlur = Platform.OS == 'web'
+  ? { backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }
+  : null
+
 export default class About extends React.Component {
   render() {
-    let dialogStyle = [styles.aboutDialog]
-    if(Platform.OS == 'web') {
-      dialogStyle.push(styles.aboutDialogWeb)
-    }
-
     return (
       <Portal>
+        {this.props.visible && (
+          <View style={[styles.aboutBackdrop, backdropBlur]} />
+        )}
         <Dialog
           visible={this.props.visible}
           onDismiss={this.props.onCloseAbout}
-          style={dialogStyle}
+          style={styles.aboutDialog}
         >
           <Dialog.Title>{packageJson.build.productName}</Dialog.Title>
           <Dialog.Content>

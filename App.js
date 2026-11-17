@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native'
+import { Image, ScrollView, View } from 'react-native'
 import { Appbar, Provider as PaperProvider } from 'react-native-paper'
 
 import About from './src/components/About'
@@ -27,12 +27,20 @@ export default class App extends React.Component {
     return (
       <PaperProvider theme={theme}>
         <Appbar.Header>
+          <View style={styles.appBarIconWrap}>
+            <Image
+              source={require('./assets/icon-squircle.png')}
+              style={styles.appBarIcon}
+              accessibilityLabel="EM Calc"
+            />
+          </View>
           <Appbar.Content
             title="EM Calc"
             style={styles.appBarTitle}
           />
           <Appbar.Action
             icon="information"
+            accessibilityLabel="About"
             onPress={() => this.setState({about: true})}
           />
         </Appbar.Header>

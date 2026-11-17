@@ -19,8 +19,9 @@ export default class edid {
       // top & bottom margin
       marginSize: 0.018, // (1.8%)
 
-      // cell horizontal granularity for each reduced blanking version
+      // cell horizontal granularity for standard CVT and each reduced blanking version
       hCellGranularity: {
+        standard: 8, // (px)
         1: 8, // (px)
         2: 1 // (px)
       },
@@ -66,7 +67,8 @@ export default class edid {
         1: 6, // (lines)
         2: 6 // (lines)
       },
-      clockStep: { // for each reduced blanking version
+      clockStep: { // pixel clock step (MHz) for standard CVT and each reduced blanking version
+        standard: .25,
         1: .25,
         2: .001
       },
@@ -128,8 +130,11 @@ export default class edid {
    * @param {Object=} params (optional) - defaults to this.params
    */
   calcEdid(params = this.params) {
-    // horizontal cell granularity
-    var hCellGranularityRounded = Math.floor(this.timings.hCellGranularity[params.redBlnkV])
+    // horizontal cell granularity (standard CVT always uses 8px, whichever
+    // reduced blanking version was last selected)
+    var hCellGranularityRounded = Math.floor(
+      this.timings.hCellGranularity[params.redBlnk ? params.redBlnkV : 'standard']
+    )
 
     // horizontal pixels
     var hPxRounded = Math.floor(params.hPx / hCellGranularityRounded) * hCellGranularityRounded
@@ -164,13 +169,13 @@ export default class edid {
     // interlace factor
     const interlace = this.timings.interlaced ? 0.5 : 0
 
-    // aspect ratio
+    // aspect ratio (sets the V sync width, except for reduced blanking v2 which is fixed)
     var aspect
-    if(params.redBlnk && params.redBlnkV) {
+    if(params.redBlnk && params.redBlnkV == 2) {
       aspect = 'CVT-RB V2'
     }
     else {
-      aspect = this.aspectRatio(params.hPx,params.vPx)
+      aspect = this.aspectRatio(hPxRounded, vLines)
     }
 
     var vSync = this.timings.vSyncWidth[aspect]
@@ -184,11 +189,8 @@ export default class edid {
       // estimate num vertical lines
       var vEstSyncBackPorch = Math.ceil(this.timings.vMinSyncInterval / hEstPeriod)
 
-      // num vertical lines
-      var vSyncBackPorch = Math.min(this.timings.vMinSyncInterval + this.timings.vMinBackPorch, vEstSyncBackPorch)
-
-      // lines in back porch
-      var vBackPorch = vSyncBackPorch - this.timings.vSyncWidth[aspect]
+      // num vertical lines in sync + back porch (at least the sync width plus minimum back porch)
+      var vSyncBackPorch = Math.max(vSync + this.timings.vMinBackPorch, vEstSyncBackPorch)
 
       // total lines in vertical field
       vTotal = vLines + 2 * vMargin + vSyncBackPorch + interlace + this.timings.vMinPorchRounded
@@ -256,6 +258,11 @@ export default class edid {
     }
 
     // blanking independent
+
+    // CVT rounds the pixel clock down to its clock step (the small offset
+    // stops floating point error knocking an exact step down a whole step)
+    const clockStep = this.timings.clockStep[params.redBlnk ? params.redBlnkV : 'standard']
+    freq = Math.floor(freq / clockStep + 1e-9) * clockStep
 
     // round the frequency to 3 d.p.
     const freqRounded = freq.toFixed(3)
@@ -422,7 +429,7 @@ export default class edid {
    */
   linksNote(freq) {
     switch (true) {
-      case freq < 165:
+      case freq <= 165:
         return this.warnings.links.sl
       case freq <= 330:
         return this.warnings.links.dl

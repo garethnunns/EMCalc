@@ -1,0 +1,4 @@
+{
+  "spec": "test/**/*.test.js",
+  "node-option": ["disable-warning=MODULE_TYPELESS_PACKAGE_JSON"]
+}
