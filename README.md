@@ -36,7 +36,7 @@ to report a bug or request a feature.
 
 ## Build
 
-You'll need [Node.js](https://nodejs.org/) 22 or 24 (see `.nvmrc`).
+You'll need [Node.js](https://nodejs.org/) 24 (see `.nvmrc`).
 
 ````bash
 # clone this repo
