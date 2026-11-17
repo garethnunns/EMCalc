@@ -1,6 +1,7 @@
 // Offline support: pages are network-first (so new releases show up),
 // hashed bundles/assets are cache-first (their names change on every build).
-const CACHE = 'emcalc-v1'
+// renamed when old cached files should be cleared out
+const CACHE = 'emcalc-v2'
 
 // The local dev server reuses script names between edits, so a worker there
 // serves stale code. If one was installed (older builds registered it there),
@@ -37,6 +38,8 @@ if (!LOCAL) self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
   if (request.method !== 'GET' || url.origin !== self.location.origin) return
+  // always ask the server which version is deployed
+  if (url.pathname === '/version.json') return
 
   if (request.mode === 'navigate') {
     event.respondWith(
