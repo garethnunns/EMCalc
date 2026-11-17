@@ -32,7 +32,7 @@ jobs:
       run: yarn run build-web
 
     - name: gn deploy
-      uses: SamKirkland/FTP-Deploy-Action@3.1.0
+      uses: SamKirkland/FTP-Deploy-Action@v4.4.0
       with:
         ftp-server: ftp://ftp.garethnunns.com/
         ftp-username: e2@garethnunns.com
