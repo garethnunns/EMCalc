@@ -1,5 +1,7 @@
 import React from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
+import { Portal, Snackbar } from 'react-native-paper'
+import * as Clipboard from 'expo-clipboard'
 
 import styles from '../style/styles'
 
@@ -12,22 +14,33 @@ import ResultsTable from './ResultsTable'
 import Warnings from './Warnings'
 
 import edid from '../lib/edid'
-import { connections, DEFAULT_PROCESSOR } from '../lib/processors'
+import { connections } from '../lib/processors'
+import { initialState, shareUrl, toQuery } from '../lib/params'
+
+// on the website and desktop app, keep the inputs in the URL and remember them
+const isWeb = Platform.OS === 'web' && typeof window !== 'undefined'
+const STORAGE_KEY = 'emcalc:last'
+
+const linkQuery = () => isWeb ? window.location.search : ''
+
+const storedQuery = () => {
+  try { return isWeb ? window.localStorage.getItem(STORAGE_KEY) || '' : '' }
+  catch (e) { return '' }
+}
+
+const remember = (query) => {
+  if (!isWeb) return
+  try { window.localStorage.setItem(STORAGE_KEY, query) } catch (e) {}
+  try { window.history.replaceState(null, '', `?${query}`) } catch (e) {}
+}
 
 export default class Calc extends React.Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      hPx: '2560',
-      vPx: '2000',
-      refresh: '60',
-      margins: false,
-      redBlnk: {
-        enabled: true,
-        version: 2
-      },
-      processor: DEFAULT_PROCESSOR,
+      ...initialState(linkQuery(), storedQuery()),
+      snack: '',
     }
 
     this.edid = new edid(
@@ -38,6 +51,27 @@ export default class Calc extends React.Component {
       this.state.redBlnk.enabled,
       this.state.redBlnk.version
     )
+  }
+
+  componentDidMount() {
+    remember(toQuery(this.inputs))
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const query = toQuery(this.inputs)
+    if (query !== toQuery(prevState)) remember(query)
+  }
+
+  get inputs() {
+    const { snack, ...inputs } = this.state
+    return inputs
+  }
+
+  notify = (snack) => this.setState({ snack })
+
+  copyLink = async () => {
+    await Clipboard.setStringAsync(shareUrl(this.inputs))
+    this.notify('Link copied')
   }
 
   onChange = (name,value) => {
@@ -122,7 +156,18 @@ export default class Calc extends React.Component {
         <ResultsTable 
           value={customFormat}
           connections={connections(customFormat, this.state.processor)}
+          onCopyLink={this.copyLink}
         />
+
+        <Portal>
+          <Snackbar
+            visible={!!this.state.snack}
+            onDismiss={() => this.notify('')}
+            duration={2000}
+          >
+            {this.state.snack}
+          </Snackbar>
+        </Portal>
       </View>
     )
   }

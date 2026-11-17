@@ -22,6 +22,7 @@
     "@expo/vector-icons": "^15.0.2",
     "color": "^5.0.3",
     "expo": "~58.0.25",
+    "expo-clipboard": "~58.0.4",
     "expo-font": "~58.0.12",
     "expo-splash-screen": "~58.0.14",
     "react": "19.3.0",

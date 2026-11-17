@@ -110,7 +110,12 @@ export default StyleSheet.create({
   },
   
   resultsTableHeading: {
+    flex: 1,
     paddingHorizontal: 15,
+  },
+
+  resultsTableActions: {
+    flexDirection: 'row',
   },
 
   connectorName: {

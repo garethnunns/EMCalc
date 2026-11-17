@@ -122,6 +122,15 @@ export default class ResultsTable extends React.Component {
         <View style={styles.resultsTableHeadingContainer}>
           <Text style={styles.resultsTableHeading}>{title}</Text>
 
+          <View style={styles.resultsTableActions}>
+            <IconButton
+              icon="link-variant"
+              accessibilityLabel="Copy link to this format"
+              size={20}
+              onPress={this.props.onCopyLink}
+            />
+          </View>
+
           <DataTable.Pagination
             page={this.state.page}
             numberOfPages={3}
