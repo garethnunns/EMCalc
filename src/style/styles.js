@@ -120,13 +120,9 @@ export default StyleSheet.create({
     marginHorizontal: 'auto',
   },
   
-  aboutDialogWeb: {
-    position: 'relative',
-    top: '-25%',
-  },
-  
   aboutBackdrop: {
     ...StyleSheet.absoluteFillObject,
+    pointerEvents: 'none',
   },
 
   aboutVersion: {

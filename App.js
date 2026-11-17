@@ -40,6 +40,7 @@ export default class App extends React.Component {
           />
           <Appbar.Action
             icon="information"
+            accessibilityLabel="About"
             onPress={() => this.setState({about: true})}
           />
         </Appbar.Header>

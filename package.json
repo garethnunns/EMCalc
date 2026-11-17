@@ -6,57 +6,48 @@
   "license": "Copyright Gareth Nunns 2020",
   "author": "Gareth Nunns <gareth@garethnunns.com>",
   "repository": "https://github.com/garethnunns/EMCalc",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "desktop": "expo-electron start",
-    "eject": "expo eject",
-    "test": "mocha --require @babel/register",
-    "build-web": "expo build:web",
-    "build-desktop": "yarn electron-webpack && yarn electron-builder"
+    "desktop": "yarn build-web && electron electron/main.js",
+    "test": "mocha",
+    "build-web": "expo export --platform web --output-dir web-build",
+    "build-desktop": "yarn build-web && electron-builder --publish never"
   },
   "dependencies": {
-    "color": "^3.1.2",
-    "expo": "~37.0.3",
-    "mem": "^6.1.0",
-    "react": "~16.9.0",
-    "react-dom": "~16.9.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
-    "react-native-paper": "^3.10.1",
-    "react-native-web": "~0.11.7"
+    "@expo/metro-runtime": "~58.0.17",
+    "@expo/vector-icons": "^15.0.2",
+    "color": "^5.0.3",
+    "expo": "~58.0.25",
+    "expo-font": "~58.0.12",
+    "expo-splash-screen": "~58.0.14",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-paper": "^5.15.5",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-web": "^0.21.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.6",
-    "@expo/electron-adapter": "0.0.0-alpha.54",
-    "@expo/webpack-config": "^0.12.6",
-    "babel-preset-expo": "~8.1.0",
-    "electron": "^6.1.12",
-    "electron-builder": "^22.6.0",
-    "mocha": "^7.1.2"
+    "electron": "^45.3.3",
+    "electron-builder": "^26.18.0",
+    "mocha": "^12.0.3"
   },
   "private": true,
   "build": {
     "appId": "com.garethnunns.emcalc",
     "productName": "EM Calc",
     "extraMetadata": {
-      "main": "main.js"
+      "main": "electron/main.js"
     },
     "files": [
-      {
-        "from": "dist/main/",
-        "to": "./",
-        "filter": ["**/*"]
-      },
-      {
-        "from": "dist/renderer",
-        "to": "./",
-        "filter": ["**/*"]
-      },
+      "electron/**/*",
+      "web-build/**/*",
       "package.json",
-      "**/node_modules/**/*"
+      "!node_modules/**/*"
     ],
     "mac": {
       "target": "zip",
@@ -73,6 +64,13 @@
     },
     "nsis": {
       "deleteAppDataOnUninstall": true
-    }
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "npmRebuild": false
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

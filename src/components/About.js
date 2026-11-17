@@ -12,20 +12,15 @@ const backdropBlur = Platform.OS == 'web'
 
 export default class About extends React.Component {
   render() {
-    let dialogStyle = [styles.aboutDialog]
-    if(Platform.OS == 'web') {
-      dialogStyle.push(styles.aboutDialogWeb)
-    }
-
     return (
       <Portal>
         {this.props.visible && (
-          <View pointerEvents="none" style={[styles.aboutBackdrop, backdropBlur]} />
+          <View style={[styles.aboutBackdrop, backdropBlur]} />
         )}
         <Dialog
           visible={this.props.visible}
           onDismiss={this.props.onCloseAbout}
-          style={dialogStyle}
+          style={styles.aboutDialog}
         >
           <Dialog.Title>{packageJson.build.productName}</Dialog.Title>
           <Dialog.Content>
@@ -66,7 +61,7 @@ export default class About extends React.Component {
               style={styles.link}
               onPress={() => Linking.openURL('https://garethnunns.com')}
             >
-              &copy; Gareth Nunns 2026
+              &copy; Gareth Nunns 2020
             </Paragraph>
           </Dialog.Content>
           <Dialog.Actions>

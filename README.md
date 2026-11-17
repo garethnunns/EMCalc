@@ -30,7 +30,8 @@ to report a bug or request a feature.
 
 ## Build
 
-To run locally it's recommended to use [Yarn](https://yarnpkg.com/):
+You'll need [Node.js](https://nodejs.org/) 22 or 24 (see `.nvmrc`) and
+[Yarn](https://classic.yarnpkg.com/):
 
 ````bash
 # clone this repo
@@ -39,15 +40,19 @@ git clone https://github.com/garethnunns/EMCalc.git
 # go to cloned repo folder
 cd EMCalc
 
-# install expo-cli
-yarn global add expo-cli
-
 # install dependencies
 yarn install
 
-# run
+# run the Expo dev server (press w for web, i for iOS, a for Android)
 yarn start
 ````
 
-This will launch the Expo DevTools in your browser from which you can
-run the project in the browser or with iOS/Android devices.
+Other scripts:
+
+| Command | Does |
+| --- | --- |
+| `yarn web` | Run in the browser with live reload |
+| `yarn desktop` | Build the web version and open it in Electron |
+| `yarn test` | Run the unit tests |
+| `yarn build-web` | Export the static website to `web-build/` |
+| `yarn build-desktop` | Package the desktop app into `dist/` |

@@ -1,15 +1,15 @@
-import { Colors, DarkTheme } from 'react-native-paper'
+import { MD2Colors, MD2DarkTheme } from 'react-native-paper'
 import color from 'color'
 
 export default {
-  ...DarkTheme,
+  ...MD2DarkTheme,
   colors: {
-    ...DarkTheme.colors,
-    primary: Colors.blue500,
-    primaryLight: Colors.blue100,
-    red: Colors.red200,
-    green: Colors.green200,
+    ...MD2DarkTheme.colors,
+    primary: MD2Colors.blue500,
+    primaryLight: MD2Colors.blue100,
+    red: MD2Colors.red200,
+    green: MD2Colors.green200,
     textDark: '#999999',
-    surfaceLight: color(DarkTheme.colors.surface).lighten(0.24).rgb().string()
+    surfaceLight: color(MD2DarkTheme.colors.surface).lighten(0.24).rgb().string()
   }
 };
