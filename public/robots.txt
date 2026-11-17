@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://e2.garethnunns.com/sitemap.xml

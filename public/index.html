@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -11,7 +11,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1.00001, viewport-fit=cover"
     />
-    <title>EM Calc</title>
+    <title>EM Calc – Barco Event Master Custom Format Calculator</title>
+    <meta name="description" content="Free calculator for Barco Event Master custom formats: EDID timings, pixel clock, connector capacity and supported inputs/outputs, with CVT reduced blanking v1 &amp; v2." />
+    <meta name="keywords" content="Barco, Event Master, E2, S3, custom format, EDID, CVT, reduced blanking, pixel clock, calculator" />
+    <meta name="author" content="Gareth Nunns" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://e2.garethnunns.com/" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -44,14 +49,37 @@
 
     <meta property="og:locale" content="en_GB" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="EM Calc" />
+    <meta property="og:title" content="EM Calc – Barco Event Master Custom Format Calculator" />
+    <meta property="og:description" content="Free calculator for Barco Event Master custom formats: EDID timings, pixel clock, connector capacity and supported inputs/outputs, with CVT reduced blanking v1 &amp; v2." />
+    <meta property="og:url" content="https://e2.garethnunns.com/" />
     <meta property="og:image" content="https://e2.garethnunns.com/social.png" />
-    <meta property="og:width" content="1280" />
-    <meta property="og:height" content="640" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content="EM Calc – Barco Event Master Custom Format Calculator" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@garethnunns" />
     <meta name="twitter:image" content="https://e2.garethnunns.com/social.png" />
     <meta name="twitter:creator" content="@garethnunns" />
+    <meta name="twitter:title" content="EM Calc – Barco Event Master Custom Format Calculator" />
+    <meta name="twitter:description" content="Free calculator for Barco Event Master custom formats: EDID timings, pixel clock, connector capacity and supported inputs/outputs, with CVT reduced blanking v1 &amp; v2." />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "EM Calc",
+        "alternateName": "Barco Event Master Custom Format Calculator",
+        "url": "https://e2.garethnunns.com/",
+        "description": "Free calculator for Barco Event Master custom formats: EDID timings, pixel clock, connector capacity and supported inputs/outputs, with CVT reduced blanking v1 & v2.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web, macOS, Windows, Linux",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" },
+        "author": { "@type": "Person", "name": "Gareth Nunns", "url": "https://garethnunns.com" },
+        "sameAs": ["https://github.com/garethnunns/EMCalc"]
+      }
+    </script>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53004474-1"></script>
     <script>
@@ -65,29 +93,18 @@
   </head>
 
   <body>
-    <!-- 
-      A generic no script element with a reload button and a message.
-      Feel free to customize this however you'd like.
-    -->
     <noscript>
-      <form
-        action=""
-        style="background-color:#fff;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;"
-      >
-        <div
-          style="font-size:18px;font-family:Helvetica,sans-serif;line-height:24px;margin:10%;width:80%;"
-        >
-          <p>Oh no! It looks like JavaScript is not enabled in your browser.</p>
-          <p style="margin:20px 0;">
-            <button
-              type="submit"
-              style="background-color: #4630EB; border-radius: 100px; border: none; box-shadow: none; color: #fff; cursor: pointer; font-weight: bold; line-height: 20px; padding: 6px 16px;"
-            >
-              Reload
-            </button>
-          </p>
-        </div>
-      </form>
+      <main style="font-family:Helvetica,sans-serif;color:#fff;max-width:600px;margin:10% auto;padding:0 16px;line-height:1.5;">
+        <h1>EM Calc – Barco Event Master Custom Format Calculator</h1>
+        <p>
+          Calculate custom formats for the Barco Event Master range: EDID timings,
+          pixel clock, connector capacity and which inputs and outputs support the
+          format, with CVT reduced blanking v1 &amp; v2.
+        </p>
+        <p>Please enable JavaScript to use the calculator, or
+          <a style="color:#64b5f6" href="https://github.com/garethnunns/EMCalc/releases">download the desktop app</a>.
+        </p>
+      </main>
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
