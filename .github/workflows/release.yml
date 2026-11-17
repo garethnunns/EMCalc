@@ -4,6 +4,8 @@ on:
   release:
     types:
       - created
+  # redeploy the website from the Actions tab without making a release
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '24.x'
@@ -30,16 +32,28 @@ jobs:
     - name: Build
       run: yarn build-web
 
-    - name: gn deploy
-      uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-      with:
-        server: ftp.garethnunns.com
-        username: e2@garethnunns.com
-        password: ${{ secrets.gn_ftp_password }}
-        local-dir: ./web-build/
+    - name: Deploy over SFTP
+      env:
+        SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        # user@host for the hosting account (host must match the pinned keys below)
+        TARGET: ${{ secrets.DEPLOY_TARGET }}
+      run: |
+        install -m 700 -d ~/.ssh
+        printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        # pinned host keys for ftp.garethnunns.com (oxygen.primexeon.com)
+        cat > ~/.ssh/known_hosts <<'KEYS'
+        ftp.garethnunns.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCSfOU5ZXtUQdWLMxsw1Albh07E6KKsxzEZGuMZ/nBPw7SjZEx9iYlLOMQC4Q2hNpir8KliuxsDtDhcTcMuBX9rjAWFSyw3HFKI1+YgDXycDGc8/Jl+g+VbCk9rQ6tAORBYu/PjT6K/1rhj48GaEFpe7n5P4lBmd6+3h4Zx3aYc8H2Ek43cBUv14ZknNsfQsPQwC8zvmZa1hAosWZmaBiCBgPFWsLuuOz2Ig+HXJ8J+M1sYxm0wXhyWxce44aNaRNz36v/Mo6i5TUBXahxYAIuRZIwqNpkLph3R8qpTBcJKngMKCV2h5kIZIdsbpyLRr+T8i/kgZxYes6ig+NpgUnC3
+        ftp.garethnunns.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBN30lB13gjM1ZvTkcHmRpKJ11WZtCkW0nuJ3QDvvCk/bqwAOSNfL6TPoaEVw3/rxq9rny1FqBJrVT1tXzUbaTZk=
+        ftp.garethnunns.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKp/yA5CEowbsB9VFT5sKJW/Yj3fcdsqdcOt1DkpGIZy
+        KEYS
+        scripts/sftp-batch.sh web-build e2 > batch.txt
+        sftp -b batch.txt -i ~/.ssh/deploy_key \
+          -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "$TARGET"
 
   desktop:
     name: Desktop Release
+    if: github.event_name == 'release'
 
     runs-on: ${{ matrix.os }}
 
