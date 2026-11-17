@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Linking, View } from 'react-native'
 import { Button, IconButton, Text } from 'react-native-paper'
 
@@ -44,7 +44,7 @@ export default function UpdateBanner() {
 
   const reload = async () => {
     // pick up the new service worker too, then load the new version
-    try { await (await navigator.serviceWorker?.getRegistration())?.update() } catch (e) {}
+    try { await (await navigator.serviceWorker?.getRegistration())?.update() } catch {}
     window.location.reload()
   }
 

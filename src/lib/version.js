@@ -32,7 +32,7 @@ export async function latestVersion(kind, fetchFn = fetch) {
     // no-store, and the service worker lets this through, so it's never a cached copy
     const res = await fetchFn('/version.json', { cache: 'no-store' })
     return res.ok ? (await res.json()).version : null
-  } catch (e) {
+  } catch {
     return null
   }
 }
