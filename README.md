@@ -64,5 +64,7 @@ Other scripts:
 | `npm run web` | Run in the browser with live reload |
 | `npm run desktop` | Build the web version and open it in Electron |
 | `npm test` | Run the unit tests |
+| `npm run lint` | Check the code with ESLint |
+| `npm run test:e2e` | Run the browser tests against `web-build/` (run `npm run build-web` and `npx playwright install chromium` first) |
 | `npm run build-web` | Export the static website to `web-build/` |
 | `npm run build-desktop` | Package the desktop app into `dist/` |

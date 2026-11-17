@@ -15,6 +15,7 @@
     "desktop": "npm run build-web && electron electron/main.js",
     "test": "mocha",
     "lint": "eslint .",
+    "test:e2e": "playwright test",
     "build-web": "expo export --platform web --output-dir web-build && node scripts/write-version.mjs",
     "build-desktop": "npm run build-web && electron-builder --publish never"
   },
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
     "electron": "^45.3.3",
     "electron-builder": "^26.18.0",
     "eslint": "^10.15.0",

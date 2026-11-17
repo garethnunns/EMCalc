@@ -33,6 +33,7 @@ export default class CalcInputNum extends React.Component {
           <TextInput
             name={this.props.name}
             label={this.props.label}
+            aria-label={this.props.label}
             value={this.props.value}
             onChangeText={this.props.onChange}
             onFocus={() => this.animateFocus(1)}
