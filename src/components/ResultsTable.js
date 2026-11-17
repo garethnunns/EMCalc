@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native'
 import { DataTable, IconButton, Text } from 'react-native-paper'
 
+import ConnectorIcon from './ConnectorIcon'
 import styles from '../style/styles'
 import theme from '../style/theme';
 
@@ -80,29 +81,39 @@ export default class ResultsTable extends React.Component {
     let results = [
       {
         name: 'DVI-D',
+        icon: 'dvi',
         value: conns.dvid
       },
       {
         name: 'HDMI 1.4',
+        icon: 'hdmi',
         value: conns.hdmi14
       },
       {
         name: 'HDMI 2.0',
+        icon: 'hdmi',
         value: conns.hdmi20
       },
       {
         name: 'DP 1.1',
+        icon: 'dp',
         value: conns.dp11
       },
       {
         name: 'DP 1.2',
+        icon: 'dp',
         value: conns.dp12
       },
     ]
 
     return results.map((result, index) => 
       <DataTable.Row key={index}>
-        <DataTable.Cell>{result.name}</DataTable.Cell>
+        <DataTable.Cell>
+          <View style={styles.connectorName}>
+            <ConnectorIcon type={result.icon} color={theme.colors.text} />
+            <Text style={styles.connectorText}>{result.name}</Text>
+          </View>
+        </DataTable.Cell>
         <IconButton
           icon={result.value ? 'check-circle' : 'close-circle'}
           iconColor={result.value ? theme.colors.green : theme.colors.red}
