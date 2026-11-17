@@ -7,7 +7,7 @@
 
 <br clear="left">
 
-![EM Calc on a desktop, with the format settings beside the EDID timing](README/Desktop.png)
+![EM Calc on a desktop, with the format settings and saved formats beside the EDID timing](README/Desktop.png)
 
 ![EM Calc on a phone, showing the format settings and results](README/Phone-1.png) | ![EM Calc on a phone, showing which inputs support the format, including SDI](README/Phone-2.png)
 :---:|:---:
