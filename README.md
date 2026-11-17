@@ -3,7 +3,7 @@
 <img src="assets/icon-squircle.png" alt="EM Calc logo" width="80" align="left">
 
 ### Barco Event Master Custom Format Calculator
-[![Test](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml/badge.svg)](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml) [![Release](https://img.shields.io/github/v/release/garethnunns/EMCalc)](https://github.com/garethnunns/EMCalc/releases/latest) [![Downloads](https://img.shields.io/github/downloads/garethnunns/EMCalc/total)](https://github.com/garethnunns/EMCalc/releases) [![Web app](https://img.shields.io/badge/web%20app-e2.garethnunns.com-blue)](https://e2.garethnunns.com)
+[![Test](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml/badge.svg)](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml) [![Release](https://img.shields.io/github/v/release/garethnunns/EMCalc)](https://github.com/garethnunns/EMCalc/releases/latest) [![Downloads](https://img.shields.io/github/downloads/garethnunns/EMCalc/total)](https://github.com/garethnunns/EMCalc/releases) [![Web app](https://img.shields.io/badge/web%20app-e2.garethnunns.com-blue)](https://e2.garethnunns.com) [![License: MIT](https://img.shields.io/github/license/garethnunns/EMCalc)](LICENSE)
 
 <br clear="left">
 
