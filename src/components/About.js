@@ -1,9 +1,14 @@
 import React from 'react'
-import { Linking, Platform } from 'react-native'
+import { Linking, Platform, View } from 'react-native'
 import { Button, Dialog, Paragraph, Portal, Subheading, Text } from 'react-native-paper'
 
 import packageJson from '../../package.json'
 import styles from '../style/styles'
+
+// backdrop-filter only exists on web (incl. Electron); passed inline to skip StyleSheet validation
+const backdropBlur = Platform.OS == 'web'
+  ? { backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }
+  : null
 
 export default class About extends React.Component {
   render() {
@@ -14,6 +19,9 @@ export default class About extends React.Component {
 
     return (
       <Portal>
+        {this.props.visible && (
+          <View pointerEvents="none" style={[styles.aboutBackdrop, backdropBlur]} />
+        )}
         <Dialog
           visible={this.props.visible}
           onDismiss={this.props.onCloseAbout}
@@ -58,7 +66,7 @@ export default class About extends React.Component {
               style={styles.link}
               onPress={() => Linking.openURL('https://garethnunns.com')}
             >
-              &copy; Gareth Nunns 2020
+              &copy; Gareth Nunns 2026
             </Paragraph>
           </Dialog.Content>
           <Dialog.Actions>

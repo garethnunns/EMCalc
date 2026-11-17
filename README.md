@@ -1,7 +1,7 @@
 # EM Calc
 ### Barco Event Master Custom Format Calculator
 
-![Test](https://github.com/garethnunns/EMCalc/workflows/Test/badge.svg) ![Release](https://github.com/garethnunns/EMCalc/workflows/Release/badge.svg) 
+[![Test](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml/badge.svg)](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml) [![Release](https://img.shields.io/github/v/release/garethnunns/EMCalc)](https://github.com/garethnunns/EMCalc/releases/latest) 
 
 ![iPhone Screenshot](README/iPhone-1.png) | ![iPhone Screenshot](README/iPhone-3.png) | ![Mac Screenshot](README/Mac-1.png)
 :---:|:---:|:---:
