@@ -1,4 +1,3 @@
-import React from 'react'
 import Svg, { Circle, Path, Rect } from 'react-native-svg'
 
 // Front-on outlines of each connector's port, drawn on a 32x20 grid

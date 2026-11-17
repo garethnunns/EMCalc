@@ -1,4 +1,3 @@
-import React from 'react'
 import { View } from 'react-native'
 import { Button, DataTable, Icon, Text } from 'react-native-paper'
 

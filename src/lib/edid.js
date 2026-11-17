@@ -376,22 +376,16 @@ export default class edid {
     switch (hPx / vPx) {
       case 4/3:
         return '4:3'
-        break;
       case 16/9:
         return '16:9'
-        break;
       case 16/10:
         return '16:10'
-        break;
       case 5/4:
         return '5:4'
-        break;
       case 15/9:
         return '15:9'
-        break;
       default:
         return 'custom'
-        break;
     }
   }
 
@@ -400,10 +394,9 @@ export default class edid {
    * @param {number} hPx - active horizontal pixels (px)
    * @param {number} hTotal - total horizontal pixels (px)
    * @param {number} freq - pixel clock (MHz)
-   * @param {boolean} input - whether the calculation is for inputs or outputs
    * @returns {Object} Object
    */
-  possConns(hPx,hTotal,freq,input) {
+  possConns(hPx,hTotal,freq) {
     return {
       'input': {
         'dvid': hPx < 4096 && freq <= 330,

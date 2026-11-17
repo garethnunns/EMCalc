@@ -44,13 +44,13 @@ const linkQuery = () => isWeb ? window.location.search : ''
 
 const storedQuery = () => {
   try { return isWeb ? window.localStorage.getItem(STORAGE_KEY) || '' : '' }
-  catch (e) { return '' }
+  catch { return '' }
 }
 
 const remember = (query) => {
   if (!isWeb) return
-  try { window.localStorage.setItem(STORAGE_KEY, query) } catch (e) {}
-  try { window.history.replaceState(null, '', `?${query}`) } catch (e) {}
+  try { window.localStorage.setItem(STORAGE_KEY, query) } catch {}
+  try { window.history.replaceState(null, '', `?${query}`) } catch {}
 }
 
 export default class Calc extends React.Component {
