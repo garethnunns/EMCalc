@@ -6,9 +6,11 @@ import { PROCESSORS, processorById } from '../lib/processors'
 import styles from '../style/styles'
 
 export default class CalcInputProcessor extends React.Component {
-  state = { open: false }
+  // Paper's Menu focuses its anchor when it first mounts closed (it treats that
+  // as closing), so only mount it once it's first opened
+  state = { open: false, mounted: false }
 
-  open = () => this.setState({ open: true })
+  open = () => this.setState({ open: true, mounted: true })
   close = () => this.setState({ open: false })
 
   select = (id) => {
@@ -19,38 +21,42 @@ export default class CalcInputProcessor extends React.Component {
   render () {
     const current = processorById(this.props.value)
 
+    const button = (
+      <Button
+        mode="outlined"
+        uppercase={false}
+        icon="chevron-down"
+        contentStyle={{ flexDirection: 'row-reverse' }}
+        onPress={this.open}
+        accessibilityLabel={`${this.props.label}: ${current.name}`}
+        style={styles.processorButton}
+      >
+        {current.name}
+      </Button>
+    )
+
     return (
       <View style={styles.switchContainer}>
         <Text style={styles.switchText}>
           {this.props.label}
         </Text>
 
-        <Menu
-          visible={this.state.open}
-          onDismiss={this.close}
-          anchor={
-            <Button
-              mode="outlined"
-              uppercase={false}
-              icon="chevron-down"
-              contentStyle={{ flexDirection: 'row-reverse' }}
-              onPress={this.open}
-              accessibilityLabel={`${this.props.label}: ${current.name}`}
-              style={styles.processorButton}
-            >
-              {current.name}
-            </Button>
-          }
-        >
-          {PROCESSORS.map(p => (
-            <Menu.Item
-              key={p.id}
-              title={p.name}
-              leadingIcon={p.id === current.id ? 'check' : undefined}
-              onPress={() => this.select(p.id)}
-            />
-          ))}
-        </Menu>
+        {this.state.mounted ? (
+          <Menu
+            visible={this.state.open}
+            onDismiss={this.close}
+            anchor={button}
+          >
+            {PROCESSORS.map(p => (
+              <Menu.Item
+                key={p.id}
+                title={p.name}
+                leadingIcon={p.id === current.id ? 'check' : undefined}
+                onPress={() => this.select(p.id)}
+              />
+            ))}
+          </Menu>
+        ) : button}
       </View>
     )
   }
