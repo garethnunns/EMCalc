@@ -1,0 +1,42 @@
+name: Bug report
+description: Something's wrong, like a calculation or a connector result
+labels: [bug]
+body:
+  - type: input
+    id: link
+    attributes:
+      label: Share link
+      description: Use the link button next to the results tabs to copy one. It holds the format, processor and settings.
+      placeholder: https://e2.garethnunns.com/?h=3840&v=2160&hz=60…
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What's wrong?
+      description: What EM Calc shows.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: What should it show, and where's that from (e.g. a Barco spec sheet, or what the processor accepted)?
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where are you using it?
+      options:
+        - Website
+        - iPhone or Android home screen app
+        - Mac app
+        - Windows app
+        - Linux app
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in the info (i) popup.
+      placeholder: 1.3.3
