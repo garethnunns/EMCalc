@@ -20,6 +20,11 @@ The logic is largely based from the
 [spreadsheet](https://www.facebook.com/groups/Barcofolsom/permalink/2524750314238262/)
 created by Graham Loveridge, Syed Athar Hussain & Scott Gershick.
 
+Each format can also be downloaded as an EDID file, to load into whatever's
+sending it (e.g. BetterDisplay on a Mac, Custom Resolution Utility on Windows,
+or an EDID emulator). Formats too big for a standard EDID timing, like those
+over 4096 wide, are added in a DisplayID block.
+
 # Run
 
 Download the latest version for your platform on the 

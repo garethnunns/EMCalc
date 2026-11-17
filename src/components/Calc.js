@@ -23,6 +23,7 @@ import { resultsText } from '../lib/report'
 import { isWide } from '../lib/layout'
 import { fitSuggestions } from '../lib/fit'
 import { macFit } from '../lib/mac'
+import { buildEdid } from '../lib/edidFile'
 
 const PROCESSOR_OPTIONS = PROCESSORS.map(p => ({ value: p.id, label: p.name }))
 
@@ -103,6 +104,25 @@ export default class Calc extends React.Component {
     const result = this.edid.calcEdid(this.edidParams)
     await Clipboard.setStringAsync(resultsText(this.inputs, result, connections(result, this.state.processor, this.state.bits)))
     this.notify('Results copied')
+  }
+
+  // save the format as an EDID file (website and desktop app)
+  downloadEdid = () => {
+    const file = buildEdid(this.edidParams, { bits: this.state.bits })
+    if (!file) return this.notify('No EDID for this format')
+
+    const url = URL.createObjectURL(new Blob([file.bytes], { type: 'application/octet-stream' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.fileName
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 10000)
+
+    this.notify(file.displayId
+      ? `EDID saved, with ${file.fallback.hPx} × ${file.fallback.vPx} for devices without DisplayID`
+      : 'EDID saved')
   }
 
   onChange = (name,value) => {
@@ -240,6 +260,7 @@ export default class Calc extends React.Component {
             connections={conns}
             onCopyLink={this.copyLink}
             onCopyResults={this.copyResults}
+            onDownloadEdid={isWeb ? this.downloadEdid : null}
             renderMac={() => (
               <MacTab
                 mac={this.state.mac}
