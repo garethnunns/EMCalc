@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dimensions, Image, ScrollView, View } from 'react-native'
 import { Appbar, Provider as PaperProvider } from 'react-native-paper'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import About from './src/components/About'
 import Calc from './src/components/Calc'
@@ -36,40 +37,42 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <PaperProvider theme={theme}>
-        <Appbar.Header nativeID="appbar">
-          <View style={[styles.appBarInner, { maxWidth: contentMaxWidth(this.state.wide) }]}>
-            <View style={styles.appBarIconWrap} nativeID="appbar-logo">
-              <Image
-                source={require('./assets/icon-squircle.png')}
-                style={styles.appBarIcon}
-                accessibilityLabel="EM Calc"
+      <SafeAreaProvider>
+        <PaperProvider theme={theme}>
+          <Appbar.Header nativeID="appbar">
+            <View style={[styles.appBarInner, { maxWidth: contentMaxWidth(this.state.wide) }]}>
+              <View style={styles.appBarIconWrap} nativeID="appbar-logo">
+                <Image
+                  source={require('./assets/icon-squircle.png')}
+                  style={styles.appBarIcon}
+                  accessibilityLabel="EM Calc"
+                />
+              </View>
+              <Appbar.Content
+                title="EM Calc"
+                style={styles.appBarTitle}
+              />
+              <Appbar.Action
+                icon="information"
+                color={theme.colors.text}
+                accessibilityLabel="About"
+                onPress={() => this.setState({about: true})}
               />
             </View>
-            <Appbar.Content
-              title="EM Calc"
-              style={styles.appBarTitle}
-            />
-            <Appbar.Action
-              icon="information"
-              color={theme.colors.text}
-              accessibilityLabel="About"
-              onPress={() => this.setState({about: true})}
-            />
-          </View>
-        </Appbar.Header>
-        <UpdateBanner />
-        <About 
-          visible={this.state.about}
-          onCloseAbout={this.onCloseAbout}
-        />
-        <ScrollView 
-          style={{backgroundColor:theme.colors.surface}}
-          contentContainerStyle={styles.scrollContent}
-        >
-          <Calc />
-        </ScrollView>
-      </PaperProvider>
+          </Appbar.Header>
+          <UpdateBanner />
+          <About 
+            visible={this.state.about}
+            onCloseAbout={this.onCloseAbout}
+          />
+          <ScrollView 
+            style={{backgroundColor:theme.colors.surface}}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <Calc />
+          </ScrollView>
+        </PaperProvider>
+      </SafeAreaProvider>
     )
   }
 }
