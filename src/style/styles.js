@@ -314,7 +314,21 @@ export default StyleSheet.create({
     color: theme.colors.textDark,
   },
 
-  processorButton: {
+  menuItemTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  menuItemTickSpace: {
+    width: 18,
+  },
+
+  menuItemText: {
+    fontSize: 16,
+  },
+
+    processorButton: {
     marginLeft: 8,
   },
 
