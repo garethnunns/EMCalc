@@ -22,6 +22,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: npm
+    # npm 10 (bundled with Node 22) handles the lockfile's overrides differently
+    - name: Use npm 11
+      run: npm install -g npm@11
     - name: Install
       run: npm ci
     - name: Test
