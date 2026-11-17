@@ -159,6 +159,7 @@ describe('Calculate EDID', () => {
       vTotal: 1235,
       vFrontPorch: 3,
       vActive: 1200,
+      vSync: 6, // 16:10
       vPolarity: false,
     })
     assert.deepEqual(result.warnings, [])
@@ -172,6 +173,19 @@ describe('Calculate EDID', () => {
     assert.deepEqual(afterV2, afterV1)
     assert.equal(afterV2.hActive, 1920)
     assert.equal(afterV2.hTotal % 8, 0)
+  })
+
+  it('reduced blanking v1 sets the V sync width from the aspect ratio', () => {
+    assert.equal(calc(1024, 768, 60, false, true, 1).vSync, 4) // 4:3
+    assert.equal(calc(1920, 1080, 60, false, true, 1).vSync, 5) // 16:9
+    assert.equal(calc(1920, 1200, 60, false, true, 1).vSync, 6) // 16:10
+    assert.equal(calc(1280, 1024, 60, false, true, 1).vSync, 7) // 5:4
+    assert.equal(calc(2560, 2000, 60, false, true, 1).vSync, 10) // custom
+  })
+
+  it('reduced blanking v2 always uses an 8 line V sync', () => {
+    assert.equal(calc(1024, 768, 60, false, true, 2).vSync, 8)
+    assert.equal(calc(2560, 2000, 60, false, true, 2).vSync, 8)
   })
 
   it('accepts the string values the UI text inputs provide', () => {
@@ -244,6 +258,14 @@ describe('Warnings', () => {
 
   it('custom aspect ratio without reduced blanking', () => {
     assert.deepEqual(calc(2560, 2000, 60, false, false, 1).warnings, [warnings.aspect])
+  })
+
+  it('custom aspect ratio with reduced blanking v1', () => {
+    assert.deepEqual(calc(2560, 2000, 60, false, true, 1).warnings, [warnings.aspect])
+  })
+
+  it('no aspect warning when v1 rounding brings it back to a standard ratio', () => {
+    assert.deepEqual(calc(1925, 1080, 60, false, true, 1).warnings, [warnings.hRounded])
   })
 
   it('non-standard refresh rate without reduced blanking', () => {

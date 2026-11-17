@@ -168,13 +168,13 @@ export default class edid {
     // interlace factor
     const interlace = this.timings.interlaced ? 0.5 : 0
 
-    // aspect ratio
+    // aspect ratio (sets the V sync width, except for reduced blanking v2 which is fixed)
     var aspect
-    if(params.redBlnk && params.redBlnkV) {
+    if(params.redBlnk && params.redBlnkV == 2) {
       aspect = 'CVT-RB V2'
     }
     else {
-      aspect = this.aspectRatio(params.hPx,params.vPx)
+      aspect = this.aspectRatio(hPxRounded, vLines)
     }
 
     var vSync = this.timings.vSyncWidth[aspect]
