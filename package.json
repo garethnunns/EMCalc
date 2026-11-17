@@ -42,6 +42,7 @@
   "build": {
     "appId": "com.garethnunns.emcalc",
     "productName": "EM Calc",
+    "copyright": "© 2020 Generative Noise",
     "extraMetadata": {
       "main": "electron/main.js"
     },
