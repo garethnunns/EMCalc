@@ -86,8 +86,11 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
           />
         </View>
       </Row>
-      {!fit.ok && best && (
-        <Row label="Scaled">
+      {/* every row is always shown, so the tab's height doesn't change */}
+      <Row label="Scaled">
+        {fit.ok ? (
+          <Text style={styles.macNote}>Not needed</Text>
+        ) : best ? (
           <View style={styles.macStatus}>
             <Text>{best.hPx} × {best.vPx} @ {refresh}</Text>
             <Button mode="outlined" compact uppercase={false} onPress={() => onUse(best.hPx, best.vPx)}
@@ -95,10 +98,12 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
               Use
             </Button>
           </View>
-        </Row>
-      )}
-      {fit.perCable && (
-        <Row label="Each connector">
+        ) : (
+          <Text style={styles.macNote}>No same-aspect format fits</Text>
+        )}
+      </Row>
+      <Row label="Each connector">
+        {fit.perCable ? (
           <View style={styles.macStatus}>
             <Text>{fit.perCable[0]} × {fit.perCable[1]} @ {refresh}</Text>
             <Button mode="outlined" compact uppercase={false} onPress={() => onUse(fit.perCable[0], fit.perCable[1])}
@@ -106,23 +111,19 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
               Use
             </Button>
           </View>
-        </Row>
-      )}
-      {displays && (
-        <Row label="Displays this Mac drives">
-          <Text>{displays}</Text>
-        </Row>
-      )}
-      {best && (
-        <>
-          <Row label="Keynote canvas">
-            <Text>{keynoteCanvas(best.hPx, best.vPx).join(' × ')}</Text>
-          </Row>
-          <Row label="PowerPoint canvas">
-            <Text>{powerPointCanvas(best.hPx, best.vPx).join(' × ')} in</Text>
-          </Row>
-        </>
-      )}
+        ) : (
+          <Text style={styles.macNote}>One connector</Text>
+        )}
+      </Row>
+      <Row label="Displays this Mac drives">
+        <Text>{displays ?? '–'}</Text>
+      </Row>
+      <Row label="Keynote canvas">
+        <Text>{best ? keynoteCanvas(best.hPx, best.vPx).join(' × ') : '–'}</Text>
+      </Row>
+      <Row label="PowerPoint canvas">
+        <Text>{best ? `${powerPointCanvas(best.hPx, best.vPx).join(' × ')} in` : '–'}</Text>
+      </Row>
     </View>
   )
 }

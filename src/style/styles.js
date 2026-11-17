@@ -256,6 +256,10 @@ export default StyleSheet.create({
     gap: 10,
   },
 
+  macNote: {
+    color: theme.colors.textDark,
+  },
+
   macReason: {
     fontSize: 13,
     color: theme.colors.red,
@@ -344,9 +348,10 @@ export default StyleSheet.create({
     color: theme.colors.text,
   },
 
-  // 11 timing rows at DataTable's 48px row height
+  // as tall as the tallest tab (Mac: its settings and 7 rows), so the page
+  // doesn't jump when switching tabs
   resultsBody: {
-    minHeight: 11 * 48,
+    minHeight: 590,
     overflow: 'hidden',
   },
 
