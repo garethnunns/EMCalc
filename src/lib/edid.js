@@ -19,8 +19,9 @@ export default class edid {
       // top & bottom margin
       marginSize: 0.018, // (1.8%)
 
-      // cell horizontal granularity for each reduced blanking version
+      // cell horizontal granularity for standard CVT and each reduced blanking version
       hCellGranularity: {
+        standard: 8, // (px)
         1: 8, // (px)
         2: 1 // (px)
       },
@@ -128,8 +129,11 @@ export default class edid {
    * @param {Object=} params (optional) - defaults to this.params
    */
   calcEdid(params = this.params) {
-    // horizontal cell granularity
-    var hCellGranularityRounded = Math.floor(this.timings.hCellGranularity[params.redBlnkV])
+    // horizontal cell granularity (standard CVT always uses 8px, whichever
+    // reduced blanking version was last selected)
+    var hCellGranularityRounded = Math.floor(
+      this.timings.hCellGranularity[params.redBlnk ? params.redBlnkV : 'standard']
+    )
 
     // horizontal pixels
     var hPxRounded = Math.floor(params.hPx / hCellGranularityRounded) * hCellGranularityRounded
@@ -184,11 +188,8 @@ export default class edid {
       // estimate num vertical lines
       var vEstSyncBackPorch = Math.ceil(this.timings.vMinSyncInterval / hEstPeriod)
 
-      // num vertical lines
-      var vSyncBackPorch = Math.min(this.timings.vMinSyncInterval + this.timings.vMinBackPorch, vEstSyncBackPorch)
-
-      // lines in back porch
-      var vBackPorch = vSyncBackPorch - this.timings.vSyncWidth[aspect]
+      // num vertical lines in sync + back porch (at least the sync width plus minimum back porch)
+      var vSyncBackPorch = Math.max(vSync + this.timings.vMinBackPorch, vEstSyncBackPorch)
 
       // total lines in vertical field
       vTotal = vLines + 2 * vMargin + vSyncBackPorch + interlace + this.timings.vMinPorchRounded

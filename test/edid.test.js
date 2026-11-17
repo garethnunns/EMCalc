@@ -92,13 +92,13 @@ describe('Calculate EDID', () => {
     assertTimings(result, {
       links: '4K',
       linksNote: calcEdid.warnings.links.gen1,
-      freq: '389.429',
+      freq: '389.019',
       freqNote: calcEdid.warnings.freq.above330,
 
-      hTotal: 5702,
-      hFrontPorch: 274,
+      hTotal: 5696,
+      hFrontPorch: 280,
       hActive: 4096,
-      hSync: 456,
+      hSync: 448,
       hPolarity: false,
 
       vTotal: 2277,
@@ -162,6 +162,16 @@ describe('Calculate EDID', () => {
       vPolarity: false,
     })
     assert.deepEqual(result.warnings, [])
+  })
+
+  it('no reduced blanking uses the standard 8px cell whichever version was last selected', () => {
+    // the UI keeps the last reduced blanking version when it's turned off
+    const afterV1 = calc(1923, 1080, 60, false, false, 1)
+    const afterV2 = calc(1923, 1080, 60, false, false, 2)
+
+    assert.deepEqual(afterV2, afterV1)
+    assert.equal(afterV2.hActive, 1920)
+    assert.equal(afterV2.hTotal % 8, 0)
   })
 
   it('accepts the string values the UI text inputs provide', () => {
