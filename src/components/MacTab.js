@@ -87,7 +87,7 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
         </View>
       </Row>
       {!fit.ok && best && (
-        <Row label="Send instead">
+        <Row label="Scaled">
           <View style={styles.macStatus}>
             <Text>{best.hPx} × {best.vPx} @ {refresh}</Text>
             <Button mode="outlined" compact uppercase={false} onPress={() => onUse(best.hPx, best.vPx)}
@@ -98,7 +98,7 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
         </Row>
       )}
       {fit.perCable && (
-        <Row label="Each cable">
+        <Row label="Each connector">
           <Text>{fit.perCable[0]} × {fit.perCable[1]}</Text>
         </Row>
       )}
