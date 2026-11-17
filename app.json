@@ -13,7 +13,7 @@
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/icon.png"
+      "favicon": "./assets/icon-squircle.png"
     },
     "android": {
       "package": "com.garethnunns.emcalc"

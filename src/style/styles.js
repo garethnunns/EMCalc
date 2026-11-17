@@ -21,7 +21,6 @@ export default StyleSheet.create({
   appBarIcon: {
     width: 32,
     height: 32,
-    borderRadius: 4,
   },
 
   container: {

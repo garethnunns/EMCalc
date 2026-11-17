@@ -29,7 +29,7 @@ export default class App extends React.Component {
         <Appbar.Header>
           <View style={styles.appBarIconWrap}>
             <Image
-              source={require('./assets/icon.png')}
+              source={require('./assets/icon-squircle.png')}
               style={styles.appBarIcon}
               accessibilityLabel="EM Calc"
             />
