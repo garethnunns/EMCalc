@@ -7,20 +7,24 @@ import styles from '../style/styles'
 
 import CalcInputBlanking from './CalcInputBlanking'
 import CalcInputNum from './CalcInputNum'
-import CalcInputProcessor from './CalcInputProcessor'
+import Dropdown from './Dropdown'
 import CapacityAndFreq from './CapacityAndFreq'
 import FitSuggestions from './FitSuggestions'
+import MacTab from './MacTab'
 import ResultsTable from './ResultsTable'
 import SectionHeading from './SectionHeading'
 import SegmentedControl from './SegmentedControl'
 import Warnings from './Warnings'
 
 import edid from '../lib/edid'
-import { capacityNotes, connections } from '../lib/processors'
+import { capacityNotes, connections, PROCESSORS } from '../lib/processors'
 import { initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
 import { isWide } from '../lib/layout'
 import { fitSuggestions } from '../lib/fit'
+import { macFit } from '../lib/mac'
+
+const PROCESSOR_OPTIONS = PROCESSORS.map(p => ({ value: p.id, label: p.name }))
 
 const BIT_OPTIONS = [
   { value: 8, label: '8', accessibilityLabel: '8-bit' },
@@ -204,8 +208,9 @@ export default class Calc extends React.Component {
               />
             </View>
             <View style={[styles.inputCell, styles.toggleCell, styles.blankingCell]}>
-              <CalcInputProcessor
+              <Dropdown
                 label="Processor"
+                options={PROCESSOR_OPTIONS}
                 value={this.state.processor}
                 onChange={value => this.onChange('processor',value)}
                 stacked
@@ -235,6 +240,15 @@ export default class Calc extends React.Component {
             connections={conns}
             onCopyLink={this.copyLink}
             onCopyResults={this.copyResults}
+            renderMac={() => (
+              <MacTab
+                mac={this.state.mac}
+                fit={macFit(this.edidParams, this.state.mac, this.state.processor, this.state.bits)}
+                refresh={this.state.refresh}
+                onChange={mac => this.setState({ mac })}
+                onUse={(hPx, vPx) => this.setState({ hPx: String(hPx), vPx: String(vPx) })}
+              />
+            )}
           />
         </View>
 

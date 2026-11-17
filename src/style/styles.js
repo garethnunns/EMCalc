@@ -243,6 +243,26 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
 
+  macValue: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    paddingRight: 16,
+  },
+
+  macStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+
+  macReason: {
+    fontSize: 13,
+    color: theme.colors.red,
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+
   fitBox: {
     marginHorizontal: inputPaddingH,
     marginBottom: 8,

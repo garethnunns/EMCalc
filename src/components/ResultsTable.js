@@ -7,7 +7,7 @@ import { timingRows } from '../lib/report'
 import styles from '../style/styles'
 import theme from '../style/theme';
 
-const TABS = ['Timing', 'Inputs', 'Outputs']
+const TABS = ['Timing', 'Inputs', 'Outputs', 'Mac']
 
 // the native animation driver isn't available on web
 const useNativeDriver = Platform.OS !== 'web'
@@ -102,6 +102,7 @@ export default class ResultsTable extends React.Component {
       () => this.formatEdid(this.props.value),
       () => this.formatConns(this.props.connections.input),
       () => this.formatConns(this.props.connections.output),
+      () => this.props.renderMac(),
     ][page]()
 
     return (

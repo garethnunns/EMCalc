@@ -15,6 +15,7 @@ const useNativeDriver = Platform.OS !== 'web'
  * @param {*} value - the chosen option's value
  * @param {function} onChange - called with the chosen option's value
  * @param {boolean} stacked - label above the options rather than beside them
+ * @param {number=} segmentWidth - width of each option, for longer labels
  */
 export default class SegmentedControl extends React.Component {
   constructor(props) {
@@ -49,10 +50,11 @@ export default class SegmentedControl extends React.Component {
 
   render () {
     const { label, options, onChange, stacked, style } = this.props
+    const width = this.props.segmentWidth || SEGMENT_WIDTH
     const current = this.selectedIndex
     const translateX = this.position.interpolate({
       inputRange: [0, options.length - 1],
-      outputRange: [0, SEGMENT_WIDTH * (options.length - 1)],
+      outputRange: [0, width * (options.length - 1)],
     })
 
     return (
@@ -62,7 +64,7 @@ export default class SegmentedControl extends React.Component {
         </Text>
 
         <View style={styles.segments} role="radiogroup" aria-label={label}>
-          <Animated.View style={[styles.segmentHighlight, { transform: [{ translateX }] }]} />
+          <Animated.View style={[styles.segmentHighlight, { width, transform: [{ translateX }] }]} />
 
           {options.map((option, index) => (
             <Pressable
@@ -73,7 +75,7 @@ export default class SegmentedControl extends React.Component {
               role="radio"
               aria-checked={current === index}
               aria-label={option.accessibilityLabel}
-              style={styles.segment}
+              style={[styles.segment, { width }]}
             >
               <Animated.Text
                 style={[

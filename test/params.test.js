@@ -9,11 +9,12 @@ const state = {
   redBlnk: { enabled: true, version: 1 },
   bits: 10,
   processor: 'e2gen2',
+  mac: { model: 'studio', chip: 'M2 Ultra', macos: '15', connection: 'dual', betterDisplay: true },
 }
 
 describe('Share links', () => {
   it('encodes the inputs as a query string', () => {
-    assert.equal(toQuery(state), 'h=3840&v=2160&hz=59.94&m=1&rb=1&b=10&p=e2gen2')
+    assert.equal(toQuery(state), 'h=3840&v=2160&hz=59.94&m=1&rb=1&b=10&p=e2gen2&mm=studio&mc=M2+Ultra&mo=15&mx=dual&bd=1')
   })
 
   it('reads back what it writes', () => {
@@ -41,7 +42,14 @@ describe('Share links', () => {
     assert.equal(result.refresh, DEFAULTS.refresh)
   })
 
+  it('corrects a Mac setup that does not exist', () => {
+    // no Mac Pro has an M1, and an M4 can't run Monterey
+    assert.deepEqual(fromQuery('mm=pro&mc=M1&mo=12').mac,
+      { model: 'pro', chip: 'M2 Ultra', macos: '26', connection: 'dp12', betterDisplay: false })
+    assert.equal(fromQuery('mm=mbp&mc=M4&mo=12').mac.macos, '26')
+  })
+
   it('makes a link to the website', () => {
-    assert.equal(shareUrl(state), 'https://e2.garethnunns.com/?h=3840&v=2160&hz=59.94&m=1&rb=1&b=10&p=e2gen2')
+    assert.equal(shareUrl(state), 'https://e2.garethnunns.com/?h=3840&v=2160&hz=59.94&m=1&rb=1&b=10&p=e2gen2&mm=studio&mc=M2+Ultra&mo=15&mx=dual&bd=1')
   })
 })

@@ -1,4 +1,5 @@
 import { BIT_DEPTHS, DEFAULT_PROCESSOR, PROCESSORS } from './processors.js'
+import { MAC_DEFAULTS, validMac } from './mac.js'
 
 export const SITE_URL = 'https://e2.garethnunns.com/'
 
@@ -10,6 +11,7 @@ export const DEFAULTS = {
   redBlnk: { enabled: true, version: 2 },
   bits: 8,
   processor: DEFAULT_PROCESSOR,
+  mac: MAC_DEFAULTS,
 }
 
 const NUMBER = /^\d+(\.\d+)?$/
@@ -28,6 +30,12 @@ export function toQuery(state) {
     rb: state.redBlnk.enabled ? String(state.redBlnk.version) : '0',
     b: String(state.bits),
     p: state.processor,
+    // the Mac tab's setup
+    mm: state.mac.model,
+    mc: state.mac.chip,
+    mo: state.mac.macos,
+    mx: state.mac.connection,
+    bd: state.mac.betterDisplay ? '1' : '0',
   }).toString()
 }
 
@@ -51,6 +59,16 @@ export function fromQuery(query) {
 
   if (BIT_DEPTHS.includes(Number(q.get('b')))) found.bits = Number(q.get('b'))
   if (PROCESSORS.some(p => p.id === q.get('p'))) found.processor = q.get('p')
+
+  if (['mm', 'mc', 'mo', 'mx', 'bd'].some(k => q.has(k))) {
+    found.mac = validMac({
+      model: q.get('mm') || MAC_DEFAULTS.model,
+      chip: q.get('mc') || MAC_DEFAULTS.chip,
+      macos: q.get('mo') || MAC_DEFAULTS.macos,
+      connection: q.get('mx') || MAC_DEFAULTS.connection,
+      betterDisplay: q.get('bd') === '1',
+    })
+  }
 
   return found
 }

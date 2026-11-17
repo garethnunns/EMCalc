@@ -35,7 +35,7 @@ describe('Copy results', () => {
   })
 
   it('ends with a link to the format', () => {
-    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&b=8&p=e2gen2')
+    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&b=8&p=e2gen2&mm=mbp&mc=M4+Pro&mo=26&mx=dp12&bd=0')
   })
 
   it('includes warnings when there are any', () => {

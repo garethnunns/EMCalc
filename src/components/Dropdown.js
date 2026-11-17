@@ -2,14 +2,21 @@ import React from 'react'
 import { View } from 'react-native'
 import { Button, Icon, Menu, Text } from 'react-native-paper'
 
-import { PROCESSORS, processorById } from '../lib/processors'
 import styles from '../style/styles'
 import theme from '../style/theme'
 
 // Paper animates menus over 250ms x the theme's scale; quicker feels more responsive
 const FAST_MENU = { animation: { scale: 0.4 } }
 
-export default class CalcInputProcessor extends React.Component {
+/**
+ * A labelled dropdown
+ * @param {string} label
+ * @param {Array<{value: *, label: string}>} options
+ * @param {*} value
+ * @param {function} onChange - called with the chosen option's value
+ * @param {boolean} stacked - label above the button rather than beside it
+ */
+export default class Dropdown extends React.Component {
   // Paper's Menu focuses its anchor when it first mounts closed (it treats that
   // as closing), so only mount it once it's first opened
   state = { open: false, mounted: false }
@@ -23,7 +30,7 @@ export default class CalcInputProcessor extends React.Component {
   }
 
   render () {
-    const current = processorById(this.props.value)
+    const current = this.props.options.find(o => o.value === this.props.value) || this.props.options[0]
 
     const button = (
       <Button
@@ -32,10 +39,10 @@ export default class CalcInputProcessor extends React.Component {
         icon="chevron-down"
         contentStyle={{ flexDirection: 'row-reverse' }}
         onPress={this.open}
-        accessibilityLabel={`${this.props.label}: ${current.name}`}
+        accessibilityLabel={`${this.props.label}: ${current.label}`}
         style={this.props.stacked ? null : styles.processorButton}
       >
-        {current.name}
+        {current.label}
       </Button>
     )
 
@@ -52,20 +59,20 @@ export default class CalcInputProcessor extends React.Component {
             anchor={button}
             theme={FAST_MENU}
           >
-            {PROCESSORS.map(p => (
+            {this.props.options.map(o => (
               <Menu.Item
-                key={p.id}
+                key={String(o.value)}
                 title={
                   // a compact tick beside the chosen one; Paper's icon slot leaves a wide gap
                   <View style={styles.menuItemTitle}>
-                    {p.id === current.id
+                    {o.value === current.value
                       ? <Icon source="check" size={18} color={theme.colors.primary} />
                       : <View style={styles.menuItemTickSpace} />}
-                    <Text style={styles.menuItemText}>{p.name}</Text>
+                    <Text style={styles.menuItemText}>{o.label}</Text>
                   </View>
                 }
-                accessibilityState={{ checked: p.id === current.id }}
-                onPress={() => this.select(p.id)}
+                accessibilityState={{ checked: o.value === current.value }}
+                onPress={() => this.select(o.value)}
               />
             ))}
           </Menu>
