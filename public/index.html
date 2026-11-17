@@ -20,9 +20,12 @@
     <link rel="icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#121212" />
+    <!-- tints the status bar to match the app bar -->
+    <meta name="theme-color" content="#272727" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- No apple-mobile-web-app-status-bar-style: since iOS 26 a home screen
+         app blurs the top of the page under a black or black-translucent
+         status bar; the default starts the page below an opaque one -->
     <style>
       /* Fix the page to the window so the app's own ScrollView scrolls
          (keeps the top bar pinned and dialogs centred in the viewport) */
