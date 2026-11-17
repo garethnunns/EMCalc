@@ -12,17 +12,19 @@ import CapacityAndFreq from './CapacityAndFreq'
 import FitSuggestions from './FitSuggestions'
 import MacTab from './MacTab'
 import ResultsTable from './ResultsTable'
+import SavedFormats from './SavedFormats'
 import SectionHeading from './SectionHeading'
 import SegmentedControl from './SegmentedControl'
 import Warnings from './Warnings'
 
 import edid from '../lib/edid'
 import { capacityNotes, connections, PROCESSORS } from '../lib/processors'
-import { initialState, shareUrl, toQuery } from '../lib/params'
+import { fromQuery, initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
 import { isWide } from '../lib/layout'
 import { fitSuggestions } from '../lib/fit'
 import { macFit } from '../lib/mac'
+import { buildEdid } from '../lib/edidFile'
 
 const PROCESSOR_OPTIONS = PROCESSORS.map(p => ({ value: p.id, label: p.name }))
 
@@ -105,6 +107,25 @@ export default class Calc extends React.Component {
     this.notify('Results copied')
   }
 
+  // save the format as an EDID file (website and desktop app)
+  downloadEdid = () => {
+    const file = buildEdid(this.edidParams, { bits: this.state.bits })
+    if (!file) return this.notify('No EDID for this format')
+
+    const url = URL.createObjectURL(new Blob([file.bytes], { type: 'application/octet-stream' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.fileName
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 10000)
+
+    this.notify(file.displayId
+      ? `EDID saved, with ${file.fallback.hPx} × ${file.fallback.vPx} for devices without DisplayID`
+      : 'EDID saved')
+  }
+
   onChange = (name,value) => {
     this.setState({
       [name]: value
@@ -129,6 +150,14 @@ export default class Calc extends React.Component {
 
     const wide = this.state.wide
 
+    // kept in the browser, so only on the website and desktop app
+    const saved = isWeb ? (
+      <SavedFormats
+        query={toQuery(this.inputs)}
+        onLoad={query => this.setState(fromQuery(query))}
+      />
+    ) : null
+
     const capacity = (
       <CapacityAndFreq
         links={customFormat.links}
@@ -139,8 +168,7 @@ export default class Calc extends React.Component {
 
     return (
       <View style={wide ? styles.columns : styles.container}>
-        {/* on wide windows the groups spread out to match the table's height */}
-        <View style={wide ? [styles.column, styles.spreadColumn] : null}>
+        <View style={wide ? styles.column : null}>
           <View>
             <SectionHeading>Format</SectionHeading>
 
@@ -232,6 +260,8 @@ export default class Calc extends React.Component {
               warnings={customFormat.warnings}
             />
           </View>
+
+          {wide ? saved : null}
         </View>
 
         <View style={wide ? [styles.column, styles.resultsColumn] : null}>
@@ -240,6 +270,7 @@ export default class Calc extends React.Component {
             connections={conns}
             onCopyLink={this.copyLink}
             onCopyResults={this.copyResults}
+            onDownloadEdid={isWeb ? this.downloadEdid : null}
             renderMac={() => (
               <MacTab
                 mac={this.state.mac}
@@ -252,6 +283,8 @@ export default class Calc extends React.Component {
             )}
           />
         </View>
+
+        {wide ? null : saved}
 
         <Portal>
           <Snackbar

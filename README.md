@@ -20,6 +20,11 @@ The logic is largely based from the
 [spreadsheet](https://www.facebook.com/groups/Barcofolsom/permalink/2524750314238262/)
 created by Graham Loveridge, Syed Athar Hussain & Scott Gershick.
 
+Each format can also be downloaded as an EDID file, to load into whatever's
+sending it (e.g. BetterDisplay on a Mac, Custom Resolution Utility on Windows,
+or an EDID emulator). Formats too big for a standard EDID timing, like those
+over 4096 wide, are added in a DisplayID block.
+
 # Run
 
 Download the latest version for your platform on the 
@@ -59,5 +64,7 @@ Other scripts:
 | `npm run web` | Run in the browser with live reload |
 | `npm run desktop` | Build the web version and open it in Electron |
 | `npm test` | Run the unit tests |
+| `npm run lint` | Check the code with ESLint |
+| `npm run test:e2e` | Run the browser tests against `web-build/` (run `npm run build-web` and `npx playwright install chromium` first) |
 | `npm run build-web` | Export the static website to `web-build/` |
 | `npm run build-desktop` | Package the desktop app into `dist/` |

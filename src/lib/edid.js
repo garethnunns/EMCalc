@@ -339,6 +339,10 @@ export default class edid {
       vPolarity: vPolarity,
       vRate: params.refresh,
 
+      // margins (CVT borders) each side, inside the totals
+      hBorder: hMargin,
+      vBorder: vMargin,
+
       possConns: this.possConns(hPxRounded,hTotal,freq),
 
       warnings: warnings,
