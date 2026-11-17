@@ -11,19 +11,19 @@ export const CONNECTORS = {
 }
 
 /**
- * Event Master processors grouped by the generation of I/O cards they take,
- * as the connectors and their limits come from the cards.
+ * Event Master processors, each with its standard I/O cards' connectors.
  *
- * Each connector maps to its maximum pixel clock (MHz) on those cards, or null
- * for no limit beyond the connector's own rules (edid.possConns).
+ * Each connector maps to its maximum pixel clock (MHz), or null for no limit
+ * beyond the connector's own rules (edid.possConns). Figures are from Barco's
+ * spec sheets: E2 (Jun 2023), E2 Gen 2 (Nov 2025), S3 Tri-combo Gen 2
+ * (Nov 2026), Ex Tri-combo (Jul 2024) and Encore3 (Nov 2025).
  *
- * From Barco's spec sheets: E2 (Jun 2023), E2 Gen 2 (Nov 2025),
- * S3 Tri-combo Gen 2 (Nov 2026), Encore3 (Nov 2025, preliminary).
+ * Ids are kept stable for share links (e2gen2 and tricombo date from 1.2.0).
  */
 export const PROCESSORS = [
   {
     id: 'all',
-    name: 'All cards',
+    name: 'All processors',
     input: { dvid: null, hdmi14: null, hdmi20: null, dp11: null, dp12: null, sdi3g: null, sdi12g: null },
     output: { dvid: null, hdmi14: null, hdmi20: null, dp11: null, dp12: null, sdi3g: null, sdi12g: null },
   },
@@ -36,16 +36,33 @@ export const PROCESSORS = [
   },
   {
     id: 'e2gen2',
-    name: 'E2 Gen 2 / Encore3',
+    name: 'E2 Gen 2',
     input: { hdmi20: 600, dp12: 600, sdi3g: null, sdi12g: null },
     output: { hdmi20: 600, dp12: 660, sdi3g: null, sdi12g: null },
   },
   {
-    // the Tri-combo card's HDMI input is 550MHz, and there's no DP output
+    // the Tri-combo card's HDMI input is 550MHz; S3's output card has no DP
     id: 'tricombo',
-    name: 'S3 / Ex Tri-combo (Gen 2)',
+    name: 'S3 Tri-combo Gen 2',
     input: { hdmi20: 550, dp12: 600, sdi3g: null, sdi12g: null },
     output: { hdmi20: 600, sdi3g: null, sdi12g: null },
+  },
+  {
+    // the same Tri-combo input card; Ex's output card adds a DP 1.2 (4K60) output
+    id: 'extricombo',
+    name: 'Ex Tri-combo Gen 2',
+    input: { hdmi20: 550, dp12: 600, sdi3g: null, sdi12g: null },
+    output: { hdmi20: 600, dp12: 600, sdi3g: null, sdi12g: null },
+  },
+  {
+    // Encore3 is natively 4K (one 4K scaler per layer rather than E2's four HD
+    // ones), so takes less per connector: about 550MHz, though Barco say some
+    // formats over that still work, so it's approximate
+    id: 'encore3',
+    name: 'Encore3',
+    approximate: 'Encore3 takes about 550 MHz per input; check in Toolset',
+    input: { hdmi20: 550, dp12: 550, sdi3g: null, sdi12g: null },
+    output: { hdmi20: 600, dp12: 660, sdi3g: null, sdi12g: null },
   },
 ]
 
@@ -86,9 +103,9 @@ export function connections(result, processorId) {
 const GEN1_TOO_HIGH = 'Pixel Clock too high for all Gen 1 Cards'
 
 /**
- * The notes under the connector capacity and pixel clock, for the chosen cards.
- * All cards keeps the general connector notes; a card group describes what
- * its own inputs can take instead, so e.g. Gen 2 cards don't warn about Gen 1.
+ * The notes under the connector capacity and pixel clock, for the chosen processor.
+ * All processors keeps the general connector notes; a processor describes what
+ * its own inputs can take instead, so e.g. Gen 2 doesn't warn about Gen 1.
  * @param {Object} result - from edid.calcEdid()
  * @param {string} processorId
  * @param {{input: Array}} conns - from connections()
@@ -106,7 +123,7 @@ export function capacityNotes(result, processorId, conns) {
     }
   }
 
-  // Gen 1's limit only matters on Gen 1 cards; elsewhere it's 4K bandwidth
+  // Gen 1's limit only matters on Gen 1 processors; elsewhere it's 4K bandwidth
   const linksNote = result.linksNote === GEN1_TOO_HIGH && processorId !== 'gen1'
     ? '4K Signal Bandwidth'
     : result.linksNote
@@ -117,9 +134,18 @@ export function capacityNotes(result, processorId, conns) {
 
   let freqNote = ''
   if (supported.length === 0) {
-    freqNote = 'Not supported on any input on these cards'
+    // name the connector types, as SDI doesn't depend on the pixel clock
+    const types = [...new Set(inputs.map(c => c.name.split(/[- ]/)[0]))]
+    const list = types.length > 1 ? `${types.slice(0, -1).join(', ')} and ${types.at(-1)}` : types[0]
+    freqNote = `Too high for this processor's ${list} inputs`
   } else if (supported.length < inputs.length) {
     freqNote = `${supported.map(c => c.name).join(' & ')} input only`
+  }
+
+  // near an approximate limit, say so
+  const processor = processorById(processorId)
+  if (processor.approximate && supported.length < inputs.length) {
+    freqNote += `. ${processor.approximate}`
   }
 
   return {

@@ -38,7 +38,7 @@ export function resultsText(inputs, result, conns) {
   const notes = capacityNotes(result, inputs.processor, conns)
   const lines = [
     `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}`,
-    `Cards\t${processorById(inputs.processor).name}`,
+    `Processor\t${processorById(inputs.processor).name}`,
     `Pixel clock\t${result.freq} MHz${notes.freqNote ? `\t${notes.freqNote}` : ''}`,
     `Connector capacity\t${result.links}\t${notes.linksNote}`,
     '',

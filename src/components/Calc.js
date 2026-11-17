@@ -187,7 +187,7 @@ export default class Calc extends React.Component {
           </View>
 
           <CalcInputProcessor
-            label="Cards"
+            label="Processor"
             value={this.state.processor}
             onChange={value => this.onChange('processor',value)}
           />

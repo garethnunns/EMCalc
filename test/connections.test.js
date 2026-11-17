@@ -142,7 +142,7 @@ describe('Capacity notes for the chosen cards', () => {
     const n = notes(calc(3840, 2160, 50), 'gen1')
     assert.equal(n.linksNote, 'Pixel Clock too high for all Gen 1 Cards')
     assert.equal(n.linksWarn, true)
-    assert.equal(n.freqNote, 'Not supported on any input on these cards')
+    assert.equal(n.freqNote, "Too high for this processor's DVI, HDMI and DP inputs")
     assert.equal(n.freqWarn, true)
   })
 
@@ -155,7 +155,47 @@ describe('Capacity notes for the chosen cards', () => {
 
   it('warns when no input on the cards can take it', () => {
     const n = notes(calc(3840, 2160, 70), 'e2gen2') // 612.46MHz, over both 600MHz inputs
-    assert.equal(n.freqNote, 'Not supported on any input on these cards')
+    assert.equal(n.freqNote, "Too high for this processor's HDMI and DP inputs")
     assert.equal(n.freqWarn, true)
+  })
+})
+
+describe('Processors from the Barco spec sheets', () => {
+  const ids = PROCESSORS.map(p => p.id)
+
+  it('keeps the ids share links from 1.2.0 use', () => {
+    for (const id of ['all', 'gen1', 'e2gen2', 'tricombo']) assert(ids.includes(id), id)
+  })
+
+  it('lists each processor', () => {
+    assert.deepEqual(PROCESSORS.map(p => p.name), [
+      'All processors', 'E2 / S3-4K / Ex (Gen 1)', 'E2 Gen 2',
+      'S3 Tri-combo Gen 2', 'Ex Tri-combo Gen 2', 'Encore3',
+    ])
+  })
+
+  it('Ex Tri-combo has a DP output, S3 Tri-combo does not', () => {
+    assert('dp12' in processorById('extricombo').output)
+    assert(!('dp12' in processorById('tricombo').output))
+  })
+
+  // Barco's example from Vincent's post: 7296x1440@60 RB v1 is 662.5MHz,
+  // scaled to 6416x1267@60 (514MHz) to fit a single connector on Encore3
+  it("Barco's ultrawide example: too high for Encore3, the scaled version fits", () => {
+    const wide = calc(7296, 1440, 60, true, 1)
+    const scaled = calc(6416, 1267, 60, true, 1)
+    assert.equal(wide.freq, '662.500')
+    assert.equal(scaled.freq, '514.000')
+
+    const encore3 = (r) => Object.fromEntries(connections(r, 'encore3').input.map(c => [c.key, c.ok]))
+    assert.equal(encore3(wide).dp12, false)
+    assert.equal(encore3(scaled).dp12, true)
+  })
+
+  it('Encore3 notes say its limit is approximate', () => {
+    const r = calc(3840, 2160, 60) // 522.614MHz: fits
+    const over = calc(4096, 2160, 60) // 556.744MHz: just over 550
+    assert.equal(capacityNotes(r, 'encore3', connections(r, 'encore3')).freqNote, '')
+    assert.match(capacityNotes(over, 'encore3', connections(over, 'encore3')).freqNote, /^Too high for this processor's HDMI and DP inputs\. Encore3 takes about 550 MHz per input; check in Toolset$/)
   })
 })

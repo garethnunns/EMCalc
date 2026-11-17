@@ -12,7 +12,7 @@ describe('Copy results', () => {
 
   it('starts with a summary of the inputs', () => {
     assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins')
-    assert.equal(lines[1], 'Cards\tE2 Gen 2 / Encore3')
+    assert.equal(lines[1], 'Processor\tE2 Gen 2')
     assert.equal(lines[2], `Pixel clock\t${result.freq} MHz`)
   })
 
