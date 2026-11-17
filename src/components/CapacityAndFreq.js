@@ -15,13 +15,13 @@ export default class CapacityAndFreq extends React.Component {
     }
 
     let linksNoteStyle = [styles.capacityAndFreqNote]
-    if(this.props.linksNote.includes("too high")) {
+    if(this.props.linksWarn) {
       linksNoteStyle.push(warningStyle)
     }
 
     let freqStyle = [styles.capacityAndFreqValue]
     let freqNoteStyle = [styles.capacityAndFreqNote]
-    if(this.props.freq > 660) {
+    if(this.props.freqWarn) {
       freqStyle.push(warningStyle)
       freqNoteStyle.push(warningStyle)
     }
@@ -35,11 +35,10 @@ export default class CapacityAndFreq extends React.Component {
           <Text style={linksStyle}>
             {this.props.links}
           </Text>
-          {this.props.linksNote.length > 0 &&
-            <Text style={linksNoteStyle}>
-              {this.props.linksNote}
-            </Text>
-          }
+          {/* always keep the note's line so both columns line up */}
+          <Text style={linksNoteStyle}>
+            {this.props.linksNote || ' '}
+          </Text>
         </View>
         <View style={styles.capacityAndFreq}>
           <Text style={styles.capacityAndFreqTitle}>
@@ -48,11 +47,10 @@ export default class CapacityAndFreq extends React.Component {
           <Text style={freqStyle}>
             {this.props.freq}
           </Text>
-          {this.props.freqNote.length > 0 &&
-            <Text style={freqNoteStyle}>
-              {this.props.freqNote}
-            </Text>
-          }
+          {/* always keep the note's line so both columns line up */}
+          <Text style={freqNoteStyle}>
+            {this.props.freqNote || ' '}
+          </Text>
         </View>
       </View>
     )

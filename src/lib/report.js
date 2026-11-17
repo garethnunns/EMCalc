@@ -1,4 +1,4 @@
-import { processorById } from './processors.js'
+import { capacityNotes, processorById } from './processors.js'
 import { shareUrl } from './params.js'
 
 /**
@@ -35,11 +35,12 @@ const connectorLines = (list) => list.map(c =>
  * @param {{input: Array, output: Array}} conns - from connections()
  */
 export function resultsText(inputs, result, conns) {
+  const notes = capacityNotes(result, inputs.processor, conns)
   const lines = [
     `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}`,
-    `Processor\t${processorById(inputs.processor).name}`,
-    `Pixel clock\t${result.freq} MHz${result.freqNote ? `\t${result.freqNote}` : ''}`,
-    `Connector capacity\t${result.links}\t${result.linksNote}`,
+    `Cards\t${processorById(inputs.processor).name}`,
+    `Pixel clock\t${result.freq} MHz${notes.freqNote ? `\t${notes.freqNote}` : ''}`,
+    `Connector capacity\t${result.links}\t${notes.linksNote}`,
     '',
     'EDID Timing',
     ...timingRows(result).map(row => `${row.name}\t${row.value}`),

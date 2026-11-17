@@ -82,3 +82,50 @@ export function connections(result, processorId) {
 
   return { input: list('input'), output: list('output') }
 }
+
+const GEN1_TOO_HIGH = 'Pixel Clock too high for all Gen 1 Cards'
+
+/**
+ * The notes under the connector capacity and pixel clock, for the chosen cards.
+ * All cards keeps the general connector notes; a card group describes what
+ * its own inputs can take instead, so e.g. Gen 2 cards don't warn about Gen 1.
+ * @param {Object} result - from edid.calcEdid()
+ * @param {string} processorId
+ * @param {{input: Array}} conns - from connections()
+ * @returns {{linksNote: string, linksWarn: boolean, freqNote: string, freqWarn: boolean}}
+ */
+export function capacityNotes(result, processorId, conns) {
+  const tooHigh = /too high/i
+
+  if (processorById(processorId).id === 'all') {
+    return {
+      linksNote: result.linksNote,
+      linksWarn: tooHigh.test(result.linksNote),
+      freqNote: result.freqNote,
+      freqWarn: Number(result.freq) > 660,
+    }
+  }
+
+  // Gen 1's limit only matters on Gen 1 cards; elsewhere it's 4K bandwidth
+  const linksNote = result.linksNote === GEN1_TOO_HIGH && processorId !== 'gen1'
+    ? '4K Signal Bandwidth'
+    : result.linksNote
+
+  // SDI depends on the broadcast format, not the pixel clock
+  const inputs = conns.input.filter(c => !CONNECTORS[c.key].sdi)
+  const supported = inputs.filter(c => c.ok)
+
+  let freqNote = ''
+  if (supported.length === 0) {
+    freqNote = 'Not supported on any input on these cards'
+  } else if (supported.length < inputs.length) {
+    freqNote = `${supported.map(c => c.name).join(' & ')} input only`
+  }
+
+  return {
+    linksNote,
+    linksWarn: tooHigh.test(linksNote),
+    freqNote,
+    freqWarn: supported.length === 0,
+  }
+}

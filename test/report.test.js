@@ -12,7 +12,7 @@ describe('Copy results', () => {
 
   it('starts with a summary of the inputs', () => {
     assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins')
-    assert.equal(lines[1], 'Processor\tE2 Gen 2 / Encore3')
+    assert.equal(lines[1], 'Cards\tE2 Gen 2 / Encore3')
     assert.equal(lines[2], `Pixel clock\t${result.freq} MHz`)
   })
 
@@ -25,6 +25,13 @@ describe('Copy results', () => {
   it('lists the connectors with SDI notes', () => {
     assert(lines.includes('HDMI 2.0\tYes'))
     assert(lines.includes('3G-SDI\tYes\t1080p50'))
+  })
+
+  it('uses the notes for the chosen cards', () => {
+    const uhd = new edid().calcEdid({ hPx: 3840, vPx: 2160, refresh: 50, margins: false, redBlnk: true, redBlnkV: 2 })
+    const uhdText = resultsText({ ...inputs, hPx: '3840', vPx: '2160' }, uhd, connections(uhd, 'e2gen2'))
+    assert(uhdText.includes('Connector capacity\t4K\t4K Signal Bandwidth'))
+    assert(!uhdText.includes('Gen 1'))
   })
 
   it('ends with a link to the format', () => {

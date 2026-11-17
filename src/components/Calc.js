@@ -14,7 +14,7 @@ import ResultsTable from './ResultsTable'
 import Warnings from './Warnings'
 
 import edid from '../lib/edid'
-import { connections } from '../lib/processors'
+import { capacityNotes, connections } from '../lib/processors'
 import { initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
 
@@ -100,6 +100,8 @@ export default class Calc extends React.Component {
 
   render () {
     const customFormat = this.edid.calcEdid(this.edidParams)
+    const conns = connections(customFormat, this.state.processor)
+    const notes = capacityNotes(customFormat, this.state.processor, conns)
 
     return (
       <View style={styles.container}>
@@ -144,16 +146,15 @@ export default class Calc extends React.Component {
         />
 
         <CalcInputProcessor
-          label="Processor"
+          label="Cards"
           value={this.state.processor}
           onChange={value => this.onChange('processor',value)}
         />
 
-        <CapacityAndFreq 
+        <CapacityAndFreq
           links={customFormat.links}
-          linksNote={customFormat.linksNote}
           freq={customFormat.freq}
-          freqNote={customFormat.freqNote}
+          {...notes}
         />
 
         <Warnings
@@ -162,7 +163,7 @@ export default class Calc extends React.Component {
 
         <ResultsTable 
           value={customFormat}
-          connections={connections(customFormat, this.state.processor)}
+          connections={conns}
           onCopyLink={this.copyLink}
           onCopyResults={this.copyResults}
         />

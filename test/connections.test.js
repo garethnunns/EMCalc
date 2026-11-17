@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import edid from '../src/lib/edid.js'
 import { sdiCarries, sdiFormat } from '../src/lib/sdi.js'
-import { connections, PROCESSORS, processorById } from '../src/lib/processors.js'
+import { capacityNotes, connections, PROCESSORS, processorById } from '../src/lib/processors.js'
 
 const calc = (hPx, vPx, refresh, redBlnk = true, redBlnkV = 2) =>
   new edid(hPx, vPx, refresh, false, redBlnk, redBlnkV).calcEdid()
@@ -111,5 +111,51 @@ describe('Processors', () => {
     const custom = byKey(connections(calc(2560, 2000, 60), 'e2gen2').input)
     assert.equal(custom.sdi12g.ok, false)
     assert.equal(custom.sdi12g.note, 'Not a broadcast format')
+  })
+})
+
+describe('Capacity notes for the chosen cards', () => {
+  const notes = (result, id) => capacityNotes(result, id, connections(result, id))
+
+  it('all cards keeps the general connector notes', () => {
+    const result = calc(3840, 2160, 30, false) // 4K, above 330MHz
+    assert.deepEqual(notes(result, 'all'), {
+      linksNote: result.linksNote,
+      linksWarn: true,
+      freqNote: result.freqNote,
+      freqWarn: false,
+    })
+  })
+
+  it("gen 2 cards don't warn about gen 1 cards", () => {
+    const result = calc(3840, 2160, 50) // 433.356MHz
+    assert.equal(result.linksNote, 'Pixel Clock too high for all Gen 1 Cards')
+
+    const n = notes(result, 'e2gen2')
+    assert.equal(n.linksNote, '4K Signal Bandwidth')
+    assert.equal(n.linksWarn, false)
+    assert.equal(n.freqNote, '')
+    assert.equal(n.freqWarn, false)
+  })
+
+  it('gen 1 cards still warn about their own limit', () => {
+    const n = notes(calc(3840, 2160, 50), 'gen1')
+    assert.equal(n.linksNote, 'Pixel Clock too high for all Gen 1 Cards')
+    assert.equal(n.linksWarn, true)
+    assert.equal(n.freqNote, 'Not supported on any input on these cards')
+    assert.equal(n.freqWarn, true)
+  })
+
+  it('says which input still works when only some do', () => {
+    // 556.744MHz: over the Tri-combo's 550MHz HDMI input, within its 600MHz DP input
+    const n = notes(calc(4096, 2160, 60), 'tricombo')
+    assert.equal(n.freqNote, 'DP 1.2 input only')
+    assert.equal(n.freqWarn, false)
+  })
+
+  it('warns when no input on the cards can take it', () => {
+    const n = notes(calc(3840, 2160, 70), 'e2gen2') // 612.46MHz, over both 600MHz inputs
+    assert.equal(n.freqNote, 'Not supported on any input on these cards')
+    assert.equal(n.freqWarn, true)
   })
 })
