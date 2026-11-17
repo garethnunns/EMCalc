@@ -422,7 +422,7 @@ export default class edid {
    */
   linksNote(freq) {
     switch (true) {
-      case freq < 165:
+      case freq <= 165:
         return this.warnings.links.sl
       case freq <= 330:
         return this.warnings.links.dl

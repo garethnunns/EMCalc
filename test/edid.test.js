@@ -338,8 +338,8 @@ describe('Possible Connections', () => {
 describe('Links Note', () => {
   const e = new edid()
   const cases = [
-    [[100, 164], e.warnings.links.sl],
-    [[165, 200, 330], e.warnings.links.dl],
+    [[100, 164, 165], e.warnings.links.sl],
+    [[165.001, 200, 330], e.warnings.links.dl],
     [[331, 400, 660], e.warnings.links.gen1],
     [[661, 1000], e.warnings.links.all],
   ]
@@ -349,6 +349,13 @@ describe('Links Note', () => {
       for (const freq of freqs) assert.equal(e.linksNote(freq), note, `${freq}MHz`)
     })
   }
+
+  it('agrees with calcLinks at the 165MHz single link limit', () => {
+    assert.equal(e.calcLinks(1920, 165), 'SL')
+    assert.equal(e.linksNote(165), e.warnings.links.sl)
+    assert.equal(e.calcLinks(1920, 165.001), 'DL')
+    assert.equal(e.linksNote(165.001), e.warnings.links.dl)
+  })
 
   it('works with the rounded string frequency calcEdid passes in', () => {
     assert.equal(e.linksNote('660.000'), e.warnings.links.gen1)
