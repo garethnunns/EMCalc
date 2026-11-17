@@ -58,8 +58,12 @@ function createMainWindow() {
   const win = new BrowserWindow({
     width: 620,
     height: 800,
+    // tall enough to always show the top of the results (connector capacity
+    // and pixel clock) in the single column layout, measured as the content
+    // so the Windows/Linux title bar doesn't eat into it
+    useContentSize: true,
     minWidth: 320,
-    minHeight: 400,
+    minHeight: 580,
     backgroundColor: '#121212',
     autoHideMenuBar: true,
     show: false,
