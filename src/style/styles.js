@@ -148,9 +148,36 @@ export default StyleSheet.create({
     pointerEvents: 'none',
   },
 
+  aboutHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+
+  aboutAppIcon: {
+    width: 64,
+    height: 64,
+    marginRight: 16,
+  },
+
+  aboutTitle: {
+    fontSize: 22,
+  },
+
   aboutVersion: {
-    paddingBottom: 10,
     color: theme.colors.disabled,
+  },
+
+  aboutFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 16,
+  },
+
+  aboutGnLogo: {
+    width: 80,
+    height: 45.5,
   },
 
   link: {
