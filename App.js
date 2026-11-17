@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ScrollView, View } from 'react-native'
+import { Dimensions, Image, ScrollView, View } from 'react-native'
 import { Appbar, Provider as PaperProvider } from 'react-native-paper'
 
 import About from './src/components/About'
@@ -7,14 +7,24 @@ import Calc from './src/components/Calc'
 
 import theme from './src/style/theme'
 import styles from './src/style/styles'
+import { contentMaxWidth, isWide } from './src/lib/layout'
 
 export default class App extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      about: false
+      about: false,
+      wide: isWide(),
     }
+  }
+
+  componentDidMount() {
+    this.resize = Dimensions.addEventListener('change', () => this.setState({ wide: isWide() }))
+  }
+
+  componentWillUnmount() {
+    this.resize?.remove()
   }
 
   onCloseAbout = () => {
@@ -27,22 +37,25 @@ export default class App extends React.Component {
     return (
       <PaperProvider theme={theme}>
         <Appbar.Header>
-          <View style={styles.appBarIconWrap}>
-            <Image
-              source={require('./assets/icon-squircle.png')}
-              style={styles.appBarIcon}
-              accessibilityLabel="EM Calc"
+          <View style={[styles.appBarInner, { maxWidth: contentMaxWidth(this.state.wide) }]}>
+            <View style={styles.appBarIconWrap}>
+              <Image
+                source={require('./assets/icon-squircle.png')}
+                style={styles.appBarIcon}
+                accessibilityLabel="EM Calc"
+              />
+            </View>
+            <Appbar.Content
+              title="EM Calc"
+              style={styles.appBarTitle}
+            />
+            <Appbar.Action
+              icon="information"
+              color={theme.colors.text}
+              accessibilityLabel="About"
+              onPress={() => this.setState({about: true})}
             />
           </View>
-          <Appbar.Content
-            title="EM Calc"
-            style={styles.appBarTitle}
-          />
-          <Appbar.Action
-            icon="information"
-            accessibilityLabel="About"
-            onPress={() => this.setState({about: true})}
-          />
         </Appbar.Header>
         <About 
           visible={this.state.about}

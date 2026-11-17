@@ -18,15 +18,12 @@ import edid from '../lib/edid'
 import { capacityNotes, connections } from '../lib/processors'
 import { initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
+import { isWide } from '../lib/layout'
 
 const MARGIN_OPTIONS = [
   { value: false, label: 'Off', accessibilityLabel: 'Margins Off' },
   { value: true, label: 'On', accessibilityLabel: 'Margins On' },
 ]
-
-// side by side inputs and results from this window width
-const WIDE = 1000
-const isWide = () => Dimensions.get('window').width >= WIDE
 
 // on the website and desktop app, keep the inputs in the URL and remember them
 const isWeb = Platform.OS === 'web' && typeof window !== 'undefined'

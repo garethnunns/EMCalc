@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import theme from './theme'
+import { NARROW_MAX, WIDE_MAX } from '../lib/layout'
 
 const inputPaddingH = 10
 const inputPaddingV = 5
@@ -8,6 +9,16 @@ const inputPaddingV = 5
 export const SEGMENT_WIDTH = 46
 
 export default StyleSheet.create({
+  // the top bar's contents line up with the content below
+  appBarInner: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
+    marginHorizontal: 'auto',
+  },
+
   appBarTitle: {
     alignItems: 'center',
   },
@@ -35,7 +46,7 @@ export default StyleSheet.create({
 
   container: {
     width: '100%',
-    maxWidth: 600,
+    maxWidth: NARROW_MAX,
     marginHorizontal: 'auto',
   },
 
@@ -44,7 +55,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'stretch',
     width: '100%',
-    maxWidth: 1200,
+    maxWidth: WIDE_MAX,
     marginHorizontal: 'auto',
     gap: 24,
   },
