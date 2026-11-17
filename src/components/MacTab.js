@@ -99,7 +99,13 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
       )}
       {fit.perCable && (
         <Row label="Each connector">
-          <Text>{fit.perCable[0]} × {fit.perCable[1]}</Text>
+          <View style={styles.macStatus}>
+            <Text>{fit.perCable[0]} × {fit.perCable[1]} @ {refresh}</Text>
+            <Button mode="outlined" compact uppercase={false} onPress={() => onUse(fit.perCable[0], fit.perCable[1])}
+              accessibilityLabel={`Use ${fit.perCable[0]} by ${fit.perCable[1]} for each connector`}>
+              Use
+            </Button>
+          </View>
         </Row>
       )}
       {displays && (
