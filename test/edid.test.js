@@ -65,7 +65,7 @@ describe('Calculate EDID', () => {
     assertTimings(result, {
       links: 'DL',
       linksNote: calcEdid.warnings.links.dl,
-      freq: '173.101',
+      freq: '173.000',
       freqNote: '',
 
       hTotal: 2576,
@@ -92,7 +92,7 @@ describe('Calculate EDID', () => {
     assertTimings(result, {
       links: '4K',
       linksNote: calcEdid.warnings.links.gen1,
-      freq: '389.019',
+      freq: '389.000',
       freqNote: calcEdid.warnings.freq.above330,
 
       hTotal: 5696,
@@ -150,7 +150,7 @@ describe('Calculate EDID', () => {
 
     assertTimings(result, {
       links: 'SL',
-      freq: '154.128',
+      freq: '154.000',
       hTotal: 2080,
       hFrontPorch: 48, // 160 blanking - 80 back porch - 32 sync
       hActive: 1920,
@@ -209,6 +209,52 @@ describe('Calculate EDID', () => {
     assert.equal(result.vActive, 720)
     assert.equal(result.vRate, 50)
   })
+})
+
+// Published VESA CVT timings (as the reference `cvt` utility gives them),
+// as an independent check of the whole calculation
+describe('VESA CVT reference timings', () => {
+  // modeline: clock, hActive hSyncStart hSyncEnd hTotal, vActive vSyncStart vSyncEnd vTotal
+  const vesa = {
+    'CVT (no reduced blanking)': {
+      redBlnk: false,
+      modes: [
+        ['63.500', 1024, 1072, 1176, 1328, 768, 771, 775, 798],
+        ['74.500', 1280, 1344, 1472, 1664, 720, 723, 728, 748],
+        ['173.000', 1920, 2048, 2248, 2576, 1080, 1083, 1088, 1120],
+        ['193.250', 1920, 2056, 2256, 2592, 1200, 1203, 1209, 1245],
+      ],
+    },
+    'CVT-RB v1': {
+      redBlnk: true,
+      redBlnkV: 1,
+      modes: [
+        ['138.500', 1920, 1968, 2000, 2080, 1080, 1083, 1088, 1111],
+        ['154.000', 1920, 1968, 2000, 2080, 1200, 1203, 1209, 1235],
+        ['268.500', 2560, 2608, 2640, 2720, 1600, 1603, 1609, 1646],
+      ],
+    },
+  }
+
+  for (const [name, { redBlnk, redBlnkV = 2, modes }] of Object.entries(vesa)) {
+    describe(name, () => {
+      for (const [freq, hA, hSS, hSE, hT, vA, vSS, vSE, vT] of modes) {
+        it(`${hA}x${vA}@60`, () => {
+          assertTimings(calc(hA, vA, 60, false, redBlnk, redBlnkV), {
+            freq,
+            hActive: hA,
+            hFrontPorch: hSS - hA,
+            hSync: hSE - hSS,
+            hTotal: hT,
+            vActive: vA,
+            vFrontPorch: vSS - vA,
+            vSync: vSE - vSS,
+            vTotal: vT,
+          })
+        })
+      }
+    })
+  }
 })
 
 // Published VESA CVT reduced blanking v2 timings, as an independent reference

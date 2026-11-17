@@ -67,7 +67,8 @@ export default class edid {
         1: 6, // (lines)
         2: 6 // (lines)
       },
-      clockStep: { // for each reduced blanking version
+      clockStep: { // pixel clock step (MHz) for standard CVT and each reduced blanking version
+        standard: .25,
         1: .25,
         2: .001
       },
@@ -257,6 +258,11 @@ export default class edid {
     }
 
     // blanking independent
+
+    // CVT rounds the pixel clock down to its clock step (the small offset
+    // stops floating point error knocking an exact step down a whole step)
+    const clockStep = this.timings.clockStep[params.redBlnk ? params.redBlnkV : 'standard']
+    freq = Math.floor(freq / clockStep + 1e-9) * clockStep
 
     // round the frequency to 3 d.p.
     const freqRounded = freq.toFixed(3)
