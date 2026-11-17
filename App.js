@@ -50,6 +50,7 @@ export default class App extends React.Component {
         />
         <ScrollView 
           style={{backgroundColor:theme.colors.surface}}
+          contentContainerStyle={styles.scrollContent}
         >
           <Calc />
         </ScrollView>

@@ -5,7 +5,7 @@ const inputPaddingH = 10
 const inputPaddingV = 5
 
 // width of each option in the reduced blanking control
-export const SEGMENT_WIDTH = 52
+export const SEGMENT_WIDTH = 46
 
 export default StyleSheet.create({
   appBarTitle: {
@@ -26,20 +26,89 @@ export default StyleSheet.create({
     height: 32,
   },
 
+  // centre the content vertically when it's shorter than the window
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: 16,
+  },
+
   container: {
     width: '100%',
     maxWidth: 600,
     marginHorizontal: 'auto',
   },
 
-  numContainer: {
-    paddingHorizontal: inputPaddingH,
-    paddingVertical: inputPaddingV,
-    flexDirection: 'column',
+  // inputs and results side by side on wide windows
+  columns: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: '100%',
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+    gap: 24,
   },
 
-  numInput: {
+  column: {
     flex: 1,
+    minWidth: 0,
+  },
+
+  spreadColumn: {
+    justifyContent: 'space-between',
+  },
+
+  // line the table's tabs up with the Format heading
+  resultsColumn: {
+    paddingTop: 8,
+  },
+
+  sectionHeading: {
+    paddingHorizontal: inputPaddingH * 2,
+    paddingTop: 16,
+    paddingBottom: 4,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: theme.colors.textDark,
+  },
+
+  // inputs and toggles side by side
+  inputRow: {
+    flexDirection: 'row',
+    paddingHorizontal: inputPaddingH / 2,
+  },
+
+  inputCell: {
+    flex: 1,
+    paddingHorizontal: inputPaddingH / 2,
+  },
+
+  // toggles beside each other match the inputs' padding, and fill the row's height
+  toggleCell: {
+    paddingVertical: inputPaddingV,
+  },
+
+  blankingCell: {
+    flex: 1.4,
+  },
+
+  // label above the control, like the inputs
+  fieldStacked: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginHorizontal: 0,
+    marginVertical: 0,
+    paddingVertical: 6,
+    gap: 6,
+  },
+
+  fieldLabel: {
+    fontSize: 12,
+    color: theme.colors.textDark,
   },
 
   switchContainer: {
@@ -102,13 +171,13 @@ export default StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     flex: 0.5,
-    marginVertical: 20,
+    marginVertical: 12,
     paddingHorizontal: 20,
   },
 
   capacity: {
     borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: theme.colors.primaryLight,
+    borderRightColor: theme.colors.disabled,
   },
 
   capacityAndFreqTitle: {
@@ -142,14 +211,43 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: inputPaddingV,
+    height: 48,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.disabled,
   },
   
-  resultsTableHeading: {
-    flex: 1,
-    paddingHorizontal: 15,
+  tabs: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    position: 'relative',
+  },
+
+  tab: {
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    cursor: 'pointer',
+  },
+
+  tabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    height: 2,
+    backgroundColor: theme.colors.primary,
+  },
+
+  tabText: {
+    fontSize: 15,
+    color: theme.colors.textDark,
+  },
+
+  tabTextActive: {
+    color: theme.colors.text,
+  },
+
+  // 11 timing rows at DataTable's 48px row height
+  resultsBody: {
+    minHeight: 11 * 48,
+    overflow: 'hidden',
   },
 
   resultsTableActions: {

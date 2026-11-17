@@ -11,7 +11,7 @@ export default class CalcInputNum extends React.Component {
 
     return (
       <View 
-        style={styles.numContainer}>
+        style={[styles.numContainer, this.props.style]}>
         <TextInput
           name={this.props.name}
           label={this.props.label}
