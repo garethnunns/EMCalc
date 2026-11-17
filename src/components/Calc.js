@@ -125,7 +125,7 @@ export default class Calc extends React.Component {
   render () {
     const customFormat = this.edid.calcEdid(this.edidParams)
     const conns = connections(customFormat, this.state.processor, this.state.bits)
-    const notes = capacityNotes(customFormat, this.state.processor, conns)
+    const notes = capacityNotes(customFormat, this.state.processor, conns, this.state.bits)
 
     const wide = this.state.wide
 

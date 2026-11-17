@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import edid from '../src/lib/edid.js'
 import { sdiCarries, sdiFormat } from '../src/lib/sdi.js'
-import { capacityNotes, connections, PROCESSORS, processorById } from '../src/lib/processors.js'
+import { capacityNotes, connections, dataRate, PROCESSORS, processorById } from '../src/lib/processors.js'
 
 const calc = (hPx, vPx, refresh, redBlnk = true, redBlnkV = 2) =>
   new edid(hPx, vPx, refresh, false, redBlnk, redBlnkV).calcEdid()
@@ -276,5 +276,38 @@ describe('SDI: fitting inside a broadcast format', () => {
 
   it('too wide for any broadcast format', () => {
     assert.equal(byKey(calc(5120, 1440, 60)).sdi12g.partial, undefined)
+  })
+})
+
+describe('Bit depth in the notes and data rate', () => {
+  const notesAt = (r, bits, id = 'all') => capacityNotes(r, id, connections(r, id, bits), bits)
+
+  it('all processors keeps the original notes at 8-bit', () => {
+    const r = calc(3840, 2160, 60)
+    assert.equal(notesAt(r, 8).freqNote, r.freqNote)
+  })
+
+  it('at 10-bit, names what the format is too much for, grouping whole families', () => {
+    // 522.614MHz: HDMI 2.0 needs 653MHz at 10-bit, DP 1.2 is fine
+    assert.equal(notesAt(calc(3840, 2160, 60), 10).freqNote, 'Above DVI, HDMI and DP 1.1 at 10-bit')
+    assert.equal(notesAt(calc(3840, 2160, 60), 10).freqWarn, false)
+  })
+
+  it('at 10-bit, names single connectors when only some of a family fails', () => {
+    // 1920x1080@60 RB v2 133.32MHz: everything but DVI fits at 10-bit
+    assert.equal(notesAt(calc(1920, 1080, 60), 10).freqNote, 'Above DVI at 10-bit')
+    // 3000x2000@60 RB v2: HDMI 1.4 out, HDMI 2.0 in at 10-bit
+    const n = notesAt(calc(3000, 1800, 60), 10).freqNote
+    assert.match(n, /HDMI 1\.4/)
+    assert.doesNotMatch(n, /HDMI 2\.0|HDMI and/)
+  })
+
+  it('at 10-bit, red when nothing fits', () => {
+    assert.equal(notesAt(calc(3840, 2160, 75), 10).freqWarn, true)
+  })
+
+  it('data rate is the pixel clock x 3 components x bit depth', () => {
+    assert.equal(dataRate('522.614', 8), '12.5')
+    assert.equal(dataRate('522.614', 10), '15.7')
   })
 })

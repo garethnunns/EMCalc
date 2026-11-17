@@ -14,6 +14,7 @@ describe('Copy results', () => {
     assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins, 8-bit')
     assert.equal(lines[1], 'Processor\tE2 Gen 2')
     assert.equal(lines[2], `Pixel clock\t${result.freq} MHz`)
+    assert.equal(lines[3], 'Data rate\t2.7 Gbit/s at 8-bit')
   })
 
   it('includes every timing row, tab separated', () => {

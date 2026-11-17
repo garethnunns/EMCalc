@@ -1,4 +1,4 @@
-import { capacityNotes, processorById } from './processors.js'
+import { capacityNotes, dataRate, processorById } from './processors.js'
 import { shareUrl } from './params.js'
 
 /**
@@ -35,11 +35,12 @@ const connectorLines = (list) => list.map(c =>
  * @param {{input: Array, output: Array}} conns - from connections()
  */
 export function resultsText(inputs, result, conns) {
-  const notes = capacityNotes(result, inputs.processor, conns)
+  const notes = capacityNotes(result, inputs.processor, conns, inputs.bits)
   const lines = [
     `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}, ${inputs.bits}-bit`,
     `Processor\t${processorById(inputs.processor).name}`,
     `Pixel clock\t${result.freq} MHz${notes.freqNote ? `\t${notes.freqNote}` : ''}`,
+    `Data rate\t${dataRate(result.freq, inputs.bits)} Gbit/s at ${inputs.bits}-bit`,
     `Connector capacity\t${result.links}\t${notes.linksNote}`,
     '',
     'EDID Timing',

@@ -132,6 +132,31 @@ export function connections(result, processorId, bits = 8) {
 
 const GEN1_TOO_HIGH = 'Pixel Clock too high for all Gen 1 Cards'
 
+const listOf = (names) => names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0]
+
+/**
+ * Which connectors a format is too much for at a bit depth, grouping a family
+ * when none of it fits: e.g. "Above DVI, HDMI and DP 1.1 at 10-bit"
+ */
+function aboveNote(inputs, bits) {
+  const family = (c) => c.name.split(/[- ]/)[0]
+  const families = [...new Set(inputs.map(family))]
+  const names = families.flatMap(f => {
+    const members = inputs.filter(c => family(c) === f)
+    const failing = members.filter(c => !c.ok)
+    return failing.length === members.length ? [f] : failing.map(c => c.name)
+  })
+  return names.length ? `Above ${listOf(names)} at ${bits}-bit` : ''
+}
+
+/**
+ * The uncompressed video data rate: 3 colour components per pixel
+ * @param {number|string} freq - pixel clock (MHz)
+ * @param {number} bits - bits per component
+ * @returns {string} Gbit/s to one decimal place, e.g. '15.7'
+ */
+export const dataRate = (freq, bits) => (Number(freq) * 3 * bits / 1000).toFixed(1)
+
 /**
  * The notes under the connector capacity and pixel clock, for the chosen processor.
  * All processors keeps the general connector notes; a processor describes what
@@ -141,15 +166,18 @@ const GEN1_TOO_HIGH = 'Pixel Clock too high for all Gen 1 Cards'
  * @param {{input: Array}} conns - from connections()
  * @returns {{linksNote: string, linksWarn: boolean, freqNote: string, freqWarn: boolean}}
  */
-export function capacityNotes(result, processorId, conns) {
+export function capacityNotes(result, processorId, conns, bits = 8) {
   const tooHigh = /too high/i
 
   if (processorById(processorId).id === 'all') {
+    // deeper colour needs more bandwidth, so name what it's too much for
+    const inputs = conns.input.filter(c => !CONNECTORS[c.key].sdi)
+    const deepNote = bits > 8 ? aboveNote(inputs, bits) : null
     return {
       linksNote: result.linksNote,
       linksWarn: tooHigh.test(result.linksNote),
-      freqNote: result.freqNote,
-      freqWarn: Number(result.freq) > 660,
+      freqNote: deepNote ?? result.freqNote,
+      freqWarn: deepNote ? inputs.every(c => !c.ok) : Number(result.freq) > 660,
     }
   }
 
