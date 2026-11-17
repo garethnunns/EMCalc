@@ -15,9 +15,20 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ])
 
+const isMac = process.platform === 'darwin'
+
+// With the title bar hidden, the top bar moves the window (its buttons stay
+// clickable) and the logo makes room for the window buttons, keeping its
+// space so the title stays centred
+const MAC_TOP_BAR_CSS = `
+  #appbar { -webkit-app-region: drag; }
+  #appbar [role=button], #appbar button { -webkit-app-region: no-drag; }
+  #appbar-logo { visibility: hidden; }
+`
+
 // macOS only routes Cmd+C, Cmd+V, Cmd+A and undo to text fields through the
 // Edit menu, so give it the standard menus. Elsewhere keep the window menu-less.
-if (process.platform === 'darwin') {
+if (isMac) {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     { role: 'appMenu' },
     { role: 'editMenu' },
@@ -53,7 +64,16 @@ function createMainWindow() {
     autoHideMenuBar: true,
     show: false,
     title: 'EM Calc',
+    // on macOS, no title bar: the window buttons sit in the app's top bar
+    ...(isMac && {
+      titleBarStyle: 'hidden',
+      trafficLightPosition: { x: 18, y: 21 },
+    }),
   })
+
+  if (isMac) {
+    win.webContents.on('dom-ready', () => win.webContents.insertCSS(MAC_TOP_BAR_CSS))
+  }
 
   // keep the short name rather than the website's longer page title
   win.on('page-title-updated', (event) => event.preventDefault())
