@@ -367,6 +367,43 @@ export default StyleSheet.create({
 
   connectorText: {
     marginLeft: 12,
+    flexShrink: 1,
+  },
+
+  // keep the icon its size when a long note needs the room
+  connectorIconWrap: {
+    flexShrink: 0,
+  },
+
+  ioHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    paddingHorizontal: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.colors.disabled,
+  },
+
+  ioHeading: {
+    fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  ioSide: {
+    width: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+
+  ioMiddle: {
+    flex: 1,
+    paddingRight: 8,
+  },
+
+  ioAbsent: {
+    color: theme.colors.textDark,
+    fontSize: 16,
   },
 
   connectorNote: {

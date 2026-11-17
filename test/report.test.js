@@ -23,9 +23,15 @@ describe('Copy results', () => {
     }
   })
 
-  it('lists the connectors with SDI notes', () => {
-    assert(lines.includes('HDMI 2.0\tYes'))
-    assert(lines.includes('3G-SDI\tYes\t1080p50'))
+  it('lists the connectors with input and output side by side, and SDI notes', () => {
+    assert(lines.includes('Connectors\tInput\tOutput'))
+    assert(lines.includes('HDMI 2.0\tYes\tYes'))
+    assert(lines.includes('3G-SDI\tYes\tYes\t1080p50'))
+  })
+
+  it('a connector the processor only has one way shows –', () => {
+    const tri = resultsText({ ...inputs, processor: 'tricombo' }, result, connections(result, 'tricombo'))
+    assert(tri.split('\n').includes('DP 1.2\tYes\t–'))
   })
 
   it('uses the notes for the chosen cards', () => {

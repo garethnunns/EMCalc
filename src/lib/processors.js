@@ -213,3 +213,21 @@ export function capacityNotes(result, processorId, conns, bits = 8) {
     freqWarn: supported.length === 0,
   }
 }
+
+/**
+ * Inputs and outputs side by side, one row per connector the processor has
+ * in either direction, like Toolset's I/O table
+ * @param {{input: Array, output: Array}} conns - from connections()
+ * @returns {Array<{key, name, icon, note, input, output}>} input/output are
+ *   the connection, or null when the processor doesn't have it that way
+ */
+export function ioRows(conns) {
+  const find = (list, key) => list.find(c => c.key === key) || null
+  return Object.keys(CONNECTORS)
+    .filter(key => find(conns.input, key) || find(conns.output, key))
+    .map(key => {
+      const input = find(conns.input, key)
+      const output = find(conns.output, key)
+      return { key, ...CONNECTORS[key], note: (input || output).note, input, output }
+    })
+}

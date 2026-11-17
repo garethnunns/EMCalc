@@ -1,13 +1,14 @@
 import React from 'react';
 import { Animated, Easing, Platform, Pressable, View } from 'react-native'
-import { DataTable, IconButton, Text } from 'react-native-paper'
+import { DataTable, Icon, IconButton, Text } from 'react-native-paper'
 
 import ConnectorIcon from './ConnectorIcon'
 import { timingRows } from '../lib/report'
+import { ioRows } from '../lib/processors'
 import styles from '../style/styles'
 import theme from '../style/theme';
 
-const TABS = ['Timing', 'Inputs', 'Outputs', 'Mac']
+const TABS = ['Timing', 'I/O', 'Mac']
 
 // the native animation driver isn't available on web
 const useNativeDriver = Platform.OS !== 'web'
@@ -74,34 +75,45 @@ export default class ResultsTable extends React.Component {
     )
   }
 
-  formatConns(conns) {
-    return conns.map(conn =>
-      <DataTable.Row key={conn.key}>
-        <DataTable.Cell>
-          <View style={styles.connectorName}>
-            <ConnectorIcon type={conn.icon} color={theme.colors.textDark} />
+  // one direction's status: tick, yellow (fits inside a broadcast format), cross, or – when absent
+  status(conn, direction) {
+    if (!conn) return <Text style={styles.ioAbsent} aria-label={`No ${direction}`}>–</Text>
+    const [icon, color, label] = conn.ok ? ['check-circle', theme.colors.green, 'supported']
+      : conn.partial ? ['minus-circle', theme.colors.yellow, 'fits inside a larger format']
+      : ['close-circle', theme.colors.red, 'not supported']
+    return <Icon source={icon} color={color} size={20} aria-label={`${direction} ${label}`} />
+  }
+
+  formatIO(conns) {
+    return [
+      <View key="header" style={styles.ioHeader}>
+        <Text style={[styles.ioHeading, styles.ioMiddle]}>Connector</Text>
+        <Text style={[styles.ioHeading, styles.ioSide]}>Input</Text>
+        <Text style={[styles.ioHeading, styles.ioSide]}>Output</Text>
+      </View>,
+      ...ioRows(conns).map(row =>
+        <DataTable.Row key={row.key}>
+          <View style={[styles.ioMiddle, styles.connectorName]}>
+            <View style={styles.connectorIconWrap}>
+              <ConnectorIcon type={row.icon} color={theme.colors.textDark} />
+            </View>
             <View style={styles.connectorText}>
-              <Text>{conn.name}</Text>
-              {conn.note ? <Text style={styles.connectorNote}>{conn.note}</Text> : null}
+              <Text>{row.name}</Text>
+              {row.note ? <Text style={styles.connectorNote}>{row.note}</Text> : null}
             </View>
           </View>
-        </DataTable.Cell>
-        <IconButton
-          icon={conn.ok ? 'check-circle' : conn.partial ? 'minus-circle' : 'close-circle'}
-          iconColor={conn.ok ? theme.colors.green : conn.partial ? theme.colors.yellow : theme.colors.red}
-          accessibilityLabel={conn.ok ? 'Supported' : conn.partial ? 'Fits inside a larger format' : 'Not supported'}
-          size={20}
-        />
-      </DataTable.Row>
-    )
+          <View style={styles.ioSide}>{this.status(row.input, 'Input')}</View>
+          <View style={styles.ioSide}>{this.status(row.output, 'Output')}</View>
+        </DataTable.Row>
+      ),
+    ]
   }
 
   render() {
     const page = this.state.page
     const results = [
       () => this.formatEdid(this.props.value),
-      () => this.formatConns(this.props.connections.input),
-      () => this.formatConns(this.props.connections.output),
+      () => this.formatIO(this.props.connections),
       () => this.props.renderMac(),
     ][page]()
 

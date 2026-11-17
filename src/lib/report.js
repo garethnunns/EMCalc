@@ -1,4 +1,4 @@
-import { capacityNotes, dataRate, processorById } from './processors.js'
+import { capacityNotes, dataRate, ioRows, processorById } from './processors.js'
 import { shareUrl } from './params.js'
 
 /**
@@ -23,8 +23,11 @@ export const timingRows = (result) => [
 const blankingName = ({ enabled, version }) =>
   enabled ? `reduced blanking v${version}` : 'no reduced blanking'
 
-const connectorLines = (list) => list.map(c =>
-  `${c.name}\t${c.ok ? 'Yes' : c.partial ? 'Partly' : 'No'}${c.note ? `\t${c.note}` : ''}`
+const statusText = (c) => !c ? '–' : c.ok ? 'Yes' : c.partial ? 'Partly' : 'No'
+
+// connectors with input and output side by side, like the I/O tab
+const connectorLines = (conns) => ioRows(conns).map(r =>
+  `${r.name}\t${statusText(r.input)}\t${statusText(r.output)}${r.note ? `\t${r.note}` : ''}`
 )
 
 /**
@@ -46,11 +49,8 @@ export function resultsText(inputs, result, conns) {
     'EDID Timing',
     ...timingRows(result).map(row => `${row.name}\t${row.value}`),
     '',
-    'Possible Inputs',
-    ...connectorLines(conns.input),
-    '',
-    'Recommended Outputs',
-    ...connectorLines(conns.output),
+    'Connectors\tInput\tOutput',
+    ...connectorLines(conns),
   ]
 
   if (result.warnings.length) {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import edid from '../src/lib/edid.js'
 import { sdiCarries, sdiFormat } from '../src/lib/sdi.js'
-import { capacityNotes, connections, dataRate, PROCESSORS, processorById } from '../src/lib/processors.js'
+import { capacityNotes, connections, dataRate, ioRows, PROCESSORS, processorById } from '../src/lib/processors.js'
 
 const calc = (hPx, vPx, refresh, redBlnk = true, redBlnkV = 2) =>
   new edid(hPx, vPx, refresh, false, redBlnk, redBlnkV).calcEdid()
@@ -309,5 +309,25 @@ describe('Bit depth in the notes and data rate', () => {
   it('data rate is the pixel clock x 3 components x bit depth', () => {
     assert.equal(dataRate('522.614', 8), '12.5')
     assert.equal(dataRate('522.614', 10), '15.7')
+  })
+})
+
+describe('I/O rows', () => {
+  it('one row per connector, input and output side by side', () => {
+    const rows = ioRows(connections(calc(1920, 1080, 60), 'all'))
+    assert.deepEqual(rows.map(r => r.key), ['dvid', 'hdmi14', 'hdmi20', 'dp11', 'dp12', 'sdi3g', 'sdi12g'])
+    assert(rows.every(r => r.input && r.output))
+  })
+
+  it('null where the processor lacks that direction', () => {
+    const dp = ioRows(connections(calc(1920, 1080, 60), 'tricombo')).find(r => r.key === 'dp12')
+    assert.equal(dp.input.ok, true)
+    assert.equal(dp.output, null)
+  })
+
+  it('Gen 1 has DVI and DP 1.1 inputs but only HDMI 1.4 and 3G-SDI outputs', () => {
+    const rows = ioRows(connections(calc(1920, 1080, 60), 'gen1'))
+    assert.deepEqual(rows.map(r => [r.key, !!r.input, !!r.output]),
+      [['dvid', true, false], ['hdmi14', true, true], ['dp11', true, false], ['sdi3g', true, true]])
   })
 })
