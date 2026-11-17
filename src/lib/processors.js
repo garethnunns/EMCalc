@@ -1,4 +1,14 @@
-import { sdiCarries, sdiFormat } from './sdi.js'
+import edid from './edid.js'
+import { sdiCarries, sdiContainer, sdiFormat } from './sdi.js'
+
+const calculator = new edid()
+
+export const BIT_DEPTHS = [8, 10]
+
+// DisplayPort's fixed data rate (Gbit/s after 8b/10b coding) caps the pixel
+// clock at a given bit depth: 3 colour components per pixel
+const DP_DATA_RATE = { dp11: 8.64, dp12: 17.28 }
+const dpMaxClock = (key, bits) => DP_DATA_RATE[key] * 1000 / (3 * bits)
 
 export const CONNECTORS = {
   dvid: { name: 'DVI-D', icon: 'dvi' },
@@ -11,19 +21,19 @@ export const CONNECTORS = {
 }
 
 /**
- * Event Master processors grouped by the generation of I/O cards they take,
- * as the connectors and their limits come from the cards.
+ * Event Master processors, each with its standard I/O cards' connectors.
  *
- * Each connector maps to its maximum pixel clock (MHz) on those cards, or null
- * for no limit beyond the connector's own rules (edid.possConns).
+ * Each connector maps to its maximum pixel clock (MHz), or null for no limit
+ * beyond the connector's own rules (edid.possConns). Figures are from Barco's
+ * spec sheets: E2 (Jun 2023), E2 Gen 2 (Nov 2025), S3 Tri-combo Gen 2
+ * (Nov 2026), Ex Tri-combo (Jul 2024) and Encore3 (Nov 2025).
  *
- * From Barco's spec sheets: E2 (Jun 2023), E2 Gen 2 (Nov 2025),
- * S3 Tri-combo Gen 2 (Nov 2026), Encore3 (Nov 2025, preliminary).
+ * Ids are kept stable for share links (e2gen2 and tricombo date from 1.2.0).
  */
 export const PROCESSORS = [
   {
     id: 'all',
-    name: 'All cards',
+    name: 'All processors',
     input: { dvid: null, hdmi14: null, hdmi20: null, dp11: null, dp12: null, sdi3g: null, sdi12g: null },
     output: { dvid: null, hdmi14: null, hdmi20: null, dp11: null, dp12: null, sdi3g: null, sdi12g: null },
   },
@@ -36,16 +46,33 @@ export const PROCESSORS = [
   },
   {
     id: 'e2gen2',
-    name: 'E2 Gen 2 / Encore3',
+    name: 'E2 Gen 2',
     input: { hdmi20: 600, dp12: 600, sdi3g: null, sdi12g: null },
     output: { hdmi20: 600, dp12: 660, sdi3g: null, sdi12g: null },
   },
   {
-    // the Tri-combo card's HDMI input is 550MHz, and there's no DP output
+    // the Tri-combo card's HDMI input is 550MHz; S3's output card has no DP
     id: 'tricombo',
-    name: 'S3 / Ex Tri-combo (Gen 2)',
+    name: 'S3 Tri-combo Gen 2',
     input: { hdmi20: 550, dp12: 600, sdi3g: null, sdi12g: null },
     output: { hdmi20: 600, sdi3g: null, sdi12g: null },
+  },
+  {
+    // the same Tri-combo input card; Ex's output card adds a DP 1.2 (4K60) output
+    id: 'extricombo',
+    name: 'Ex Tri-combo Gen 2',
+    input: { hdmi20: 550, dp12: 600, sdi3g: null, sdi12g: null },
+    output: { hdmi20: 600, dp12: 600, sdi3g: null, sdi12g: null },
+  },
+  {
+    // Encore3 is natively 4K (one 4K scaler per layer rather than E2's four HD
+    // ones), so takes less per connector: about 550MHz, though Barco say some
+    // formats over that still work, so it's approximate
+    id: 'encore3',
+    name: 'Encore3',
+    approximate: 'Encore3 takes about 550 MHz per input; check in Toolset',
+    input: { hdmi20: 550, dp12: 550, sdi3g: null, sdi12g: null },
+    output: { hdmi20: 600, dp12: 660, sdi3g: null, sdi12g: null },
   },
 ]
 
@@ -58,25 +85,45 @@ export const processorById = (id) =>
  * Which of a processor's connectors can carry a calculated format
  * @param {Object} result - from edid.calcEdid()
  * @param {string} processorId
- * @returns {{input: Array, output: Array}} each entry { key, name, icon, ok, note }
+ * @param {number} bits - bits per colour component, 8 or 10
+ * @returns {{input: Array, output: Array}} each entry { key, name, icon, ok, note },
+ *   plus partial: true for SDI when the format fits inside a broadcast format
  */
-export function connections(result, processorId) {
+export function connections(result, processorId, bits = 8) {
   const processor = processorById(processorId)
   const freq = Number(result.freq)
   const broadcast = sdiFormat(result.hActive, result.vActive, result.vRate)
+
+  // HDMI carries deeper colour by clocking faster (10-bit is 1.25x), so check
+  // its connector rules at that TMDS clock
+  const tmdsClock = freq * bits / 8
+  const atTmds = calculator.possConns(result.hActive, result.hTotal, tmdsClock)
 
   const list = (direction) => Object.entries(processor[direction]).map(([key, maxFreq]) => {
     const connector = CONNECTORS[key]
 
     if (connector.sdi) {
       const ok = sdiCarries(connector.sdi, broadcast)
-      const note = ok ? broadcast.name
-        : broadcast ? `${broadcast.name} needs ${broadcast.level}-SDI`
-        : 'Not a broadcast format'
+      if (ok) return { key, ...connector, ok, note: broadcast.name }
+
+      // not a broadcast format, but fits inside one without using the whole canvas
+      const container = sdiContainer(result.hActive, result.vActive, result.vRate, connector.sdi)
+      if (container && !broadcast) {
+        return { key, ...connector, ok: false, partial: true, note: `Inside ${container.name} (${container.hPx} × ${container.vPx} canvas)` }
+      }
+
+      const note = broadcast ? `${broadcast.name} needs ${broadcast.level}-SDI` : 'Not a broadcast format'
       return { key, ...connector, ok, note }
     }
 
-    const ok = result.possConns[direction][key] && (maxFreq === null || freq <= maxFreq)
+    let ok
+    if (key.startsWith('hdmi')) {
+      ok = atTmds[direction][key] && (maxFreq === null || tmdsClock <= maxFreq)
+    } else {
+      ok = result.possConns[direction][key] && (maxFreq === null || freq <= maxFreq)
+      if (key.startsWith('dp')) ok = ok && freq <= dpMaxClock(key, bits)
+      if (key === 'dvid') ok = ok && bits === 8 // DVI is 8-bit only
+    }
     return { key, ...connector, ok, note: '' }
   })
 
@@ -85,28 +132,56 @@ export function connections(result, processorId) {
 
 const GEN1_TOO_HIGH = 'Pixel Clock too high for all Gen 1 Cards'
 
+const listOf = (names) => names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0]
+
 /**
- * The notes under the connector capacity and pixel clock, for the chosen cards.
- * All cards keeps the general connector notes; a card group describes what
- * its own inputs can take instead, so e.g. Gen 2 cards don't warn about Gen 1.
+ * Which connectors a format is too much for at a bit depth, grouping a family
+ * when none of it fits: e.g. "Above DVI, HDMI and DP 1.1 at 10-bit"
+ */
+function aboveNote(inputs, bits) {
+  const family = (c) => c.name.split(/[- ]/)[0]
+  const families = [...new Set(inputs.map(family))]
+  const names = families.flatMap(f => {
+    const members = inputs.filter(c => family(c) === f)
+    const failing = members.filter(c => !c.ok)
+    return failing.length === members.length ? [f] : failing.map(c => c.name)
+  })
+  return names.length ? `Above ${listOf(names)} at ${bits}-bit` : ''
+}
+
+/**
+ * The uncompressed video data rate: 3 colour components per pixel
+ * @param {number|string} freq - pixel clock (MHz)
+ * @param {number} bits - bits per component
+ * @returns {string} Gbit/s to one decimal place, e.g. '15.7'
+ */
+export const dataRate = (freq, bits) => (Number(freq) * 3 * bits / 1000).toFixed(1)
+
+/**
+ * The notes under the connector capacity and pixel clock, for the chosen processor.
+ * All processors keeps the general connector notes; a processor describes what
+ * its own inputs can take instead, so e.g. Gen 2 doesn't warn about Gen 1.
  * @param {Object} result - from edid.calcEdid()
  * @param {string} processorId
  * @param {{input: Array}} conns - from connections()
  * @returns {{linksNote: string, linksWarn: boolean, freqNote: string, freqWarn: boolean}}
  */
-export function capacityNotes(result, processorId, conns) {
+export function capacityNotes(result, processorId, conns, bits = 8) {
   const tooHigh = /too high/i
 
   if (processorById(processorId).id === 'all') {
+    // deeper colour needs more bandwidth, so name what it's too much for
+    const inputs = conns.input.filter(c => !CONNECTORS[c.key].sdi)
+    const deepNote = bits > 8 ? aboveNote(inputs, bits) : null
     return {
       linksNote: result.linksNote,
       linksWarn: tooHigh.test(result.linksNote),
-      freqNote: result.freqNote,
-      freqWarn: Number(result.freq) > 660,
+      freqNote: deepNote ?? result.freqNote,
+      freqWarn: deepNote ? inputs.every(c => !c.ok) : Number(result.freq) > 660,
     }
   }
 
-  // Gen 1's limit only matters on Gen 1 cards; elsewhere it's 4K bandwidth
+  // Gen 1's limit only matters on Gen 1 processors; elsewhere it's 4K bandwidth
   const linksNote = result.linksNote === GEN1_TOO_HIGH && processorId !== 'gen1'
     ? '4K Signal Bandwidth'
     : result.linksNote
@@ -117,9 +192,18 @@ export function capacityNotes(result, processorId, conns) {
 
   let freqNote = ''
   if (supported.length === 0) {
-    freqNote = 'Not supported on any input on these cards'
+    // name the connector types, as SDI doesn't depend on the pixel clock
+    const types = [...new Set(inputs.map(c => c.name.split(/[- ]/)[0]))]
+    const list = types.length > 1 ? `${types.slice(0, -1).join(', ')} and ${types.at(-1)}` : types[0]
+    freqNote = `Too high for this processor's ${list} inputs`
   } else if (supported.length < inputs.length) {
     freqNote = `${supported.map(c => c.name).join(' & ')} input only`
+  }
+
+  // near an approximate limit, say so
+  const processor = processorById(processorId)
+  if (processor.approximate && supported.length < inputs.length) {
+    freqNote += `. ${processor.approximate}`
   }
 
   return {
@@ -128,4 +212,22 @@ export function capacityNotes(result, processorId, conns) {
     freqNote,
     freqWarn: supported.length === 0,
   }
+}
+
+/**
+ * Inputs and outputs side by side, one row per connector the processor has
+ * in either direction, like Toolset's I/O table
+ * @param {{input: Array, output: Array}} conns - from connections()
+ * @returns {Array<{key, name, icon, note, input, output}>} input/output are
+ *   the connection, or null when the processor doesn't have it that way
+ */
+export function ioRows(conns) {
+  const find = (list, key) => list.find(c => c.key === key) || null
+  return Object.keys(CONNECTORS)
+    .filter(key => find(conns.input, key) || find(conns.output, key))
+    .map(key => {
+      const input = find(conns.input, key)
+      const output = find(conns.output, key)
+      return { key, ...CONNECTORS[key], note: (input || output).note, input, output }
+    })
 }

@@ -1,4 +1,4 @@
-import { capacityNotes, processorById } from './processors.js'
+import { capacityNotes, dataRate, ioRows, processorById } from './processors.js'
 import { shareUrl } from './params.js'
 
 /**
@@ -23,8 +23,11 @@ export const timingRows = (result) => [
 const blankingName = ({ enabled, version }) =>
   enabled ? `reduced blanking v${version}` : 'no reduced blanking'
 
-const connectorLines = (list) => list.map(c =>
-  `${c.name}\t${c.ok ? 'Yes' : 'No'}${c.note ? `\t${c.note}` : ''}`
+const statusText = (c) => !c ? '–' : c.ok ? 'Yes' : c.partial ? 'Partly' : 'No'
+
+// connectors with input and output side by side, like the I/O tab
+const connectorLines = (conns) => ioRows(conns).map(r =>
+  `${r.name}\t${statusText(r.input)}\t${statusText(r.output)}${r.note ? `\t${r.note}` : ''}`
 )
 
 /**
@@ -35,21 +38,19 @@ const connectorLines = (list) => list.map(c =>
  * @param {{input: Array, output: Array}} conns - from connections()
  */
 export function resultsText(inputs, result, conns) {
-  const notes = capacityNotes(result, inputs.processor, conns)
+  const notes = capacityNotes(result, inputs.processor, conns, inputs.bits)
   const lines = [
-    `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}`,
-    `Cards\t${processorById(inputs.processor).name}`,
+    `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}, ${inputs.bits}-bit`,
+    `Processor\t${processorById(inputs.processor).name}`,
     `Pixel clock\t${result.freq} MHz${notes.freqNote ? `\t${notes.freqNote}` : ''}`,
+    `Data rate\t${dataRate(result.freq, inputs.bits)} Gbit/s at ${inputs.bits}-bit`,
     `Connector capacity\t${result.links}\t${notes.linksNote}`,
     '',
     'EDID Timing',
     ...timingRows(result).map(row => `${row.name}\t${row.value}`),
     '',
-    'Possible Inputs',
-    ...connectorLines(conns.input),
-    '',
-    'Recommended Outputs',
-    ...connectorLines(conns.output),
+    'Connectors\tInput\tOutput',
+    ...connectorLines(conns),
   ]
 
   if (result.warnings.length) {

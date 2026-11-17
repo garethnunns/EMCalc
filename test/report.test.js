@@ -11,9 +11,10 @@ describe('Copy results', () => {
   const lines = text.split('\n')
 
   it('starts with a summary of the inputs', () => {
-    assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins')
-    assert.equal(lines[1], 'Cards\tE2 Gen 2 / Encore3')
+    assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins, 8-bit')
+    assert.equal(lines[1], 'Processor\tE2 Gen 2')
     assert.equal(lines[2], `Pixel clock\t${result.freq} MHz`)
+    assert.equal(lines[3], 'Data rate\t2.7 Gbit/s at 8-bit')
   })
 
   it('includes every timing row, tab separated', () => {
@@ -22,9 +23,15 @@ describe('Copy results', () => {
     }
   })
 
-  it('lists the connectors with SDI notes', () => {
-    assert(lines.includes('HDMI 2.0\tYes'))
-    assert(lines.includes('3G-SDI\tYes\t1080p50'))
+  it('lists the connectors with input and output side by side, and SDI notes', () => {
+    assert(lines.includes('Connectors\tInput\tOutput'))
+    assert(lines.includes('HDMI 2.0\tYes\tYes'))
+    assert(lines.includes('3G-SDI\tYes\tYes\t1080p50'))
+  })
+
+  it('a connector the processor only has one way shows –', () => {
+    const tri = resultsText({ ...inputs, processor: 'tricombo' }, result, connections(result, 'tricombo'))
+    assert(tri.split('\n').includes('DP 1.2\tYes\t–'))
   })
 
   it('uses the notes for the chosen cards', () => {
@@ -35,7 +42,7 @@ describe('Copy results', () => {
   })
 
   it('ends with a link to the format', () => {
-    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&p=e2gen2')
+    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&b=8&p=e2gen2&mm=mbp&mc=M4+Pro&mo=26&mx=dp12&bd=0')
   })
 
   it('includes warnings when there are any', () => {

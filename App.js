@@ -36,9 +36,9 @@ export default class App extends React.Component {
   render() {
     return (
       <PaperProvider theme={theme}>
-        <Appbar.Header>
+        <Appbar.Header nativeID="appbar">
           <View style={[styles.appBarInner, { maxWidth: contentMaxWidth(this.state.wide) }]}>
-            <View style={styles.appBarIconWrap}>
+            <View style={styles.appBarIconWrap} nativeID="appbar-logo">
               <Image
                 source={require('./assets/icon-squircle.png')}
                 style={styles.appBarIcon}

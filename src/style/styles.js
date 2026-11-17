@@ -243,6 +243,65 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
 
+  macValue: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    paddingRight: 16,
+  },
+
+  macStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+
+  macNote: {
+    color: theme.colors.textDark,
+  },
+
+  macReason: {
+    fontSize: 13,
+    color: theme.colors.red,
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+
+  fitBox: {
+    marginHorizontal: inputPaddingH,
+    marginBottom: 8,
+    padding: 12,
+    gap: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: theme.colors.red,
+    backgroundColor: theme.colors.surfaceLight,
+  },
+
+  fitTitle: {
+    fontWeight: '600',
+    color: theme.colors.red,
+  },
+
+  fitRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+
+  fitText: {
+    flex: 1,
+  },
+
+  fitLabel: {
+    fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  fitValue: {
+    fontSize: 15,
+  },
+
   warningTitle: {
     lineHeight: 30,
     fontWeight: 'bold',
@@ -289,9 +348,10 @@ export default StyleSheet.create({
     color: theme.colors.text,
   },
 
-  // 11 timing rows at DataTable's 48px row height
+  // as tall as the tallest tab (Mac: its settings and 7 rows), so the page
+  // doesn't jump when switching tabs
   resultsBody: {
-    minHeight: 11 * 48,
+    minHeight: 590,
     overflow: 'hidden',
   },
 
@@ -307,6 +367,43 @@ export default StyleSheet.create({
 
   connectorText: {
     marginLeft: 12,
+    flexShrink: 1,
+  },
+
+  // keep the icon its size when a long note needs the room
+  connectorIconWrap: {
+    flexShrink: 0,
+  },
+
+  ioHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    paddingHorizontal: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.colors.disabled,
+  },
+
+  ioHeading: {
+    fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  ioSide: {
+    width: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+
+  ioMiddle: {
+    flex: 1,
+    paddingRight: 8,
+  },
+
+  ioAbsent: {
+    color: theme.colors.textDark,
+    fontSize: 16,
   },
 
   connectorNote: {
@@ -314,7 +411,21 @@ export default StyleSheet.create({
     color: theme.colors.textDark,
   },
 
-  processorButton: {
+  menuItemTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  menuItemTickSpace: {
+    width: 18,
+  },
+
+  menuItemText: {
+    fontSize: 16,
+  },
+
+    processorButton: {
     marginLeft: 8,
   },
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import edid from '../src/lib/edid.js'
 import { sdiCarries, sdiFormat } from '../src/lib/sdi.js'
-import { capacityNotes, connections, PROCESSORS, processorById } from '../src/lib/processors.js'
+import { capacityNotes, connections, dataRate, ioRows, PROCESSORS, processorById } from '../src/lib/processors.js'
 
 const calc = (hPx, vPx, refresh, redBlnk = true, redBlnkV = 2) =>
   new edid(hPx, vPx, refresh, false, redBlnk, redBlnkV).calcEdid()
@@ -108,7 +108,11 @@ describe('Processors', () => {
     assert.equal(uhd.sdi3g.note, '2160p60 needs 12G-SDI')
     assert.equal(uhd.sdi12g.ok, true)
 
-    const custom = byKey(connections(calc(2560, 2000, 60), 'e2gen2').input)
+    const inside = byKey(connections(calc(2560, 2000, 60), 'e2gen2').input)
+    assert.equal(inside.sdi12g.ok, false)
+    assert.equal(inside.sdi12g.note, 'Inside 2160p60 (3840 × 2160 canvas)')
+
+    const custom = byKey(connections(calc(5120, 1440, 60), 'e2gen2').input)
     assert.equal(custom.sdi12g.ok, false)
     assert.equal(custom.sdi12g.note, 'Not a broadcast format')
   })
@@ -142,7 +146,7 @@ describe('Capacity notes for the chosen cards', () => {
     const n = notes(calc(3840, 2160, 50), 'gen1')
     assert.equal(n.linksNote, 'Pixel Clock too high for all Gen 1 Cards')
     assert.equal(n.linksWarn, true)
-    assert.equal(n.freqNote, 'Not supported on any input on these cards')
+    assert.equal(n.freqNote, "Too high for this processor's DVI, HDMI and DP inputs")
     assert.equal(n.freqWarn, true)
   })
 
@@ -155,7 +159,175 @@ describe('Capacity notes for the chosen cards', () => {
 
   it('warns when no input on the cards can take it', () => {
     const n = notes(calc(3840, 2160, 70), 'e2gen2') // 612.46MHz, over both 600MHz inputs
-    assert.equal(n.freqNote, 'Not supported on any input on these cards')
+    assert.equal(n.freqNote, "Too high for this processor's HDMI and DP inputs")
     assert.equal(n.freqWarn, true)
+  })
+})
+
+describe('Processors from the Barco spec sheets', () => {
+  const ids = PROCESSORS.map(p => p.id)
+
+  it('keeps the ids share links from 1.2.0 use', () => {
+    for (const id of ['all', 'gen1', 'e2gen2', 'tricombo']) assert(ids.includes(id), id)
+  })
+
+  it('lists each processor', () => {
+    assert.deepEqual(PROCESSORS.map(p => p.name), [
+      'All processors', 'E2 / S3-4K / Ex (Gen 1)', 'E2 Gen 2',
+      'S3 Tri-combo Gen 2', 'Ex Tri-combo Gen 2', 'Encore3',
+    ])
+  })
+
+  it('Ex Tri-combo has a DP output, S3 Tri-combo does not', () => {
+    assert('dp12' in processorById('extricombo').output)
+    assert(!('dp12' in processorById('tricombo').output))
+  })
+
+  // Barco's example from Vincent's post: 7296x1440@60 RB v1 is 662.5MHz,
+  // scaled to 6416x1267@60 (514MHz) to fit a single connector on Encore3
+  it("Barco's ultrawide example: too high for Encore3, the scaled version fits", () => {
+    const wide = calc(7296, 1440, 60, true, 1)
+    const scaled = calc(6416, 1267, 60, true, 1)
+    assert.equal(wide.freq, '662.500')
+    assert.equal(scaled.freq, '514.000')
+
+    const encore3 = (r) => Object.fromEntries(connections(r, 'encore3').input.map(c => [c.key, c.ok]))
+    assert.equal(encore3(wide).dp12, false)
+    assert.equal(encore3(scaled).dp12, true)
+  })
+
+  it('Encore3 notes say its limit is approximate', () => {
+    const r = calc(3840, 2160, 60) // 522.614MHz: fits
+    const over = calc(4096, 2160, 60) // 556.744MHz: just over 550
+    assert.equal(capacityNotes(r, 'encore3', connections(r, 'encore3')).freqNote, '')
+    assert.match(capacityNotes(over, 'encore3', connections(over, 'encore3')).freqNote, /^Too high for this processor's HDMI and DP inputs\. Encore3 takes about 550 MHz per input; check in Toolset$/)
+  })
+})
+
+describe('Bit depth', () => {
+  const ok = (result, id, bits) => Object.fromEntries(connections(result, id, bits).input.map(c => [c.key, c.ok]))
+
+  it('8-bit by default', () => {
+    const r = calc(3840, 2160, 60)
+    assert.deepEqual(ok(r, 'e2gen2'), ok(r, 'e2gen2', 8))
+  })
+
+  // 3840x2160@60 RB v2: 522.614MHz
+  it('HDMI 2.0 clocks 10-bit 1.25x faster, so 4K60 no longer fits', () => {
+    const r = calc(3840, 2160, 60)
+    assert.equal(ok(r, 'e2gen2', 8).hdmi20, true)
+    assert.equal(ok(r, 'e2gen2', 10).hdmi20, false) // 653MHz TMDS
+  })
+
+  it('DP 1.2 carries 10-bit 4K60 with reduced blanking (under 576MHz)', () => {
+    assert.equal(ok(calc(3840, 2160, 60), 'e2gen2', 10).dp12, true)
+  })
+
+  it("DP 1.2's data rate caps 10-bit at 576MHz, below the card's 600MHz", () => {
+    const r = calc(4096, 2160, 64) // 594.929MHz
+    assert.equal(ok(r, 'e2gen2', 8).dp12, true)
+    assert.equal(ok(r, 'e2gen2', 10).dp12, false)
+  })
+
+  it('DVI is 8-bit only', () => {
+    const r = calc(1920, 1080, 60)
+    assert.equal(ok(r, 'gen1', 8).dvid, true)
+    assert.equal(ok(r, 'gen1', 10).dvid, false)
+  })
+
+  it('SDI is unaffected', () => {
+    const r = calc(1920, 1080, 50)
+    assert.equal(ok(r, 'e2gen2', 10).sdi3g, true)
+  })
+})
+
+describe('SDI: fitting inside a broadcast format', () => {
+  const byKey = (r, id = 'e2gen2') => Object.fromEntries(connections(r, id).input.map(c => [c.key, c]))
+
+  it('a smaller format fits inside 1080p, using part of the canvas', () => {
+    const sdi = byKey(calc(1600, 900, 60))
+    assert.equal(sdi.sdi3g.ok, false)
+    assert.equal(sdi.sdi3g.partial, true)
+    assert.equal(sdi.sdi3g.note, 'Inside 1080p60 (1920 × 1080 canvas)')
+    assert.equal(sdi.sdi12g.partial, true)
+  })
+
+  it('too big for 3G but fits inside 2160p on 12G', () => {
+    const sdi = byKey(calc(2560, 1440, 50))
+    assert.equal(sdi.sdi3g.partial, undefined)
+    assert.equal(sdi.sdi3g.note, 'Not a broadcast format')
+    assert.equal(sdi.sdi12g.note, 'Inside 2160p50 (3840 × 2160 canvas)')
+  })
+
+  it('picks the smallest broadcast format it fits in', () => {
+    assert.equal(byKey(calc(1280, 1000, 60)).sdi12g.note, 'Inside 1080p60 (1920 × 1080 canvas)')
+    assert.equal(byKey(calc(2000, 1080, 30)).sdi3g.note, 'Inside 2K 1080p30 (2048 × 1080 canvas)')
+  })
+
+  it('still needs a broadcast frame rate', () => {
+    const sdi = byKey(calc(1600, 900, 75))
+    assert.equal(sdi.sdi3g.partial, undefined)
+    assert.equal(sdi.sdi12g.partial, undefined)
+  })
+
+  it('an exact broadcast format is still a full tick', () => {
+    assert.equal(byKey(calc(1920, 1080, 60)).sdi3g.ok, true)
+  })
+
+  it('too wide for any broadcast format', () => {
+    assert.equal(byKey(calc(5120, 1440, 60)).sdi12g.partial, undefined)
+  })
+})
+
+describe('Bit depth in the notes and data rate', () => {
+  const notesAt = (r, bits, id = 'all') => capacityNotes(r, id, connections(r, id, bits), bits)
+
+  it('all processors keeps the original notes at 8-bit', () => {
+    const r = calc(3840, 2160, 60)
+    assert.equal(notesAt(r, 8).freqNote, r.freqNote)
+  })
+
+  it('at 10-bit, names what the format is too much for, grouping whole families', () => {
+    // 522.614MHz: HDMI 2.0 needs 653MHz at 10-bit, DP 1.2 is fine
+    assert.equal(notesAt(calc(3840, 2160, 60), 10).freqNote, 'Above DVI, HDMI and DP 1.1 at 10-bit')
+    assert.equal(notesAt(calc(3840, 2160, 60), 10).freqWarn, false)
+  })
+
+  it('at 10-bit, names single connectors when only some of a family fails', () => {
+    // 1920x1080@60 RB v2 133.32MHz: everything but DVI fits at 10-bit
+    assert.equal(notesAt(calc(1920, 1080, 60), 10).freqNote, 'Above DVI at 10-bit')
+    // 3000x2000@60 RB v2: HDMI 1.4 out, HDMI 2.0 in at 10-bit
+    const n = notesAt(calc(3000, 1800, 60), 10).freqNote
+    assert.match(n, /HDMI 1\.4/)
+    assert.doesNotMatch(n, /HDMI 2\.0|HDMI and/)
+  })
+
+  it('at 10-bit, red when nothing fits', () => {
+    assert.equal(notesAt(calc(3840, 2160, 75), 10).freqWarn, true)
+  })
+
+  it('data rate is the pixel clock x 3 components x bit depth', () => {
+    assert.equal(dataRate('522.614', 8), '12.5')
+    assert.equal(dataRate('522.614', 10), '15.7')
+  })
+})
+
+describe('I/O rows', () => {
+  it('one row per connector, input and output side by side', () => {
+    const rows = ioRows(connections(calc(1920, 1080, 60), 'all'))
+    assert.deepEqual(rows.map(r => r.key), ['dvid', 'hdmi14', 'hdmi20', 'dp11', 'dp12', 'sdi3g', 'sdi12g'])
+    assert(rows.every(r => r.input && r.output))
+  })
+
+  it('null where the processor lacks that direction', () => {
+    const dp = ioRows(connections(calc(1920, 1080, 60), 'tricombo')).find(r => r.key === 'dp12')
+    assert.equal(dp.input.ok, true)
+    assert.equal(dp.output, null)
+  })
+
+  it('Gen 1 has DVI and DP 1.1 inputs but only HDMI 1.4 and 3G-SDI outputs', () => {
+    const rows = ioRows(connections(calc(1920, 1080, 60), 'gen1'))
+    assert.deepEqual(rows.map(r => [r.key, !!r.input, !!r.output]),
+      [['dvid', true, false], ['hdmi14', true, true], ['dp11', true, false], ['sdi3g', true, true]])
   })
 })
