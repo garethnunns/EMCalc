@@ -243,6 +243,7 @@ export default class Calc extends React.Component {
             renderMac={() => (
               <MacTab
                 mac={this.state.mac}
+                processor={this.state.processor}
                 fit={macFit(this.edidParams, this.state.mac, this.state.processor, this.state.bits)}
                 refresh={this.state.refresh}
                 onChange={mac => this.setState({ mac })}

@@ -5,14 +5,13 @@ import { Button, DataTable, Icon, Text } from 'react-native-paper'
 import Dropdown from './Dropdown'
 import SegmentedControl from './SegmentedControl'
 import {
-  betterDisplayHelps, keynoteCanvas, MAC_CONNECTIONS, MAC_MODELS, macosFor,
+  betterDisplayHelps, keynoteCanvas, MAC_MODELS, macConnectionsFor, macosFor,
   maxDisplays, modelById, powerPointCanvas, validMac,
 } from '../lib/mac'
 import styles from '../style/styles'
 import theme from '../style/theme'
 
 const MODEL_OPTIONS = MAC_MODELS.map(m => ({ value: m.id, label: m.name }))
-const CONNECTION_OPTIONS = MAC_CONNECTIONS.map(c => ({ value: c.id, label: c.name, accessibilityLabel: c.name }))
 const ON_OFF = [
   { value: false, label: 'Off', accessibilityLabel: 'BetterDisplay Off' },
   { value: true, label: 'On', accessibilityLabel: 'BetterDisplay On' },
@@ -29,7 +28,9 @@ const Row = ({ label, children }) => (
  * Sending the format from an Apple silicon Mac: whether it can, and the
  * nearest format it can if not
  */
-export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
+export default function MacTab({ mac, fit, refresh, processor, onChange, onUse }) {
+  // the connections the processor's inputs offer
+  const connectionOptions = macConnectionsFor(processor).map(c => ({ value: c.id, label: c.name, accessibilityLabel: c.name }))
   const set = (changes) => onChange(validMac({ ...mac, ...changes }))
   const chips = modelById(mac.model).chips.map(c => ({ value: c, label: c }))
   const versions = macosFor(mac.chip).map(v => ({ value: v.id, label: v.name }))
@@ -64,8 +65,8 @@ export default function MacTab({ mac, fit, refresh, onChange, onUse }) {
         <View style={[styles.inputCell, styles.toggleCell]}>
           <SegmentedControl
             label="Connection"
-            options={CONNECTION_OPTIONS}
-            value={mac.connection}
+            options={connectionOptions}
+            value={fit.connection}
             onChange={connection => set({ connection })}
             segmentWidth={88}
             stacked

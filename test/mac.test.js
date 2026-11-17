@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import {
-  betterDisplayHelps, keynoteCanvas, macFit, macMaxWidth, macosFor, maxDisplays,
+  betterDisplayHelps, keynoteCanvas, macConnectionFor, macConnectionsFor, macFit, macMaxWidth, macosFor, maxDisplays,
   MAC_MODELS, powerPointCanvas, validMac,
 } from '../src/lib/mac.js'
 
@@ -77,8 +77,24 @@ describe('Sending a format from a Mac', () => {
     assert.deepEqual(r.perCable, [2560, 1440])
   })
 
-  it('HDMI 2.0 needs a processor with an HDMI 2.0 input', () => {
-    assert.equal(macFit(p(1920, 1080, 60), mac('M4', '26', 'hdmi20'), 'gen1').connectorAvailable, false)
-    assert.equal(macFit(p(1920, 1080, 60), mac('M4', '26', 'hdmi20'), 'e2gen2').connectorAvailable, true)
+  it("offers the connections the processor's inputs have", () => {
+    const names = (id) => macConnectionsFor(id).map(c => c.name)
+    assert.deepEqual(names('all'), ['DP 1.2', 'HDMI 2.0', '2× DP 1.2'])
+    assert.deepEqual(names('encore3'), ['DP 1.2', 'HDMI 2.0', '2× DP 1.2'])
+    assert.deepEqual(names('gen1'), ['DP 1.1', 'HDMI 1.4', 'DVI-D'])
+  })
+
+  it('uses the equivalent connection the processor has', () => {
+    assert.equal(macConnectionFor('hdmi20', 'gen1').id, 'hdmi14')
+    assert.equal(macConnectionFor('dp12', 'gen1').id, 'dp11')
+    assert.equal(macConnectionFor('dual', 'gen1').id, 'dp11') // no DP 1.2, so the first
+    assert.equal(macConnectionFor('hdmi14', 'e2gen2').id, 'hdmi20')
+  })
+
+  it('checks against the connector it uses on Gen 1', () => {
+    const r = macFit(p(1920, 1080, 60), mac('M1 Max', '26', 'hdmi20'), 'gen1')
+    assert.equal(r.connection, 'hdmi14')
+    assert.equal(r.maxWidth, 4096)
+    assert.equal(r.ok, true)
   })
 })

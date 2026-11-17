@@ -1,5 +1,5 @@
 import { largestSameAspect } from './fit.js'
-import { connections } from './processors.js'
+import { connections, processorById } from './processors.js'
 import edid from './edid.js'
 
 /**
@@ -29,11 +29,47 @@ export const MACOS = [
 ]
 const FIRST_MACOS = { M1: '12', M2: '13', M3: '14', M4: '15', M5: '26' }
 
+// how the Mac connects to Event Master: the input connector it uses, and
+// whether it splits the format across two (DisplayID tiling)
 export const MAC_CONNECTIONS = [
-  { id: 'dp12', name: 'DP 1.2' },
-  { id: 'hdmi20', name: 'HDMI 2.0' },
-  { id: 'dual', name: '2× DP 1.2' },
+  { id: 'dp12', name: 'DP 1.2', connector: 'dp12' },
+  { id: 'dp11', name: 'DP 1.1', connector: 'dp11' },
+  { id: 'hdmi20', name: 'HDMI 2.0', connector: 'hdmi20' },
+  { id: 'hdmi14', name: 'HDMI 1.4', connector: 'hdmi14' },
+  { id: 'dual', name: '2× DP 1.2', connector: 'dp12', dual: true },
+  { id: 'dvid', name: 'DVI-D', connector: 'dvid' },
 ]
+
+const connectionById = (id) => MAC_CONNECTIONS.find(c => c.id === id)
+
+/**
+ * The connections a processor's inputs offer: its best DP and HDMI, then two
+ * DP 1.2 cables if it has DP 1.2, otherwise DVI-D
+ * @param {string} processorId
+ */
+export function macConnectionsFor(processorId) {
+  const inputs = Object.keys(processorById(processorId).input)
+  const has = (key) => inputs.includes(key)
+  return [
+    has('dp12') ? 'dp12' : has('dp11') ? 'dp11' : null,
+    has('hdmi20') ? 'hdmi20' : has('hdmi14') ? 'hdmi14' : null,
+    has('dp12') ? 'dual' : has('dvid') ? 'dvid' : null,
+  ].filter(Boolean).map(connectionById)
+}
+
+/**
+ * The connection to use with a processor: the chosen one if it has it, or
+ * the equivalent it does have (e.g. DP 1.1 for DP 1.2), or its first
+ * @param {string} connection - chosen connection id
+ * @param {string} processorId
+ */
+export function macConnectionFor(connection, processorId) {
+  const available = macConnectionsFor(processorId)
+  const family = (id) => id === 'dual' ? 'dual' : id.replace(/\d+$/, '')
+  return available.find(c => c.id === connection)
+    || available.find(c => family(c.id) === family(connection))
+    || available[0]
+}
 
 // displays each Mac drives, including a built-in one where it has one
 const MAX_DISPLAYS = {
@@ -70,7 +106,7 @@ export function validMac(mac) {
  * @param {Object} mac - { chip, macos, connection, betterDisplay }
  */
 export function macMaxWidth({ chip, macos, connection, betterDisplay }) {
-  if (connection === 'hdmi20') return 4096
+  if (['hdmi20', 'hdmi14', 'dvid'].includes(connection)) return 4096
   if (connection === 'dual') return 6144
   if (generation(chip) === 'M1') return macos === '12' ? 8192 : 6144 // BetterDisplay doesn't help M1
   if (betterDisplay) return macos === '26' ? 8192 : 7680
@@ -96,10 +132,11 @@ export const powerPointCanvas = (w, h) => scaleWithin(w, h, 4032).map(px => +(px
  * @param {number} bits
  */
 export function macFit(params, mac, processorId, bits = 8) {
-  const { connection } = validMac(mac)
-  const maxWidth = macMaxWidth(validMac(mac))
-  const dual = connection === 'dual'
-  const connector = connection === 'hdmi20' ? 'hdmi20' : 'dp12'
+  // use a connection the processor has
+  const connection = macConnectionFor(validMac(mac).connection, processorId)
+  const maxWidth = macMaxWidth({ ...validMac(mac), connection: connection.id })
+  const dual = !!connection.dual
+  const connector = connection.connector
 
   // a format fits when the processor's input for that connector takes it
   // (for two cables, each half does)
@@ -115,7 +152,7 @@ export function macFit(params, mac, processorId, bits = 8) {
   const ok = fits(full)
   const best = ok ? { hPx: full.hActive, vPx: full.vActive, result: full } : largestSameAspect(params, fits, maxWidth)
   const connectorAvailable = connections(full, processorId, bits).input.some(c => c.key === connector)
-  const connectorName = connector === 'hdmi20' ? 'HDMI 2.0' : 'DP 1.2'
+  const connectorName = connectionById(connector).name
 
   let reason = ''
   if (!connectorAvailable) reason = `This processor has no ${connectorName} input`
@@ -125,6 +162,7 @@ export function macFit(params, mac, processorId, bits = 8) {
   return {
     ok,
     reason,
+    connection: connection.id,
     maxWidth,
     connectorAvailable,
     best,
