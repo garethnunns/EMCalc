@@ -5,12 +5,14 @@ import styles from '../style/styles'
 
 import CalcInputBlanking from './CalcInputBlanking'
 import CalcInputNum from './CalcInputNum'
+import CalcInputProcessor from './CalcInputProcessor'
 import CalcInputSwitch from './CalcInputSwitch'
 import CapacityAndFreq from './CapacityAndFreq'
 import ResultsTable from './ResultsTable'
 import Warnings from './Warnings'
 
 import edid from '../lib/edid'
+import { connections, DEFAULT_PROCESSOR } from '../lib/processors'
 
 export default class Calc extends React.Component {
   constructor (props) {
@@ -25,6 +27,7 @@ export default class Calc extends React.Component {
         enabled: true,
         version: 2
       },
+      processor: DEFAULT_PROCESSOR,
     }
 
     this.edid = new edid(
@@ -56,8 +59,6 @@ export default class Calc extends React.Component {
 
   render () {
     const customFormat = this.edid.calcEdid(this.edidParams)
-
-    console.log(customFormat)
 
     return (
       <View style={styles.container}>
@@ -101,6 +102,12 @@ export default class Calc extends React.Component {
           onChange={value => this.onChange('redBlnk',value)}
         />
 
+        <CalcInputProcessor
+          label="Processor"
+          value={this.state.processor}
+          onChange={value => this.onChange('processor',value)}
+        />
+
         <CapacityAndFreq 
           links={customFormat.links}
           linksNote={customFormat.linksNote}
@@ -114,6 +121,7 @@ export default class Calc extends React.Component {
 
         <ResultsTable 
           value={customFormat}
+          connections={connections(customFormat, this.state.processor)}
         />
       </View>
     )

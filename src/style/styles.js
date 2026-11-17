@@ -123,6 +123,15 @@ export default StyleSheet.create({
     marginLeft: 12,
   },
 
+  connectorNote: {
+    fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  processorButton: {
+    marginLeft: 8,
+  },
+
   aboutDialog: {
     width: '95%',
     maxWidth: 600,

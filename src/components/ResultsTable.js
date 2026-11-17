@@ -78,45 +78,21 @@ export default class ResultsTable extends React.Component {
   }
 
   formatConns(conns) {
-    let results = [
-      {
-        name: 'DVI-D',
-        icon: 'dvi',
-        value: conns.dvid
-      },
-      {
-        name: 'HDMI 1.4',
-        icon: 'hdmi',
-        value: conns.hdmi14
-      },
-      {
-        name: 'HDMI 2.0',
-        icon: 'hdmi',
-        value: conns.hdmi20
-      },
-      {
-        name: 'DP 1.1',
-        icon: 'dp',
-        value: conns.dp11
-      },
-      {
-        name: 'DP 1.2',
-        icon: 'dp',
-        value: conns.dp12
-      },
-    ]
-
-    return results.map((result, index) => 
-      <DataTable.Row key={index}>
+    return conns.map(conn =>
+      <DataTable.Row key={conn.key}>
         <DataTable.Cell>
           <View style={styles.connectorName}>
-            <ConnectorIcon type={result.icon} color={theme.colors.textDark} />
-            <Text style={styles.connectorText}>{result.name}</Text>
+            <ConnectorIcon type={conn.icon} color={theme.colors.textDark} />
+            <View style={styles.connectorText}>
+              <Text>{conn.name}</Text>
+              {conn.note ? <Text style={styles.connectorNote}>{conn.note}</Text> : null}
+            </View>
           </View>
         </DataTable.Cell>
         <IconButton
-          icon={result.value ? 'check-circle' : 'close-circle'}
-          iconColor={result.value ? theme.colors.green : theme.colors.red}
+          icon={conn.ok ? 'check-circle' : 'close-circle'}
+          iconColor={conn.ok ? theme.colors.green : theme.colors.red}
+          accessibilityLabel={conn.ok ? 'Supported' : 'Not supported'}
           size={20}
         />
       </DataTable.Row>
@@ -133,11 +109,11 @@ export default class ResultsTable extends React.Component {
         break;
       case 1:
         title = "Possible Inputs"
-        results = this.formatConns(this.props.value.possConns.input)
+        results = this.formatConns(this.props.connections.input)
         break;
       case 2:
         title = "Recommended Outputs"
-        results = this.formatConns(this.props.value.possConns.output)
+        results = this.formatConns(this.props.connections.output)
         break;
     }
 
