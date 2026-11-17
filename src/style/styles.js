@@ -113,6 +113,16 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
   },
 
+  connectorName: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  connectorText: {
+    marginLeft: 12,
+  },
+
   aboutDialog: {
     width: '95%',
     maxWidth: 600,
