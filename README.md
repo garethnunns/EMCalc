@@ -1,10 +1,14 @@
+<img src="assets/icon-squircle.png" alt="EM Calc logo" width="128">
+
 # EM Calc
 ### Barco Event Master Custom Format Calculator
 
 [![Test](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml/badge.svg)](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml) [![Release](https://img.shields.io/github/v/release/garethnunns/EMCalc)](https://github.com/garethnunns/EMCalc/releases/latest) 
 
-![iPhone Screenshot](README/iPhone-1.png) | ![iPhone Screenshot](README/iPhone-3.png) | ![Mac Screenshot](README/Mac-1.png)
-:---:|:---:|:---:
+![EM Calc on a desktop, with the format settings beside the EDID timing](README/Desktop.png)
+
+![EM Calc on a phone, showing the format settings and results](README/Phone-1.png) | ![EM Calc on a phone, showing which inputs support the format, including SDI](README/Phone-2.png)
+:---:|:---:
 
 This tool is designed to help calculate custom formats for the Barco 
 Event Master range of products. This isn't a Barco product and 
@@ -30,8 +34,7 @@ to report a bug or request a feature.
 
 ## Build
 
-You'll need [Node.js](https://nodejs.org/) 22 or 24 (see `.nvmrc`) and
-[Yarn](https://classic.yarnpkg.com/):
+You'll need [Node.js](https://nodejs.org/) 22 or 24 (see `.nvmrc`).
 
 ````bash
 # clone this repo
@@ -41,18 +44,18 @@ git clone https://github.com/garethnunns/EMCalc.git
 cd EMCalc
 
 # install dependencies
-yarn install
+npm install
 
 # run the Expo dev server (press w for web, i for iOS, a for Android)
-yarn start
+npm start
 ````
 
 Other scripts:
 
 | Command | Does |
 | --- | --- |
-| `yarn web` | Run in the browser with live reload |
-| `yarn desktop` | Build the web version and open it in Electron |
-| `yarn test` | Run the unit tests |
-| `yarn build-web` | Export the static website to `web-build/` |
-| `yarn build-desktop` | Package the desktop app into `dist/` |
+| `npm run web` | Run in the browser with live reload |
+| `npm run desktop` | Build the web version and open it in Electron |
+| `npm test` | Run the unit tests |
+| `npm run build-web` | Export the static website to `web-build/` |
+| `npm run build-desktop` | Package the desktop app into `dist/` |

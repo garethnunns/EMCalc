@@ -34,11 +34,22 @@ const Dvi = ({ color }) => (
   </>
 )
 
-const shapes = { hdmi: Hdmi, dp: DisplayPort, dvi: Dvi }
+// SDI (BNC): round shell with bayonet lugs, insulator ring and centre pin
+const Bnc = ({ color }) => (
+  <>
+    <Circle cx={16} cy={10} r={7.5} stroke={color} strokeWidth={1.6} fill="none" />
+    <Circle cx={16} cy={10} r={4} stroke={color} strokeWidth={1} fill="none" />
+    <Circle cx={16} cy={10} r={1.4} fill={color} />
+    <Rect x={5.5} y={9} width={3} height={2} rx={0.5} fill={color} />
+    <Rect x={23.5} y={9} width={3} height={2} rx={0.5} fill={color} />
+  </>
+)
+
+const shapes = { hdmi: Hdmi, dp: DisplayPort, dvi: Dvi, sdi: Bnc }
 
 /**
  * Outline icon of a video connector's port
- * @param {'hdmi'|'dp'|'dvi'} type
+ * @param {'hdmi'|'dp'|'dvi'|'sdi'} type
  */
 export default function ConnectorIcon({ type, color, size = 28 }) {
   const Shape = shapes[type]

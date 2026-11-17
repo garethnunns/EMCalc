@@ -1,10 +1,24 @@
 import { StyleSheet } from 'react-native'
 import theme from './theme'
+import { NARROW_MAX, WIDE_MAX } from '../lib/layout'
 
 const inputPaddingH = 10
 const inputPaddingV = 5
 
+// width of each option in the reduced blanking control
+export const SEGMENT_WIDTH = 46
+
 export default StyleSheet.create({
+  // the top bar's contents line up with the content below
+  appBarInner: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
+    marginHorizontal: 'auto',
+  },
+
   appBarTitle: {
     alignItems: 'center',
   },
@@ -23,20 +37,123 @@ export default StyleSheet.create({
     height: 32,
   },
 
+  // centre the content vertically when it's shorter than the window
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: 16,
+  },
+
   container: {
     width: '100%',
-    maxWidth: 600,
+    maxWidth: NARROW_MAX,
     marginHorizontal: 'auto',
   },
 
+  // inputs and results side by side on wide windows
+  columns: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: '100%',
+    maxWidth: WIDE_MAX,
+    marginHorizontal: 'auto',
+    gap: 24,
+  },
+
+  column: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  spreadColumn: {
+    justifyContent: 'space-between',
+  },
+
+  // line the table's tabs up with the Format heading
+  resultsColumn: {
+    paddingTop: 8,
+  },
+
+  sectionHeading: {
+    paddingHorizontal: inputPaddingH * 2,
+    paddingTop: 16,
+    paddingBottom: 4,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: theme.colors.textDark,
+  },
+
   numContainer: {
-    paddingHorizontal: inputPaddingH,
-    paddingVertical: inputPaddingV,
     flexDirection: 'column',
   },
 
   numInput: {
     flex: 1,
+  },
+
+  // Paper's underline switches instantly, so CalcInputNum draws its own
+  hiddenUnderline: {
+    display: 'none',
+  },
+
+  // resting underline under the number inputs
+  inputLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 1,
+    backgroundColor: theme.colors.disabled,
+    pointerEvents: 'none',
+  },
+
+  // focus underline, grown out from the centre with scaleX
+  inputLineFocus: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 2,
+    pointerEvents: 'none',
+  },
+
+  // inputs and toggles side by side
+  inputRow: {
+    flexDirection: 'row',
+    paddingHorizontal: inputPaddingH / 2,
+  },
+
+  inputCell: {
+    flex: 1,
+    paddingHorizontal: inputPaddingH / 2,
+  },
+
+  // toggles beside each other match the inputs' padding, and fill the row's height
+  toggleCell: {
+    paddingVertical: inputPaddingV,
+  },
+
+  blankingCell: {
+    flex: 1.4,
+  },
+
+  // label above the control, like the inputs
+  fieldStacked: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginHorizontal: 0,
+    marginVertical: 0,
+    paddingVertical: 6,
+    gap: 6,
+  },
+
+  fieldLabel: {
+    fontSize: 12,
+    color: theme.colors.textDark,
   },
 
   switchContainer: {
@@ -55,6 +172,41 @@ export default StyleSheet.create({
     flex: 0.7,
   },
 
+  segments: {
+    flexDirection: 'row',
+    borderRadius: 20,
+    padding: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+
+  segmentHighlight: {
+    position: 'absolute',
+    top: 3,
+    left: 3,
+    width: SEGMENT_WIDTH,
+    bottom: 3,
+    borderRadius: 17,
+    backgroundColor: theme.colors.primary,
+  },
+
+  segment: {
+    width: SEGMENT_WIDTH,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+  },
+
+  segmentText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: theme.colors.textDark,
+  },
+
+  segmentTextSelected: {
+    color: '#ffffff',
+  },
+
   capacityAndFreqContainer: {
     flexDirection: 'row',
     marginTop: 5,
@@ -64,13 +216,13 @@ export default StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     flex: 0.5,
-    marginVertical: 20,
+    marginVertical: 12,
     paddingHorizontal: 20,
   },
 
   capacity: {
     borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: theme.colors.primaryLight,
+    borderRightColor: theme.colors.disabled,
   },
 
   capacityAndFreqTitle: {
@@ -104,13 +256,47 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: inputPaddingV,
+    height: 48,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.disabled,
   },
   
-  resultsTableHeading: {
-    paddingHorizontal: 15,
+  tabs: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    position: 'relative',
+  },
+
+  tab: {
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    cursor: 'pointer',
+  },
+
+  tabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    height: 2,
+    backgroundColor: theme.colors.primary,
+  },
+
+  tabText: {
+    fontSize: 15,
+    color: theme.colors.textDark,
+  },
+
+  tabTextActive: {
+    color: theme.colors.text,
+  },
+
+  // 11 timing rows at DataTable's 48px row height
+  resultsBody: {
+    minHeight: 11 * 48,
+    overflow: 'hidden',
+  },
+
+  resultsTableActions: {
+    flexDirection: 'row',
   },
 
   connectorName: {
@@ -121,6 +307,15 @@ export default StyleSheet.create({
 
   connectorText: {
     marginLeft: 12,
+  },
+
+  connectorNote: {
+    fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  processorButton: {
+    marginLeft: 8,
   },
 
   aboutDialog: {
@@ -134,9 +329,36 @@ export default StyleSheet.create({
     pointerEvents: 'none',
   },
 
+  aboutHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+
+  aboutAppIcon: {
+    width: 64,
+    height: 64,
+    marginRight: 16,
+  },
+
+  aboutTitle: {
+    fontSize: 22,
+  },
+
   aboutVersion: {
-    paddingBottom: 10,
     color: theme.colors.disabled,
+  },
+
+  aboutFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 16,
+  },
+
+  aboutGnLogo: {
+    width: 80,
+    height: 45.5,
   },
 
   link: {

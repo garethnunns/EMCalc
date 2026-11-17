@@ -1,122 +1,95 @@
 import React from 'react';
-import { View } from 'react-native'
+import { Animated, Easing, Platform, Pressable, View } from 'react-native'
 import { DataTable, IconButton, Text } from 'react-native-paper'
 
 import ConnectorIcon from './ConnectorIcon'
+import { timingRows } from '../lib/report'
 import styles from '../style/styles'
 import theme from '../style/theme';
+
+const TABS = ['Timing', 'Inputs', 'Outputs']
+
+// the native animation driver isn't available on web
+const useNativeDriver = Platform.OS !== 'web'
+
+// how far the new tab's rows slide in from
+const SLIDE = 32
 
 export default class ResultsTable extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      page: 0
+      page: 0,
+      direction: 1,
+    }
+
+    // underline under the chosen tab, moved to each tab's measured position
+    this.tabLayouts = []
+    this.indicatorX = new Animated.Value(0)
+    this.indicatorWidth = new Animated.Value(0)
+
+    // 0 -> 1 as a newly chosen tab's rows slide and fade in
+    this.content = new Animated.Value(1)
+  }
+
+  onTabLayout = (index, { nativeEvent: { layout } }) => {
+    this.tabLayouts[index] = layout
+    if (index === this.state.page) {
+      this.indicatorX.setValue(layout.x)
+      this.indicatorWidth.setValue(layout.width)
     }
   }
 
   onPageChange = (page) => {
-    this.setState({
-      page: page
-    })
+    if (page === this.state.page) return
+
+    this.setState({ page, direction: page > this.state.page ? 1 : -1 })
+
+    const layout = this.tabLayouts[page]
+    if (layout) {
+      // width can't use the native driver, so neither can its partner
+      const spring = { friction: 9, tension: 90, useNativeDriver: false }
+      Animated.parallel([
+        Animated.spring(this.indicatorX, { ...spring, toValue: layout.x }),
+        Animated.spring(this.indicatorWidth, { ...spring, toValue: layout.width }),
+      ]).start()
+    }
+
+    this.content.setValue(0)
+    Animated.timing(this.content, {
+      toValue: 1,
+      duration: 240,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver,
+    }).start()
   }
 
   formatEdid(edid) {
-    let results = [
-      {
-        name: 'H Total',
-        value: edid.hTotal
-      },
-      {
-        name: 'H Front Porch',
-        value: edid.hFrontPorch
-      },
-      {
-        name: 'H Active',
-        value: edid.hActive
-      },
-      {
-        name: 'H Sync',
-        value: edid.hSync
-      },
-      {
-        name: 'H Polarity',
-        value: edid.hPolarity ? '+' : '-'
-      },
-      {
-        name: 'V Total',
-        value: edid.vTotal
-      },
-      {
-        name: 'V Front Porch',
-        value: edid.vFrontPorch
-      },
-      {
-        name: 'V Active',
-        value: edid.vActive
-      },
-      {
-        name: 'V Sync',
-        value: edid.vSync
-      },
-      {
-        name: 'V Polarity',
-        value: edid.vPolarity ? '+' : '-'
-      },
-      {
-        name: 'V Rate',
-        value: edid.vRate
-      }
-    ]
-
-    return results.map((result, index) => 
-      <DataTable.Row key={index}>
-        <DataTable.Cell>{result.name}</DataTable.Cell>
-        <DataTable.Cell numeric>{result.value}</DataTable.Cell>
+    return timingRows(edid).map(row =>
+      <DataTable.Row key={row.name}>
+        <DataTable.Cell>{row.name}</DataTable.Cell>
+        <DataTable.Cell numeric>{row.value}</DataTable.Cell>
       </DataTable.Row>
     )
   }
 
   formatConns(conns) {
-    let results = [
-      {
-        name: 'DVI-D',
-        icon: 'dvi',
-        value: conns.dvid
-      },
-      {
-        name: 'HDMI 1.4',
-        icon: 'hdmi',
-        value: conns.hdmi14
-      },
-      {
-        name: 'HDMI 2.0',
-        icon: 'hdmi',
-        value: conns.hdmi20
-      },
-      {
-        name: 'DP 1.1',
-        icon: 'dp',
-        value: conns.dp11
-      },
-      {
-        name: 'DP 1.2',
-        icon: 'dp',
-        value: conns.dp12
-      },
-    ]
-
-    return results.map((result, index) => 
-      <DataTable.Row key={index}>
+    return conns.map(conn =>
+      <DataTable.Row key={conn.key}>
         <DataTable.Cell>
           <View style={styles.connectorName}>
-            <ConnectorIcon type={result.icon} color={theme.colors.textDark} />
-            <Text style={styles.connectorText}>{result.name}</Text>
+            <ConnectorIcon type={conn.icon} color={theme.colors.textDark} />
+            <View style={styles.connectorText}>
+              <Text>{conn.name}</Text>
+              {conn.note ? <Text style={styles.connectorNote}>{conn.note}</Text> : null}
+            </View>
           </View>
         </DataTable.Cell>
         <IconButton
-          icon={result.value ? 'check-circle' : 'close-circle'}
-          iconColor={result.value ? theme.colors.green : theme.colors.red}
+          icon={conn.ok ? 'check-circle' : 'close-circle'}
+          iconColor={conn.ok ? theme.colors.green : theme.colors.red}
+          accessibilityLabel={conn.ok ? 'Supported' : 'Not supported'}
           size={20}
         />
       </DataTable.Row>
@@ -124,36 +97,68 @@ export default class ResultsTable extends React.Component {
   }
 
   render() {
-    var title, results
-
-    switch (this.state.page) {
-      case 0:
-        title = "EDID Timing"
-        results = this.formatEdid(this.props.value)
-        break;
-      case 1:
-        title = "Possible Inputs"
-        results = this.formatConns(this.props.value.possConns.input)
-        break;
-      case 2:
-        title = "Recommended Outputs"
-        results = this.formatConns(this.props.value.possConns.output)
-        break;
-    }
+    const page = this.state.page
+    const results = [
+      () => this.formatEdid(this.props.value),
+      () => this.formatConns(this.props.connections.input),
+      () => this.formatConns(this.props.connections.output),
+    ][page]()
 
     return (
       <DataTable>
         <View style={styles.resultsTableHeadingContainer}>
-          <Text style={styles.resultsTableHeading}>{title}</Text>
+          <View style={styles.tabs} role="tablist">
+            {TABS.map((tab, index) => (
+              <Pressable
+                key={tab}
+                onPress={() => this.onPageChange(index)}
+                onLayout={event => this.onTabLayout(index, event)}
+                role="tab"
+                aria-selected={index === page}
+                style={styles.tab}
+              >
+                <Text style={[styles.tabText, index === page && styles.tabTextActive]}>
+                  {tab}
+                </Text>
+              </Pressable>
+            ))}
+            <Animated.View
+              style={[styles.tabIndicator, { left: this.indicatorX, width: this.indicatorWidth }]}
+            />
+          </View>
 
-          <DataTable.Pagination
-            page={this.state.page}
-            numberOfPages={3}
-            onPageChange={(page) => this.onPageChange(page)}
-          />
+          <View style={styles.resultsTableActions}>
+            <IconButton
+              icon="content-copy"
+              accessibilityLabel="Copy results"
+              size={20}
+              onPress={this.props.onCopyResults}
+            />
+            <IconButton
+              icon="link-variant"
+              accessibilityLabel="Copy link to this format"
+              size={20}
+              onPress={this.props.onCopyLink}
+            />
+          </View>
         </View>
 
-        {results}
+        {/* as tall as the longest tab, so the page doesn't jump when switching */}
+        <View style={styles.resultsBody}>
+          <Animated.View
+            style={{
+              opacity: this.content,
+              transform: [{
+                translateX: this.content.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [SLIDE * this.state.direction, 0],
+                }),
+              }],
+            }}
+          >
+            {results}
+          </Animated.View>
+        </View>
       </DataTable>
     )
   }

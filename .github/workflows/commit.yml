@@ -21,13 +21,16 @@ jobs:
       uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
-        cache: yarn
+        cache: npm
+    # npm 10 (bundled with Node 22) handles the lockfile's overrides differently
+    - name: Use npm 11
+      run: npm install -g npm@11
     - name: Install
-      run: yarn install --frozen-lockfile
+      run: npm ci
     - name: Test
-      run: yarn test
+      run: npm test
     - name: Build web
-      run: yarn build-web
+      run: npm run build-web
 
   dependabot-automerge:
     needs: build

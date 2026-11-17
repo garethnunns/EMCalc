@@ -1,5 +1,5 @@
 import React from 'react'
-import { Linking, Platform, View } from 'react-native'
+import { Image, Linking, Platform, Pressable, View } from 'react-native'
 import { Button, Dialog, Paragraph, Portal, Subheading, Text } from 'react-native-paper'
 
 import packageJson from '../../package.json'
@@ -22,13 +22,21 @@ export default class About extends React.Component {
           onDismiss={this.props.onCloseAbout}
           style={styles.aboutDialog}
         >
-          <Dialog.Title>{packageJson.build.productName}</Dialog.Title>
           <Dialog.Content>
-            <Subheading
-              style={styles.aboutVersion}
-            >
-              {packageJson.version}
-            </Subheading>
+            <View style={styles.aboutHeader}>
+              <Image
+                source={require('../../assets/icon-squircle.png')}
+                style={styles.aboutAppIcon}
+                accessibilityIgnoresInvertColors
+              />
+              <View>
+                <Text style={styles.aboutTitle}>{packageJson.build.productName}</Text>
+                <Subheading style={styles.aboutVersion}>
+                  {packageJson.version}
+                </Subheading>
+              </View>
+            </View>
+
             <Paragraph>
               This tool is designed to help calculate custom formats for the Barco 
               Event Master range of products. This isn't a Barco product and 
@@ -57,12 +65,19 @@ export default class About extends React.Component {
               .
             </Paragraph>
 
-            <Paragraph
-              style={styles.link}
-              onPress={() => Linking.openURL('https://garethnunns.com')}
+            <Pressable
+              style={styles.aboutFooter}
+              onPress={() => Linking.openURL('https://generativenoise.com')}
+              accessibilityRole="link"
+              accessibilityLabel="Generative Noise"
             >
-              &copy; Gareth Nunns 2020
-            </Paragraph>
+              <Image
+                source={require('../../assets/gn-logo.png')}
+                style={styles.aboutGnLogo}
+                accessibilityIgnoresInvertColors
+              />
+              <Text style={styles.link}>&copy; Generative Noise 2020</Text>
+            </Pressable>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={this.props.onCloseAbout}>Close</Button>

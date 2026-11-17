@@ -4,7 +4,7 @@ const { app, BrowserWindow, Menu, net, protocol, shell } = require('electron')
 const path = require('node:path')
 const { pathToFileURL } = require('node:url')
 
-// The desktop app serves the exported web build (yarn build-web) over a
+// The desktop app serves the exported web build (npm run build-web) over a
 // custom app:// scheme so the absolute /_expo/... asset paths resolve.
 // Set ELECTRON_START_URL (e.g. http://localhost:8081) to point at the
 // Expo dev server instead.
