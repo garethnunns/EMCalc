@@ -79,8 +79,59 @@ export default StyleSheet.create({
     minWidth: 0,
   },
 
-  spreadColumn: {
-    justifyContent: 'space-between',
+  // saved formats, under the results on wide windows and at the end on narrow ones
+  saved: {
+    paddingBottom: 8,
+  },
+
+  savedForm: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: inputPaddingH,
+    marginBottom: 8,
+  },
+
+  savedName: {
+    flex: 1,
+    backgroundColor: theme.colors.surfaceLight,
+  },
+
+  savedEmpty: {
+    marginHorizontal: inputPaddingH * 2,
+    fontSize: 13,
+    color: theme.colors.textDark,
+  },
+
+  savedItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: inputPaddingH,
+    marginBottom: 4,
+    borderRadius: 4,
+    borderLeftWidth: 3,
+    borderLeftColor: 'transparent',
+    backgroundColor: theme.colors.surfaceLight,
+  },
+
+  savedItemActive: {
+    borderLeftColor: theme.colors.primary,
+  },
+
+  savedLoad: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: 8,
+    paddingLeft: inputPaddingH,
+  },
+
+  savedTitle: {
+    fontSize: 15,
+  },
+
+  savedDetail: {
+    fontSize: 12,
+    color: theme.colors.textDark,
   },
 
   // line the table's tabs up with the Format heading

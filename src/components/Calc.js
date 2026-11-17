@@ -12,13 +12,14 @@ import CapacityAndFreq from './CapacityAndFreq'
 import FitSuggestions from './FitSuggestions'
 import MacTab from './MacTab'
 import ResultsTable from './ResultsTable'
+import SavedFormats from './SavedFormats'
 import SectionHeading from './SectionHeading'
 import SegmentedControl from './SegmentedControl'
 import Warnings from './Warnings'
 
 import edid from '../lib/edid'
 import { capacityNotes, connections, PROCESSORS } from '../lib/processors'
-import { initialState, shareUrl, toQuery } from '../lib/params'
+import { fromQuery, initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
 import { isWide } from '../lib/layout'
 import { fitSuggestions } from '../lib/fit'
@@ -149,6 +150,14 @@ export default class Calc extends React.Component {
 
     const wide = this.state.wide
 
+    // kept in the browser, so only on the website and desktop app
+    const saved = isWeb ? (
+      <SavedFormats
+        query={toQuery(this.inputs)}
+        onLoad={query => this.setState(fromQuery(query))}
+      />
+    ) : null
+
     const capacity = (
       <CapacityAndFreq
         links={customFormat.links}
@@ -159,8 +168,7 @@ export default class Calc extends React.Component {
 
     return (
       <View style={wide ? styles.columns : styles.container}>
-        {/* on wide windows the groups spread out to match the table's height */}
-        <View style={wide ? [styles.column, styles.spreadColumn] : null}>
+        <View style={wide ? styles.column : null}>
           <View>
             <SectionHeading>Format</SectionHeading>
 
@@ -252,6 +260,8 @@ export default class Calc extends React.Component {
               warnings={customFormat.warnings}
             />
           </View>
+
+          {wide ? saved : null}
         </View>
 
         <View style={wide ? [styles.column, styles.resultsColumn] : null}>
@@ -273,6 +283,8 @@ export default class Calc extends React.Component {
             )}
           />
         </View>
+
+        {wide ? null : saved}
 
         <Portal>
           <Snackbar
