@@ -37,6 +37,20 @@ export default StyleSheet.create({
     height: 32,
   },
 
+  updateBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingLeft: 16,
+    paddingVertical: 4,
+    backgroundColor: theme.colors.surfaceLight,
+  },
+
+  updateText: {
+    flexShrink: 1,
+  },
+
   // centre the content vertically when it's shorter than the window
   scrollContent: {
     flexGrow: 1,

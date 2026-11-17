@@ -4,6 +4,7 @@ import { Appbar, Provider as PaperProvider } from 'react-native-paper'
 
 import About from './src/components/About'
 import Calc from './src/components/Calc'
+import UpdateBanner from './src/components/UpdateBanner'
 
 import theme from './src/style/theme'
 import styles from './src/style/styles'
@@ -57,6 +58,7 @@ export default class App extends React.Component {
             />
           </View>
         </Appbar.Header>
+        <UpdateBanner />
         <About 
           visible={this.state.about}
           onCloseAbout={this.onCloseAbout}
