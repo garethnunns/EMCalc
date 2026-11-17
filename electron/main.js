@@ -15,7 +15,17 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ])
 
-Menu.setApplicationMenu(null)
+// macOS only routes Cmd+C, Cmd+V, Cmd+A and undo to text fields through the
+// Edit menu, so give it the standard menus. Elsewhere keep the window menu-less.
+if (process.platform === 'darwin') {
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    { role: 'appMenu' },
+    { role: 'editMenu' },
+    { role: 'windowMenu' },
+  ]))
+} else {
+  Menu.setApplicationMenu(null)
+}
 
 function serveWebBuild(request) {
   const { pathname } = new URL(request.url)
