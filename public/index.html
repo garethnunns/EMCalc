@@ -109,9 +109,16 @@
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
     <script>
-      // offline support on the website (not in the desktop app's app:// scheme)
+      // offline support on the website (not in the desktop app's app:// scheme).
+      // Not on the local dev server: its script names don't change between
+      // edits, so the worker would keep serving stale code. Remove any there.
       if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'))
+        if (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) {
+          navigator.serviceWorker.getRegistrations()
+            .then(regs => regs.forEach(reg => reg.unregister()))
+        } else {
+          window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'))
+        }
       }
     </script>
   </body>
