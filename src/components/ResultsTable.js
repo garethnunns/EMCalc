@@ -110,7 +110,7 @@ export default class ResultsTable extends React.Component {
       <DataTable.Row key={index}>
         <DataTable.Cell>
           <View style={styles.connectorName}>
-            <ConnectorIcon type={result.icon} color={theme.colors.text} />
+            <ConnectorIcon type={result.icon} color={theme.colors.textDark} />
             <Text style={styles.connectorText}>{result.name}</Text>
           </View>
         </DataTable.Cell>
