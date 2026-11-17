@@ -24,7 +24,7 @@ const blankingName = ({ enabled, version }) =>
   enabled ? `reduced blanking v${version}` : 'no reduced blanking'
 
 const connectorLines = (list) => list.map(c =>
-  `${c.name}\t${c.ok ? 'Yes' : 'No'}${c.note ? `\t${c.note}` : ''}`
+  `${c.name}\t${c.ok ? 'Yes' : c.partial ? 'Partly' : 'No'}${c.note ? `\t${c.note}` : ''}`
 )
 
 /**

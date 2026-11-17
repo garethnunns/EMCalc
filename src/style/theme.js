@@ -9,6 +9,7 @@ export default {
     primaryLight: MD2Colors.blue100,
     red: MD2Colors.red200,
     green: MD2Colors.green200,
+    yellow: MD2Colors.amber200,
     textDark: '#999999',
     surfaceLight: color(MD2DarkTheme.colors.surface).lighten(0.24).rgb().string()
   }

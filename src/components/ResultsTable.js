@@ -87,9 +87,9 @@ export default class ResultsTable extends React.Component {
           </View>
         </DataTable.Cell>
         <IconButton
-          icon={conn.ok ? 'check-circle' : 'close-circle'}
-          iconColor={conn.ok ? theme.colors.green : theme.colors.red}
-          accessibilityLabel={conn.ok ? 'Supported' : 'Not supported'}
+          icon={conn.ok ? 'check-circle' : conn.partial ? 'minus-circle' : 'close-circle'}
+          iconColor={conn.ok ? theme.colors.green : conn.partial ? theme.colors.yellow : theme.colors.red}
+          accessibilityLabel={conn.ok ? 'Supported' : conn.partial ? 'Fits inside a larger format' : 'Not supported'}
           size={20}
         />
       </DataTable.Row>

@@ -108,7 +108,11 @@ describe('Processors', () => {
     assert.equal(uhd.sdi3g.note, '2160p60 needs 12G-SDI')
     assert.equal(uhd.sdi12g.ok, true)
 
-    const custom = byKey(connections(calc(2560, 2000, 60), 'e2gen2').input)
+    const inside = byKey(connections(calc(2560, 2000, 60), 'e2gen2').input)
+    assert.equal(inside.sdi12g.ok, false)
+    assert.equal(inside.sdi12g.note, 'Inside 2160p60 (3840 × 2160 canvas)')
+
+    const custom = byKey(connections(calc(5120, 1440, 60), 'e2gen2').input)
     assert.equal(custom.sdi12g.ok, false)
     assert.equal(custom.sdi12g.note, 'Not a broadcast format')
   })
@@ -234,5 +238,43 @@ describe('Bit depth', () => {
   it('SDI is unaffected', () => {
     const r = calc(1920, 1080, 50)
     assert.equal(ok(r, 'e2gen2', 10).sdi3g, true)
+  })
+})
+
+describe('SDI: fitting inside a broadcast format', () => {
+  const byKey = (r, id = 'e2gen2') => Object.fromEntries(connections(r, id).input.map(c => [c.key, c]))
+
+  it('a smaller format fits inside 1080p, using part of the canvas', () => {
+    const sdi = byKey(calc(1600, 900, 60))
+    assert.equal(sdi.sdi3g.ok, false)
+    assert.equal(sdi.sdi3g.partial, true)
+    assert.equal(sdi.sdi3g.note, 'Inside 1080p60 (1920 × 1080 canvas)')
+    assert.equal(sdi.sdi12g.partial, true)
+  })
+
+  it('too big for 3G but fits inside 2160p on 12G', () => {
+    const sdi = byKey(calc(2560, 1440, 50))
+    assert.equal(sdi.sdi3g.partial, undefined)
+    assert.equal(sdi.sdi3g.note, 'Not a broadcast format')
+    assert.equal(sdi.sdi12g.note, 'Inside 2160p50 (3840 × 2160 canvas)')
+  })
+
+  it('picks the smallest broadcast format it fits in', () => {
+    assert.equal(byKey(calc(1280, 1000, 60)).sdi12g.note, 'Inside 1080p60 (1920 × 1080 canvas)')
+    assert.equal(byKey(calc(2000, 1080, 30)).sdi3g.note, 'Inside 2K 1080p30 (2048 × 1080 canvas)')
+  })
+
+  it('still needs a broadcast frame rate', () => {
+    const sdi = byKey(calc(1600, 900, 75))
+    assert.equal(sdi.sdi3g.partial, undefined)
+    assert.equal(sdi.sdi12g.partial, undefined)
+  })
+
+  it('an exact broadcast format is still a full tick', () => {
+    assert.equal(byKey(calc(1920, 1080, 60)).sdi3g.ok, true)
+  })
+
+  it('too wide for any broadcast format', () => {
+    assert.equal(byKey(calc(5120, 1440, 60)).sdi12g.partial, undefined)
   })
 })

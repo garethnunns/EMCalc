@@ -48,3 +48,26 @@ export function sdiFormat(hPx, vPx, refresh) {
 export function sdiCarries(interfaceLevel, format) {
   return !!format && LEVELS.indexOf(format.level) <= LEVELS.indexOf(interfaceLevel)
 }
+
+/**
+ * The smallest broadcast format an SDI interface carries that a smaller custom
+ * format fits inside, so it can be sent within that raster without using the
+ * whole canvas. Still needs a broadcast frame rate.
+ * @param {number|string} hPx - active horizontal pixels
+ * @param {number|string} vPx - active vertical pixels
+ * @param {number|string} refresh - refresh rate (Hz)
+ * @param {'3G'|'12G'} interfaceLevel
+ * @returns {{name: string, level: string, hPx: number, vPx: number}|null}
+ */
+export function sdiContainer(hPx, vPx, refresh, interfaceLevel) {
+  const rate = RATES.find(r => Math.abs(r - Number(refresh)) < 0.01)
+  if (rate === undefined || !(hPx > 0 && vPx > 0)) return null
+
+  const fits = FORMATS
+    .filter(f => f.hPx >= hPx && f.vPx >= vPx)
+    .map(f => ({ name: f.name + rate, level: rate <= 30 ? f.upTo30 : f.upTo60, hPx: f.hPx, vPx: f.vPx }))
+    .filter(f => sdiCarries(interfaceLevel, f))
+    .sort((a, b) => a.hPx * a.vPx - b.hPx * b.vPx)
+
+  return fits[0] || null
+}

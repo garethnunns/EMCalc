@@ -1,5 +1,5 @@
 import edid from './edid.js'
-import { sdiCarries, sdiFormat } from './sdi.js'
+import { sdiCarries, sdiContainer, sdiFormat } from './sdi.js'
 
 const calculator = new edid()
 
@@ -86,7 +86,8 @@ export const processorById = (id) =>
  * @param {Object} result - from edid.calcEdid()
  * @param {string} processorId
  * @param {number} bits - bits per colour component, 8 or 10
- * @returns {{input: Array, output: Array}} each entry { key, name, icon, ok, note }
+ * @returns {{input: Array, output: Array}} each entry { key, name, icon, ok, note },
+ *   plus partial: true for SDI when the format fits inside a broadcast format
  */
 export function connections(result, processorId, bits = 8) {
   const processor = processorById(processorId)
@@ -103,9 +104,15 @@ export function connections(result, processorId, bits = 8) {
 
     if (connector.sdi) {
       const ok = sdiCarries(connector.sdi, broadcast)
-      const note = ok ? broadcast.name
-        : broadcast ? `${broadcast.name} needs ${broadcast.level}-SDI`
-        : 'Not a broadcast format'
+      if (ok) return { key, ...connector, ok, note: broadcast.name }
+
+      // not a broadcast format, but fits inside one without using the whole canvas
+      const container = sdiContainer(result.hActive, result.vActive, result.vRate, connector.sdi)
+      if (container && !broadcast) {
+        return { key, ...connector, ok: false, partial: true, note: `Inside ${container.name} (${container.hPx} × ${container.vPx} canvas)` }
+      }
+
+      const note = broadcast ? `${broadcast.name} needs ${broadcast.level}-SDI` : 'Not a broadcast format'
       return { key, ...connector, ok, note }
     }
 
