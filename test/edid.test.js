@@ -419,7 +419,7 @@ describe('Possible Connections', () => {
         dvid: false,
         dp11: false,
         hdmi14: false,
-        dp12: false,
+        dp12: true,
         hdmi20: false
       },
       output: {
