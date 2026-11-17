@@ -85,6 +85,40 @@ export default StyleSheet.create({
     color: theme.colors.textDark,
   },
 
+  numContainer: {
+    flexDirection: 'column',
+  },
+
+  numInput: {
+    flex: 1,
+  },
+
+  // Paper's underline switches instantly, so CalcInputNum draws its own
+  hiddenUnderline: {
+    display: 'none',
+  },
+
+  // resting underline under the number inputs
+  inputLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 1,
+    backgroundColor: theme.colors.disabled,
+    pointerEvents: 'none',
+  },
+
+  // focus underline, grown out from the centre with scaleX
+  inputLineFocus: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 2,
+    pointerEvents: 'none',
+  },
+
   // inputs and toggles side by side
   inputRow: {
     flexDirection: 'row',
