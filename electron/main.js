@@ -52,7 +52,11 @@ function createMainWindow() {
     backgroundColor: '#121212',
     autoHideMenuBar: true,
     show: false,
+    title: 'EM Calc',
   })
+
+  // keep the short name rather than the website's longer page title
+  win.on('page-title-updated', (event) => event.preventDefault())
 
   // links (Linking.openURL opens a new window on web) go to the system browser
   win.webContents.setWindowOpenHandler(({ url }) => {
