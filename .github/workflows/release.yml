@@ -21,16 +21,16 @@ jobs:
       uses: actions/setup-node@v7
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: yarn
+        cache: npm
 
     - name: Install
-      run: yarn install --frozen-lockfile
+      run: npm ci
 
     - name: Test
-      run: yarn test
+      run: npm test
 
     - name: Build
-      run: yarn build-web
+      run: npm run build-web
 
     - name: Deploy over SFTP
       env:
@@ -72,13 +72,13 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: yarn
+          cache: npm
 
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Build
-        run: yarn build-desktop
+        run: npm run build-desktop
 
       - name: Copy to artifacts
         shell: bash
