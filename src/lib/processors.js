@@ -1,4 +1,14 @@
+import edid from './edid.js'
 import { sdiCarries, sdiFormat } from './sdi.js'
+
+const calculator = new edid()
+
+export const BIT_DEPTHS = [8, 10]
+
+// DisplayPort's fixed data rate (Gbit/s after 8b/10b coding) caps the pixel
+// clock at a given bit depth: 3 colour components per pixel
+const DP_DATA_RATE = { dp11: 8.64, dp12: 17.28 }
+const dpMaxClock = (key, bits) => DP_DATA_RATE[key] * 1000 / (3 * bits)
 
 export const CONNECTORS = {
   dvid: { name: 'DVI-D', icon: 'dvi' },
@@ -75,12 +85,18 @@ export const processorById = (id) =>
  * Which of a processor's connectors can carry a calculated format
  * @param {Object} result - from edid.calcEdid()
  * @param {string} processorId
+ * @param {number} bits - bits per colour component, 8 or 10
  * @returns {{input: Array, output: Array}} each entry { key, name, icon, ok, note }
  */
-export function connections(result, processorId) {
+export function connections(result, processorId, bits = 8) {
   const processor = processorById(processorId)
   const freq = Number(result.freq)
   const broadcast = sdiFormat(result.hActive, result.vActive, result.vRate)
+
+  // HDMI carries deeper colour by clocking faster (10-bit is 1.25x), so check
+  // its connector rules at that TMDS clock
+  const tmdsClock = freq * bits / 8
+  const atTmds = calculator.possConns(result.hActive, result.hTotal, tmdsClock)
 
   const list = (direction) => Object.entries(processor[direction]).map(([key, maxFreq]) => {
     const connector = CONNECTORS[key]
@@ -93,7 +109,14 @@ export function connections(result, processorId) {
       return { key, ...connector, ok, note }
     }
 
-    const ok = result.possConns[direction][key] && (maxFreq === null || freq <= maxFreq)
+    let ok
+    if (key.startsWith('hdmi')) {
+      ok = atTmds[direction][key] && (maxFreq === null || tmdsClock <= maxFreq)
+    } else {
+      ok = result.possConns[direction][key] && (maxFreq === null || freq <= maxFreq)
+      if (key.startsWith('dp')) ok = ok && freq <= dpMaxClock(key, bits)
+      if (key === 'dvid') ok = ok && bits === 8 // DVI is 8-bit only
+    }
     return { key, ...connector, ok, note: '' }
   })
 

@@ -33,15 +33,15 @@ export default class CalcInputProcessor extends React.Component {
         contentStyle={{ flexDirection: 'row-reverse' }}
         onPress={this.open}
         accessibilityLabel={`${this.props.label}: ${current.name}`}
-        style={styles.processorButton}
+        style={this.props.stacked ? null : styles.processorButton}
       >
         {current.name}
       </Button>
     )
 
     return (
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchText}>
+      <View style={[styles.switchContainer, this.props.stacked && styles.fieldStacked, this.props.style]}>
+        <Text style={this.props.stacked ? styles.fieldLabel : styles.switchText}>
           {this.props.label}
         </Text>
 

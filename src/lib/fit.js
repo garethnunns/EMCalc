@@ -43,8 +43,8 @@ export function largestSameAspect(params, fits, maxWidth = Infinity) {
 }
 
 // whether one of a processor's HDMI/DP/DVI inputs can take a format
-const fitsOneInput = (processorId) => (result) =>
-  connections(result, processorId).input.some(c => !CONNECTORS[c.key].sdi && c.ok)
+const fitsOneInput = (processorId, bits) => (result) =>
+  connections(result, processorId, bits).input.some(c => !CONNECTORS[c.key].sdi && c.ok)
 
 /**
  * Ways to get a format into a processor when it's too much for one input:
@@ -52,10 +52,11 @@ const fitsOneInput = (processorId) => (result) =>
  * across two inputs (an Ultrawide Input, Event Master 10.1 and later).
  * @param {Object} params - calcEdid params
  * @param {string} processorId
+ * @param {number} bits - bits per colour component
  * @returns {null|{scaled: Object|null, split: Object|null}} null when it already fits
  */
-export function fitSuggestions(params, processorId) {
-  const fits = fitsOneInput(processorId)
+export function fitSuggestions(params, processorId, bits = 8) {
+  const fits = fitsOneInput(processorId, bits)
   if (fits(calc(params, params.hPx, params.vPx))) return null
 
   const scaled = largestSameAspect(params, fits)

@@ -22,6 +22,11 @@ import { resultsText } from '../lib/report'
 import { isWide } from '../lib/layout'
 import { fitSuggestions } from '../lib/fit'
 
+const BIT_OPTIONS = [
+  { value: 8, label: '8', accessibilityLabel: '8-bit' },
+  { value: 10, label: '10', accessibilityLabel: '10-bit' },
+]
+
 const MARGIN_OPTIONS = [
   { value: false, label: 'Off', accessibilityLabel: 'Margins Off' },
   { value: true, label: 'On', accessibilityLabel: 'Margins On' },
@@ -92,7 +97,7 @@ export default class Calc extends React.Component {
 
   copyResults = async () => {
     const result = this.edid.calcEdid(this.edidParams)
-    await Clipboard.setStringAsync(resultsText(this.inputs, result, connections(result, this.state.processor)))
+    await Clipboard.setStringAsync(resultsText(this.inputs, result, connections(result, this.state.processor, this.state.bits)))
     this.notify('Results copied')
   }
 
@@ -115,7 +120,7 @@ export default class Calc extends React.Component {
 
   render () {
     const customFormat = this.edid.calcEdid(this.edidParams)
-    const conns = connections(customFormat, this.state.processor)
+    const conns = connections(customFormat, this.state.processor, this.state.bits)
     const notes = capacityNotes(customFormat, this.state.processor, conns)
 
     const wide = this.state.wide
@@ -188,18 +193,32 @@ export default class Calc extends React.Component {
             </View>
           </View>
 
-          <CalcInputProcessor
-            label="Processor"
-            value={this.state.processor}
-            onChange={value => this.onChange('processor',value)}
-          />
+          <View style={styles.inputRow}>
+            <View style={[styles.inputCell, styles.toggleCell]}>
+              <SegmentedControl
+                label="Bit Depth"
+                options={BIT_OPTIONS}
+                value={this.state.bits}
+                onChange={value => this.onChange('bits',value)}
+                stacked
+              />
+            </View>
+            <View style={[styles.inputCell, styles.toggleCell, styles.blankingCell]}>
+              <CalcInputProcessor
+                label="Processor"
+                value={this.state.processor}
+                onChange={value => this.onChange('processor',value)}
+                stacked
+              />
+            </View>
+          </View>
 
           <View>
             <SectionHeading>Results</SectionHeading>
             {capacity}
 
             <FitSuggestions
-              suggestions={fitSuggestions(this.edidParams, this.state.processor)}
+              suggestions={fitSuggestions(this.edidParams, this.state.processor, this.state.bits)}
               refresh={this.state.refresh}
               onUse={(hPx, vPx) => this.setState({ hPx: String(hPx), vPx: String(vPx) })}
             />

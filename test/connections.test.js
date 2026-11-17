@@ -199,3 +199,40 @@ describe('Processors from the Barco spec sheets', () => {
     assert.match(capacityNotes(over, 'encore3', connections(over, 'encore3')).freqNote, /^Too high for this processor's HDMI and DP inputs\. Encore3 takes about 550 MHz per input; check in Toolset$/)
   })
 })
+
+describe('Bit depth', () => {
+  const ok = (result, id, bits) => Object.fromEntries(connections(result, id, bits).input.map(c => [c.key, c.ok]))
+
+  it('8-bit by default', () => {
+    const r = calc(3840, 2160, 60)
+    assert.deepEqual(ok(r, 'e2gen2'), ok(r, 'e2gen2', 8))
+  })
+
+  // 3840x2160@60 RB v2: 522.614MHz
+  it('HDMI 2.0 clocks 10-bit 1.25x faster, so 4K60 no longer fits', () => {
+    const r = calc(3840, 2160, 60)
+    assert.equal(ok(r, 'e2gen2', 8).hdmi20, true)
+    assert.equal(ok(r, 'e2gen2', 10).hdmi20, false) // 653MHz TMDS
+  })
+
+  it('DP 1.2 carries 10-bit 4K60 with reduced blanking (under 576MHz)', () => {
+    assert.equal(ok(calc(3840, 2160, 60), 'e2gen2', 10).dp12, true)
+  })
+
+  it("DP 1.2's data rate caps 10-bit at 576MHz, below the card's 600MHz", () => {
+    const r = calc(4096, 2160, 64) // 594.929MHz
+    assert.equal(ok(r, 'e2gen2', 8).dp12, true)
+    assert.equal(ok(r, 'e2gen2', 10).dp12, false)
+  })
+
+  it('DVI is 8-bit only', () => {
+    const r = calc(1920, 1080, 60)
+    assert.equal(ok(r, 'gen1', 8).dvid, true)
+    assert.equal(ok(r, 'gen1', 10).dvid, false)
+  })
+
+  it('SDI is unaffected', () => {
+    const r = calc(1920, 1080, 50)
+    assert.equal(ok(r, 'e2gen2', 10).sdi3g, true)
+  })
+})

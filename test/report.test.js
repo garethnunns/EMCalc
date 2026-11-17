@@ -11,7 +11,7 @@ describe('Copy results', () => {
   const lines = text.split('\n')
 
   it('starts with a summary of the inputs', () => {
-    assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins')
+    assert.equal(lines[0], 'EM Calc: 1920x1080 @ 50Hz, reduced blanking v2, no margins, 8-bit')
     assert.equal(lines[1], 'Processor\tE2 Gen 2')
     assert.equal(lines[2], `Pixel clock\t${result.freq} MHz`)
   })
@@ -35,7 +35,7 @@ describe('Copy results', () => {
   })
 
   it('ends with a link to the format', () => {
-    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&p=e2gen2')
+    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&b=8&p=e2gen2')
   })
 
   it('includes warnings when there are any', () => {
