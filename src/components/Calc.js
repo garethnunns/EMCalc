@@ -16,6 +16,7 @@ import Warnings from './Warnings'
 import edid from '../lib/edid'
 import { connections } from '../lib/processors'
 import { initialState, shareUrl, toQuery } from '../lib/params'
+import { resultsText } from '../lib/report'
 
 // on the website and desktop app, keep the inputs in the URL and remember them
 const isWeb = Platform.OS === 'web' && typeof window !== 'undefined'
@@ -72,6 +73,12 @@ export default class Calc extends React.Component {
   copyLink = async () => {
     await Clipboard.setStringAsync(shareUrl(this.inputs))
     this.notify('Link copied')
+  }
+
+  copyResults = async () => {
+    const result = this.edid.calcEdid(this.edidParams)
+    await Clipboard.setStringAsync(resultsText(this.inputs, result, connections(result, this.state.processor)))
+    this.notify('Results copied')
   }
 
   onChange = (name,value) => {
@@ -157,6 +164,7 @@ export default class Calc extends React.Component {
           value={customFormat}
           connections={connections(customFormat, this.state.processor)}
           onCopyLink={this.copyLink}
+          onCopyResults={this.copyResults}
         />
 
         <Portal>

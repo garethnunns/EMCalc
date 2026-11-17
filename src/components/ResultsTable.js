@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { DataTable, IconButton, Text } from 'react-native-paper'
 
 import ConnectorIcon from './ConnectorIcon'
+import { timingRows } from '../lib/report'
 import styles from '../style/styles'
 import theme from '../style/theme';
 
@@ -22,57 +23,10 @@ export default class ResultsTable extends React.Component {
   }
 
   formatEdid(edid) {
-    let results = [
-      {
-        name: 'H Total',
-        value: edid.hTotal
-      },
-      {
-        name: 'H Front Porch',
-        value: edid.hFrontPorch
-      },
-      {
-        name: 'H Active',
-        value: edid.hActive
-      },
-      {
-        name: 'H Sync',
-        value: edid.hSync
-      },
-      {
-        name: 'H Polarity',
-        value: edid.hPolarity ? '+' : '-'
-      },
-      {
-        name: 'V Total',
-        value: edid.vTotal
-      },
-      {
-        name: 'V Front Porch',
-        value: edid.vFrontPorch
-      },
-      {
-        name: 'V Active',
-        value: edid.vActive
-      },
-      {
-        name: 'V Sync',
-        value: edid.vSync
-      },
-      {
-        name: 'V Polarity',
-        value: edid.vPolarity ? '+' : '-'
-      },
-      {
-        name: 'V Rate',
-        value: edid.vRate
-      }
-    ]
-
-    return results.map((result, index) => 
-      <DataTable.Row key={index}>
-        <DataTable.Cell>{result.name}</DataTable.Cell>
-        <DataTable.Cell numeric>{result.value}</DataTable.Cell>
+    return timingRows(edid).map(row =>
+      <DataTable.Row key={row.name}>
+        <DataTable.Cell>{row.name}</DataTable.Cell>
+        <DataTable.Cell numeric>{row.value}</DataTable.Cell>
       </DataTable.Row>
     )
   }
@@ -123,6 +77,12 @@ export default class ResultsTable extends React.Component {
           <Text style={styles.resultsTableHeading}>{title}</Text>
 
           <View style={styles.resultsTableActions}>
+            <IconButton
+              icon="content-copy"
+              accessibilityLabel="Copy results"
+              size={20}
+              onPress={this.props.onCopyResults}
+            />
             <IconButton
               icon="link-variant"
               accessibilityLabel="Copy link to this format"
