@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           mkdir artifacts
-          mv dist/*.zip dist/*.AppImage dist/*.exe artifacts 2>/dev/null || true
+          mv dist/*.dmg dist/*.AppImage dist/*.exe artifacts 2>/dev/null || true
           ls artifacts
 
       - name: Upload artifacts

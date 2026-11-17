@@ -53,7 +53,7 @@
       "!node_modules/**/*"
     ],
     "mac": {
-      "target": "zip",
+      "target": "dmg",
       "category": "public.app-category.utilities",
       "icon": "assets/icon-mac.png",
       "identity": "-",
@@ -73,7 +73,27 @@
     "directories": {
       "output": "dist"
     },
-    "npmRebuild": false
+    "npmRebuild": false,
+    "dmg": {
+      "title": "EM Calc",
+      "contents": [
+        {
+          "x": 140,
+          "y": 180,
+          "type": "file"
+        },
+        {
+          "x": 400,
+          "y": 180,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    }
   },
   "engines": {
     "node": ">=22",
