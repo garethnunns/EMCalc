@@ -55,7 +55,8 @@
       "target": "zip",
       "category": "public.app-category.utilities",
       "icon": "assets/icon-mac.png",
-      "identity": null
+      "identity": "-",
+      "hardenedRuntime": false
     },
     "linux": {
       "target": "AppImage",
