@@ -73,5 +73,12 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "resolutions": {
+    "**/@electron/universal/minimatch": "^11.0.1",
+    "**/@expo/fingerprint/minimatch": "^11.0.1",
+    "**/app-builder-lib/minimatch": "^11.0.1",
+    "**/mocha/minimatch": "^11.0.1",
+    "**/mocha/glob/minimatch": "^11.0.1"
   }
 }
