@@ -1,9 +1,11 @@
-<img src="assets/icon-squircle.png" alt="EM Calc logo" width="128">
-
 # EM Calc
-### Barco Event Master Custom Format Calculator
 
-[![Test](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml/badge.svg)](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml) [![Release](https://img.shields.io/github/v/release/garethnunns/EMCalc)](https://github.com/garethnunns/EMCalc/releases/latest) 
+<img src="assets/icon-squircle.png" alt="EM Calc logo" width="80" align="left">
+
+### Barco Event Master Custom Format Calculator
+[![Test](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml/badge.svg)](https://github.com/garethnunns/EMCalc/actions/workflows/commit.yml) [![Release](https://img.shields.io/github/v/release/garethnunns/EMCalc)](https://github.com/garethnunns/EMCalc/releases/latest)
+
+<br clear="left">
 
 ![EM Calc on a desktop, with the format settings beside the EDID timing](README/Desktop.png)
 
