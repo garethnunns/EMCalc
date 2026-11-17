@@ -243,6 +243,41 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
 
+  fitBox: {
+    marginHorizontal: inputPaddingH,
+    marginBottom: 8,
+    padding: 12,
+    gap: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: theme.colors.red,
+    backgroundColor: theme.colors.surfaceLight,
+  },
+
+  fitTitle: {
+    fontWeight: '600',
+    color: theme.colors.red,
+  },
+
+  fitRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+
+  fitText: {
+    flex: 1,
+  },
+
+  fitLabel: {
+    fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  fitValue: {
+    fontSize: 15,
+  },
+
   warningTitle: {
     lineHeight: 30,
     fontWeight: 'bold',

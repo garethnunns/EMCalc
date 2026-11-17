@@ -9,6 +9,7 @@ import CalcInputBlanking from './CalcInputBlanking'
 import CalcInputNum from './CalcInputNum'
 import CalcInputProcessor from './CalcInputProcessor'
 import CapacityAndFreq from './CapacityAndFreq'
+import FitSuggestions from './FitSuggestions'
 import ResultsTable from './ResultsTable'
 import SectionHeading from './SectionHeading'
 import SegmentedControl from './SegmentedControl'
@@ -19,6 +20,7 @@ import { capacityNotes, connections } from '../lib/processors'
 import { initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
 import { isWide } from '../lib/layout'
+import { fitSuggestions } from '../lib/fit'
 
 const MARGIN_OPTIONS = [
   { value: false, label: 'Off', accessibilityLabel: 'Margins Off' },
@@ -195,6 +197,12 @@ export default class Calc extends React.Component {
           <View>
             <SectionHeading>Results</SectionHeading>
             {capacity}
+
+            <FitSuggestions
+              suggestions={fitSuggestions(this.edidParams, this.state.processor)}
+              refresh={this.state.refresh}
+              onUse={(hPx, vPx) => this.setState({ hPx: String(hPx), vPx: String(vPx) })}
+            />
 
             <Warnings
               warnings={customFormat.warnings}
