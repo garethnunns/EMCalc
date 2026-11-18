@@ -183,6 +183,24 @@ describe('Calculate EDID', () => {
     assert.equal(calc(2560, 2000, 60, false, true, 1).vSync, 10) // custom
   })
 
+  it('1366x768 rounds to 1360 and is 16:9, as VESA\'s generator has it', () => {
+    for (const redBlnk of [false, true]) {
+      const result = calc(1366, 768, 60, false, redBlnk, 1)
+      assert.equal(result.hActive, 1360)
+      assert.equal(result.vSync, 5)
+      assert.deepEqual(result.warnings, [new edid().warnings.hRounded])
+    }
+  })
+
+  it('an exact fit of vertical blanking still gets the extra line CVT adds', () => {
+    // 2000 x 1977 @ 25: the line period is exactly 20us, so the 460us minimum
+    // blanking is exactly 23 lines, and CVT makes it 24
+    for (const redBlnkV of [1, 2]) {
+      const result = calc(2000, 1977, 25, false, true, redBlnkV)
+      assert.equal(result.vTotal - result.vActive, 24)
+    }
+  })
+
   it('reduced blanking v2 always uses an 8 line V sync', () => {
     assert.equal(calc(1024, 768, 60, false, true, 2).vSync, 8)
     assert.equal(calc(2560, 2000, 60, false, true, 2).vSync, 8)
@@ -374,9 +392,13 @@ describe('Aspect Ratio', () => {
     [3840, 2160, '16:9'],
     [1920, 1200, '16:10'],
     [1280, 1024, '5:4'],
-    [1500, 900, '15:9'],
+    [1496, 900, '15:9'], // 1500 rounded to the cell
     [2560, 2000, 'custom'],
-    [1920, 1081, 'custom'],
+    // as VESA's generator: the height at the ratio, rounded down to the 8px cell
+    [1360, 768, '16:9'], // 768 x 16/9 = 1365.3
+    [848, 480, '16:9'], // 480 x 16/9 = 853.3
+    [1920, 1081, '16:9'], // 1081 x 16/9 = 1921.8
+    [1920, 1090, 'custom'], // 1090 x 16/9 = 1937.8
   ]
 
   for (const [h, v, aspect] of cases) {
@@ -384,6 +406,11 @@ describe('Aspect Ratio', () => {
       assert.equal(aspectRatio(h, v), aspect)
     })
   }
+
+  it('rounds to the given cell', () => {
+    assert.equal(aspectRatio(1365, 768, 1), '16:9')
+    assert.equal(aspectRatio(1360, 768, 1), 'custom')
+  })
 })
 
 describe('Possible Connections', () => {
