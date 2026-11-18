@@ -9,6 +9,8 @@ import theme from '../style/theme'
 
 const STORAGE_KEY = 'emcalc:saved'
 
+const INFO = 'Save frequently used formats and recall them below'
+
 const load = () => {
   try { return parseSaved(window.localStorage.getItem(STORAGE_KEY)) }
   catch { return [] }
@@ -39,7 +41,7 @@ export default function SavedFormats({ query, onLoad }) {
 
   return (
     <View style={styles.saved}>
-      <SectionHeading>Saved Formats</SectionHeading>
+      <SectionHeading info={INFO}>Saved Formats</SectionHeading>
 
       <View style={styles.savedForm}>
         <TextInput
@@ -66,11 +68,7 @@ export default function SavedFormats({ query, onLoad }) {
         </Button>
       </View>
 
-      {list.length === 0 ? (
-        <Text style={styles.savedEmpty}>
-          Save formats you use often, like an LED wall, to get back to them in one tap.
-        </Text>
-      ) : (
+      {list.length > 0 && (
         <View role="list" aria-label="Saved formats">
           {list.map(item => {
             const { format, detail } = describeSaved(item.query)

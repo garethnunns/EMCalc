@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native'
+import color from 'color'
 import theme from './theme'
 import { NARROW_MAX, WIDE_MAX } from '../lib/layout'
 
@@ -97,12 +98,6 @@ export default StyleSheet.create({
     backgroundColor: theme.colors.surfaceLight,
   },
 
-  savedEmpty: {
-    marginHorizontal: inputPaddingH * 2,
-    fontSize: 13,
-    color: theme.colors.textDark,
-  },
-
   savedItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -139,6 +134,20 @@ export default StyleSheet.create({
     paddingTop: 8,
   },
 
+  // a heading with an ⓘ: the row takes the heading's spacing
+  sectionHeadingWithInfo: {
+    paddingHorizontal: inputPaddingH * 2,
+    paddingTop: 16,
+    paddingBottom: 4,
+    gap: 4,
+  },
+
+  sectionHeadingInRow: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+
   sectionHeading: {
     paddingHorizontal: inputPaddingH * 2,
     paddingTop: 16,
@@ -156,6 +165,41 @@ export default StyleSheet.create({
 
   numInput: {
     flex: 1,
+  },
+
+  // room for a switch inside the box
+  numInputWithAccessory: {
+    paddingRight: 64,
+  },
+
+  // in line with the value, clear of the label above it
+  numAccessory: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+  },
+
+  // the ÷1.001 switch in the refresh rate box
+  fractional: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    cursor: 'pointer',
+  },
+
+  fractionalOn: {
+    backgroundColor: theme.colors.primary,
+  },
+
+  fractionalText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: theme.colors.textDark,
+  },
+
+  fractionalTextOn: {
+    color: '#ffffff',
   },
 
   // Paper's underline switches instantly, so CalcInputNum draws its own
@@ -209,7 +253,8 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    justifyContent: 'center',
+    // top, so a field beside one showing its ⓘ explanation stays put
+    justifyContent: 'flex-start',
     marginHorizontal: 0,
     marginVertical: 0,
     paddingVertical: 6,
@@ -219,6 +264,47 @@ export default StyleSheet.create({
   fieldLabel: {
     fontSize: 12,
     color: theme.colors.textDark,
+  },
+
+  // a field's label with its ⓘ
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+
+  infoTip: {
+    justifyContent: 'center',
+  },
+
+  infoTipButton: {
+    cursor: 'pointer',
+  },
+
+  // tooltips, shown over everything while hovering
+  hoverTip: {
+    position: 'absolute',
+    maxWidth: 260,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    backgroundColor: color(theme.colors.surfaceLight).lighten(0.3).rgb().string(),
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+  },
+
+  hoverTipText: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+
+  infoText: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: theme.colors.textDark,
+  },
+
+  disabled: {
+    opacity: 0.4,
   },
 
   switchContainer: {

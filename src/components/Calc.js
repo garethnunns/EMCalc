@@ -8,6 +8,7 @@ import styles from '../style/styles'
 import CalcInputBlanking from './CalcInputBlanking'
 import CalcInputNum from './CalcInputNum'
 import Dropdown from './Dropdown'
+import FractionalToggle from './FractionalToggle'
 import CapacityAndFreq from './CapacityAndFreq'
 import FitSuggestions from './FitSuggestions'
 import MacTab from './MacTab'
@@ -17,7 +18,7 @@ import SectionHeading from './SectionHeading'
 import SegmentedControl from './SegmentedControl'
 import Warnings from './Warnings'
 
-import edid from '../lib/edid'
+import edid, { videoOptApplies } from '../lib/edid'
 import { capacityNotes, connections, PROCESSORS } from '../lib/processors'
 import { fromQuery, initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
@@ -37,6 +38,12 @@ const MARGIN_OPTIONS = [
   { value: false, label: 'Off', accessibilityLabel: 'Margins Off' },
   { value: true, label: 'On', accessibilityLabel: 'Margins On' },
 ]
+
+// the ⓘ explanations beside the options
+const INFO = {
+  margins: 'Adds a black border (1.8% of the height) around the picture, inside the timing, for displays that crop the edges. Leave it off unless the display needs it.',
+  redBlnk: 'Shortens the gaps between lines and frames, so the pixel clock is lower and larger formats fit on one connector. V2 trims them most and works at any refresh rate; turn it off only for displays that need standard CVT timing.',
+}
 
 // on the website and desktop app, keep the inputs in the URL and remember them
 const isWeb = Platform.OS === 'web' && typeof window !== 'undefined'
@@ -71,7 +78,8 @@ export default class Calc extends React.Component {
       this.state.refresh,
       this.state.margins,
       this.state.redBlnk.enabled,
-      this.state.redBlnk.version
+      this.state.redBlnk.version,
+      this.state.videoOpt
     )
   }
 
@@ -139,7 +147,8 @@ export default class Calc extends React.Component {
       refresh: this.state.refresh,
       margins: this.state.margins,
       redBlnk: this.state.redBlnk.enabled,
-      redBlnkV: this.state.redBlnk.version
+      redBlnkV: this.state.redBlnk.version,
+      videoOpt: this.state.videoOpt
     }
   }
 
@@ -149,6 +158,9 @@ export default class Calc extends React.Component {
     const notes = capacityNotes(customFormat, this.state.processor, conns, this.state.bits)
 
     const wide = this.state.wide
+
+    // video optimised is only part of reduced blanking v2
+    const videoOptOn = videoOptApplies({ videoOpt: true, redBlnk: this.state.redBlnk.enabled, redBlnkV: this.state.redBlnk.version })
 
     // kept in the browser, so only on the website and desktop app
     const saved = isWeb ? (
@@ -195,12 +207,20 @@ export default class Calc extends React.Component {
               />
               <CalcInputNum
                 name="refresh"
-                label="Refresh Rate"
+                label={customFormat.videoOpt ? `Refresh Rate · ${customFormat.vRate}` : 'Refresh Rate'}
                 value={this.state.refresh}
                 onChange={value => this.onChange('refresh',value)}
                 min="1"
                 helperText=""
                 style={styles.inputCell}
+                accessory={
+                  <FractionalToggle
+                    // shown off when it doesn't apply, but remembered for going back to v2
+                    value={this.state.videoOpt}
+                    onChange={value => this.onChange('videoOpt',value)}
+                    disabled={!videoOptOn}
+                  />
+                }
               />
             </View>
           </View>
@@ -213,6 +233,7 @@ export default class Calc extends React.Component {
                 value={this.state.margins}
                 onChange={value => this.onChange('margins',value)}
                 stacked
+                info={INFO.margins}
               />
             </View>
             <View style={[styles.inputCell, styles.toggleCell, styles.blankingCell]}>
@@ -221,6 +242,7 @@ export default class Calc extends React.Component {
                 value={this.state.redBlnk}
                 onChange={value => this.onChange('redBlnk',value)}
                 stacked
+                info={INFO.redBlnk}
               />
             </View>
           </View>

@@ -40,7 +40,7 @@ const connectorLines = (conns) => ioRows(conns).map(r =>
 export function resultsText(inputs, result, conns) {
   const notes = capacityNotes(result, inputs.processor, conns, inputs.bits)
   const lines = [
-    `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}, ${inputs.bits}-bit`,
+    `EM Calc: ${inputs.hPx}x${inputs.vPx} @ ${inputs.refresh}Hz${result.videoOpt ? ` ÷1.001 (${result.vRate}Hz)` : ''}, ${blankingName(inputs.redBlnk)}, ${inputs.margins ? 'margins' : 'no margins'}, ${inputs.bits}-bit`,
     `Processor\t${processorById(inputs.processor).name}`,
     `Pixel clock\t${result.freq} MHz${notes.freqNote ? `\t${notes.freqNote}` : ''}`,
     `Data rate\t${dataRate(result.freq, inputs.bits)} Gbit/s at ${inputs.bits}-bit`,

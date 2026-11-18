@@ -2,6 +2,7 @@ import React from 'react'
 import { Animated, Platform, Pressable, View } from 'react-native'
 import { Text } from 'react-native-paper'
 
+import InfoTip, { InfoText } from './InfoTip'
 import styles, { SEGMENT_WIDTH } from '../style/styles'
 
 // the native animation driver isn't available on web
@@ -16,12 +17,14 @@ const useNativeDriver = Platform.OS !== 'web'
  * @param {function} onChange - called with the chosen option's value
  * @param {boolean} stacked - label above the options rather than beside them
  * @param {number=} segmentWidth - width of each option, for longer labels
+ * @param {string=} info - an explanation behind an ⓘ beside the label
  */
 export default class SegmentedControl extends React.Component {
   constructor(props) {
     super(props)
     this.position = new Animated.Value(this.selectedIndex)
     this.pressScale = props.options.map(() => new Animated.Value(1))
+    this.state = { infoOpen: false }
   }
 
   get selectedIndex() {
@@ -49,7 +52,7 @@ export default class SegmentedControl extends React.Component {
   }
 
   render () {
-    const { label, options, onChange, stacked, style } = this.props
+    const { label, options, onChange, stacked, style, info } = this.props
     const width = this.props.segmentWidth || SEGMENT_WIDTH
     const current = this.selectedIndex
     const translateX = this.position.interpolate({
@@ -59,9 +62,19 @@ export default class SegmentedControl extends React.Component {
 
     return (
       <View style={[styles.switchContainer, stacked && styles.fieldStacked, style]}>
-        <Text style={stacked ? styles.fieldLabel : styles.switchText}>
-          {label}
-        </Text>
+        <View style={[styles.labelRow, !stacked && styles.switchText]}>
+          <Text style={stacked ? styles.fieldLabel : null}>
+            {label}
+          </Text>
+          {info &&
+            <InfoTip
+              label={label}
+              text={info}
+              open={this.state.infoOpen}
+              onToggle={() => this.setState({ infoOpen: !this.state.infoOpen })}
+            />
+          }
+        </View>
 
         <View style={styles.segments} role="radiogroup" aria-label={label}>
           <Animated.View style={[styles.segmentHighlight, { width, transform: [{ translateX }] }]} />
@@ -89,6 +102,8 @@ export default class SegmentedControl extends React.Component {
             </Pressable>
           ))}
         </View>
+
+        {info && this.state.infoOpen && <InfoText text={info} />}
       </View>
     )
   }

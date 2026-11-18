@@ -1,3 +1,12 @@
+/**
+ * Whether the video optimised variant applies: it's only part of reduced blanking v2
+ * @param {{redBlnk: boolean, redBlnkV: number, videoOpt: boolean}} params
+ */
+export const videoOptApplies = (params) => !!(params.videoOpt && params.redBlnk && params.redBlnkV == 2)
+
+// CVT's aspect ratios, in the order VESA's generator checks them
+const ASPECT_RATIOS = [['4:3', 4, 3], ['16:9', 16, 9], ['16:10', 16, 10], ['5:4', 5, 4], ['15:9', 15, 9]]
+
 export default class edid {
   /**
    * Written by Gareth Nunns
@@ -12,8 +21,10 @@ export default class edid {
    * @param {boolean=false} (optional) margins - if margins are required
    * @param {boolean=true} (optional) redBlnk - if reduced blanking is required
    * @param {number=2} (optional) redBlnkV - reduce blanking version to use
+   * @param {boolean=false} (optional) videoOpt - reduced blanking v2's video optimised
+   *   variant, which slows the pixel clock by 1000/1001 (e.g. 60Hz to 59.94Hz)
    */
-  constructor(hPx=1920, vPx=1080, refresh=60, margins = false, redBlnk = true, redBlnkV = 2) {
+  constructor(hPx=1920, vPx=1080, refresh=60, margins = false, redBlnk = true, redBlnkV = 2, videoOpt = false) {
     // standard timings
     this.timings = {
       // top & bottom margin
@@ -112,6 +123,7 @@ export default class edid {
     this.refresh = refresh
     this.redBlnk = redBlnk
     this.redBlnkV = redBlnkV
+    this.videoOpt = videoOpt
   }
 
   get params() {
@@ -121,7 +133,8 @@ export default class edid {
       margins: this.margins,
       refresh: this.refresh,
       redBlnk: this.redBlnk,
-      redBlnkV: this.redBlnkV
+      redBlnkV: this.redBlnkV,
+      videoOpt: this.videoOpt
     }
   }
 
@@ -175,7 +188,7 @@ export default class edid {
       aspect = 'CVT-RB V2'
     }
     else {
-      aspect = this.aspectRatio(hPxRounded, vLines)
+      aspect = this.aspectRatio(hPxRounded, vLines, hCellGranularityRounded)
     }
 
     var vSync = this.timings.vSyncWidth[aspect]
@@ -186,8 +199,9 @@ export default class edid {
       // estimate horizontal period (μs)
       hEstPeriod = ((1 / vFieldRate) - this.timings.vMinSyncInterval / 1000000) / (vLines + 2 * vMargin + this.timings.vMinPorchRounded + interlace) * 1000000
 
-      // estimate num vertical lines
-      var vEstSyncBackPorch = Math.ceil(this.timings.vMinSyncInterval / hEstPeriod)
+      // estimate num vertical lines (CVT takes the whole lines and adds one,
+      // so an exact fit still gets an extra line)
+      var vEstSyncBackPorch = Math.floor(this.timings.vMinSyncInterval / hEstPeriod) + 1
 
       // num vertical lines in sync + back porch (at least the sync width plus minimum back porch)
       var vSyncBackPorch = Math.max(vSync + this.timings.vMinBackPorch, vEstSyncBackPorch)
@@ -226,7 +240,8 @@ export default class edid {
       hEstPeriod = ((1000000 / vFieldRate) - this.timings.vMinBlankingInterval) / (vLines + 2 * vMargin)
       
       // vertical blanking lines
-      var vBlankingLines = Math.ceil(this.timings.vMinBlankingInterval / hEstPeriod)
+      // (whole lines plus one, as above)
+      var vBlankingLines = Math.floor(this.timings.vMinBlankingInterval / hEstPeriod) + 1
 
       // check enough vertical blanking
       vBlankingLines = Math.max(vBlankingLines, (this.timings.vFrontPorch[params.redBlnkV] + vSync + this.timings.vMinBackPorch) )
@@ -263,6 +278,13 @@ export default class edid {
     // stops floating point error knocking an exact step down a whole step)
     const clockStep = this.timings.clockStep[params.redBlnk ? params.redBlnkV : 'standard']
     freq = Math.floor(freq / clockStep + 1e-9) * clockStep
+
+    // video optimised (reduced blanking v2 only): the same timing with the
+    // clock slowed by 1000/1001, for 59.94, 29.97, 23.976Hz etc.
+    const videoOpt = videoOptApplies(params)
+    if(videoOpt) {
+      freq *= 1000 / 1001
+    }
 
     // round the frequency to 3 d.p.
     const freqRounded = freq.toFixed(3)
@@ -337,7 +359,8 @@ export default class edid {
       vActive: vLines,
       vSync: vSync,
       vPolarity: vPolarity,
-      vRate: params.refresh,
+      vRate: videoOpt ? Number((params.refresh * 1000 / 1001).toFixed(3)) : params.refresh,
+      videoOpt: videoOpt,
 
       // margins (CVT borders) each side, inside the totals
       hBorder: hMargin,
@@ -371,26 +394,17 @@ export default class edid {
   }
 
   /**
-   * Returns the VESA aspect ratio as a string
-   * @param {number} hPx - horizontal pixels
-   * @param {number} vPx - vertical pixels
+   * Returns the VESA aspect ratio as a string. As in VESA's CVT generator, a
+   * width matches a ratio when it's the height at that ratio rounded down to
+   * the character cell, so e.g. 1360x768 (and 1366x768, rounded) is 16:9.
+   * @param {number} hPx - horizontal pixels, rounded to the cell
+   * @param {number} vPx - vertical lines
+   * @param {number=} cell - character cell width (px)
    * @returns {string} string value, *e.g. '4:3'*
    */
-  aspectRatio(hPx, vPx) {
-    switch (hPx / vPx) {
-      case 4/3:
-        return '4:3'
-      case 16/9:
-        return '16:9'
-      case 16/10:
-        return '16:10'
-      case 5/4:
-        return '5:4'
-      case 15/9:
-        return '15:9'
-      default:
-        return 'custom'
-    }
+  aspectRatio(hPx, vPx, cell = 8) {
+    const match = ASPECT_RATIOS.find(([, w, h]) => hPx == cell * Math.floor(vPx * w / (h * cell)))
+    return match ? match[0] : 'custom'
   }
 
   /**
