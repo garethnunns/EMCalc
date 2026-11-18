@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native'
+import color from 'color'
 import theme from './theme'
 import { NARROW_MAX, WIDE_MAX } from '../lib/layout'
 
@@ -97,12 +98,6 @@ export default StyleSheet.create({
     backgroundColor: theme.colors.surfaceLight,
   },
 
-  savedEmpty: {
-    marginHorizontal: inputPaddingH * 2,
-    fontSize: 13,
-    color: theme.colors.textDark,
-  },
-
   savedItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -137,6 +132,20 @@ export default StyleSheet.create({
   // line the table's tabs up with the Format heading
   resultsColumn: {
     paddingTop: 8,
+  },
+
+  // a heading with an ⓘ: the row takes the heading's spacing
+  sectionHeadingWithInfo: {
+    paddingHorizontal: inputPaddingH * 2,
+    paddingTop: 16,
+    paddingBottom: 4,
+    gap: 4,
+  },
+
+  sectionHeadingInRow: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
 
   sectionHeading: {
@@ -209,7 +218,8 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    justifyContent: 'center',
+    // top, so a field beside one showing its ⓘ explanation stays put
+    justifyContent: 'flex-start',
     marginHorizontal: 0,
     marginVertical: 0,
     paddingVertical: 6,
@@ -218,6 +228,43 @@ export default StyleSheet.create({
 
   fieldLabel: {
     fontSize: 12,
+    color: theme.colors.textDark,
+  },
+
+  // a field's label with its ⓘ
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+
+  infoTip: {
+    justifyContent: 'center',
+  },
+
+  infoTipButton: {
+    cursor: 'pointer',
+  },
+
+  // tooltips, shown over everything while hovering
+  hoverTip: {
+    position: 'absolute',
+    maxWidth: 260,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    backgroundColor: color(theme.colors.surfaceLight).lighten(0.3).rgb().string(),
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+  },
+
+  hoverTipText: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+
+  infoText: {
+    fontSize: 13,
+    lineHeight: 18,
     color: theme.colors.textDark,
   },
 

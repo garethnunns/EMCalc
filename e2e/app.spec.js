@@ -94,11 +94,15 @@ test('adds DisplayID to the EDID for formats over 4096 wide', async ({ page }) =
 
 test('saves formats, and keeps them after a reload', async ({ page }) => {
   await page.goto('/?h=3840&v=2160&hz=50&rb=2')
-  await expect(page.getByText(/Save formats you use often/)).toBeVisible()
+  const saved = page.getByRole('list', { name: 'Saved formats' })
+  await expect(saved).toHaveCount(0)
+
+  // the ⓘ explains what saving does
+  await page.getByRole('button', { name: 'About Saved Formats' }).click()
+  await expect(page.getByText(/Save frequently used formats/)).toBeVisible()
 
   await page.getByLabel('Name for this format').fill('Main wall')
-  await page.getByRole('button', { name: 'Save' }).click()
-  const saved = page.getByRole('list', { name: 'Saved formats' })
+  await page.getByRole('button', { name: 'Save', exact: true }).click()
   await expect(saved.getByText('Main wall')).toBeVisible()
   await expect(saved.getByText('3840 × 2160 @ 50 · RB v2')).toBeVisible()
 
@@ -112,7 +116,7 @@ test('saves formats, and keeps them after a reload', async ({ page }) => {
   await expect(saved.getByText('Main wall')).toBeVisible()
 
   await page.getByRole('button', { name: 'Remove Main wall' }).click()
-  await expect(page.getByText(/Save formats you use often/)).toBeVisible()
+  await expect(saved).toHaveCount(0)
 })
 
 test('fits the window without scrolling sideways', async ({ page }) => {

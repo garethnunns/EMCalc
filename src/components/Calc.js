@@ -38,6 +38,12 @@ const MARGIN_OPTIONS = [
   { value: true, label: 'On', accessibilityLabel: 'Margins On' },
 ]
 
+// the ⓘ explanations beside the options
+const INFO = {
+  margins: 'Adds a black border (1.8% of the height) around the picture, inside the timing, for displays that crop the edges. Leave it off unless the display needs it.',
+  redBlnk: 'Shortens the gaps between lines and frames, so the pixel clock is lower and larger formats fit on one connector. V2 trims them most and works at any refresh rate; turn it off only for displays that need standard CVT timing.',
+}
+
 // on the website and desktop app, keep the inputs in the URL and remember them
 const isWeb = Platform.OS === 'web' && typeof window !== 'undefined'
 const STORAGE_KEY = 'emcalc:last'
@@ -213,6 +219,7 @@ export default class Calc extends React.Component {
                 value={this.state.margins}
                 onChange={value => this.onChange('margins',value)}
                 stacked
+                info={INFO.margins}
               />
             </View>
             <View style={[styles.inputCell, styles.toggleCell, styles.blankingCell]}>
@@ -221,6 +228,7 @@ export default class Calc extends React.Component {
                 value={this.state.redBlnk}
                 onChange={value => this.onChange('redBlnk',value)}
                 stacked
+                info={INFO.redBlnk}
               />
             </View>
           </View>

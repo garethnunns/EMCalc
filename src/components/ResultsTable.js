@@ -1,8 +1,9 @@
 import React from 'react';
 import { Animated, Easing, Platform, Pressable, View } from 'react-native'
-import { DataTable, Icon, IconButton, Text, Tooltip } from 'react-native-paper'
+import { DataTable, Icon, IconButton, Text } from 'react-native-paper'
 
 import ConnectorIcon from './ConnectorIcon'
+import HoverTip from './HoverTip'
 import { timingRows } from '../lib/report'
 import { ioRows } from '../lib/processors'
 import styles from '../style/styles'
@@ -142,31 +143,31 @@ export default class ResultsTable extends React.Component {
 
           <View style={styles.resultsTableActions}>
             {this.props.onDownloadEdid ? (
-              <Tooltip title="Download EDID">
+              <HoverTip text="Download EDID">
                 <IconButton
                   icon="download"
                   accessibilityLabel="Download EDID file"
                   size={20}
                   onPress={this.props.onDownloadEdid}
                 />
-              </Tooltip>
+              </HoverTip>
             ) : null}
-            <Tooltip title="Copy results">
+            <HoverTip text="Copy results">
               <IconButton
                 icon="content-copy"
                 accessibilityLabel="Copy results"
                 size={20}
                 onPress={this.props.onCopyResults}
               />
-            </Tooltip>
-            <Tooltip title="Copy link">
+            </HoverTip>
+            <HoverTip text="Copy link">
               <IconButton
                 icon="link-variant"
                 accessibilityLabel="Copy link to this format"
                 size={20}
                 onPress={this.props.onCopyLink}
               />
-            </Tooltip>
+            </HoverTip>
           </View>
         </View>
 
