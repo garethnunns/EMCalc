@@ -9,6 +9,7 @@ export const DEFAULTS = {
   refresh: '60',
   margins: false,
   redBlnk: { enabled: true, version: 2 },
+  videoOpt: false,
   bits: 8,
   processor: DEFAULT_PROCESSOR,
   mac: MAC_DEFAULTS,
@@ -17,7 +18,7 @@ export const DEFAULTS = {
 const NUMBER = /^\d+(\.\d+)?$/
 
 /**
- * Encode the calculator inputs as a query string, e.g. h=2560&v=2000&hz=60&m=0&rb=2&b=8&p=all
+ * Encode the calculator inputs as a query string, e.g. h=2560&v=2000&hz=60&m=0&rb=2&vo=0&b=8&p=all
  * @param {Object} state - calculator state
  * @returns {string} query string without the leading ?
  */
@@ -28,6 +29,7 @@ export function toQuery(state) {
     hz: state.refresh,
     m: state.margins ? '1' : '0',
     rb: state.redBlnk.enabled ? String(state.redBlnk.version) : '0',
+    vo: state.videoOpt ? '1' : '0',
     b: String(state.bits),
     p: state.processor,
     // the Mac tab's setup
@@ -56,6 +58,8 @@ export function fromQuery(query) {
   const rb = q.get('rb')
   if (rb === '0') found.redBlnk = { enabled: false, version: 2 }
   if (rb === '1' || rb === '2') found.redBlnk = { enabled: true, version: Number(rb) }
+
+  if (['0', '1'].includes(q.get('vo'))) found.videoOpt = q.get('vo') === '1'
 
   if (BIT_DEPTHS.includes(Number(q.get('b')))) found.bits = Number(q.get('b'))
   if (PROCESSORS.some(p => p.id === q.get('p'))) found.processor = q.get('p')

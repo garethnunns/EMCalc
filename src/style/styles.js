@@ -167,6 +167,41 @@ export default StyleSheet.create({
     flex: 1,
   },
 
+  // room for a switch inside the box
+  numInputWithAccessory: {
+    paddingRight: 64,
+  },
+
+  // in line with the value, clear of the label above it
+  numAccessory: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+  },
+
+  // the ÷1.001 switch in the refresh rate box
+  fractional: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    cursor: 'pointer',
+  },
+
+  fractionalOn: {
+    backgroundColor: theme.colors.primary,
+  },
+
+  fractionalText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: theme.colors.textDark,
+  },
+
+  fractionalTextOn: {
+    color: '#ffffff',
+  },
+
   // Paper's underline switches instantly, so CalcInputNum draws its own
   hiddenUnderline: {
     display: 'none',
@@ -266,6 +301,10 @@ export default StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: theme.colors.textDark,
+  },
+
+  disabled: {
+    opacity: 0.4,
   },
 
   switchContainer: {

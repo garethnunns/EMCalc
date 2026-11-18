@@ -42,7 +42,12 @@ export default class CalcInputNum extends React.Component {
             style={styles.numInput}
             underlineStyle={styles.hiddenUnderline}
             error={invalid}
+            contentStyle={this.props.accessory ? styles.numInputWithAccessory : null}
           />
+          {/* e.g. a switch inside the box, on the right */}
+          {this.props.accessory &&
+            <View style={styles.numAccessory}>{this.props.accessory}</View>
+          }
           {/* Paper's underline switches instantly, so draw our own */}
           <View style={[styles.inputLine, invalid && { backgroundColor: theme.colors.error }]} />
           <Animated.View

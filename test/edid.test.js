@@ -23,13 +23,13 @@ const assertTimings = (result, expected) => {
 describe('Constructor', () => {
   it('sets params', () => {
     assert.deepEqual(new edid(1920, 1080, 60, false, true, 2).params, {
-      hPx: 1920, vPx: 1080, refresh: 60, margins: false, redBlnk: true, redBlnkV: 2,
+      hPx: 1920, vPx: 1080, refresh: 60, margins: false, redBlnk: true, redBlnkV: 2, videoOpt: false,
     })
   })
 
   it('defaults to 1920x1080@60, no margins, reduced blanking v2', () => {
     assert.deepEqual(new edid().params, {
-      hPx: 1920, vPx: 1080, refresh: 60, margins: false, redBlnk: true, redBlnkV: 2,
+      hPx: 1920, vPx: 1080, refresh: 60, margins: false, redBlnk: true, redBlnkV: 2, videoOpt: false,
     })
   })
 
@@ -273,6 +273,37 @@ describe('VESA CVT reference timings', () => {
       }
     })
   }
+})
+
+describe('Video optimised', () => {
+  const opt = (h, v, hz, redBlnk = true, redBlnkV = 2) =>
+    new edid(h, v, hz, false, redBlnk, redBlnkV, true).calcEdid()
+
+  it('slows the reduced blanking v2 clock by 1000/1001, keeping the timing', () => {
+    const plain = calc(1920, 1080, 60, false, true, 2)
+    const result = opt(1920, 1080, 60)
+
+    // 133.320MHz x 1000/1001
+    assert.equal(result.freq, '133.187')
+    assert.equal(result.vRate, 59.94)
+    assert.equal(result.videoOpt, true)
+    for (const key of ['hTotal', 'hFrontPorch', 'hSync', 'vTotal', 'vFrontPorch', 'vSync']) {
+      assert.equal(result[key], plain[key])
+    }
+  })
+
+  it('gives the broadcast rates', () => {
+    assert.equal(opt(3840, 2160, 30).vRate, 29.97)
+    assert.equal(opt(3840, 2160, 24).vRate, 23.976)
+  })
+
+  it('only applies with reduced blanking v2', () => {
+    for (const [redBlnk, redBlnkV] of [[true, 1], [false, 2]]) {
+      const result = opt(1920, 1080, 60, redBlnk, redBlnkV)
+      assert.deepEqual({ ...result, videoOpt: true }, { ...calc(1920, 1080, 60, false, redBlnk, redBlnkV), videoOpt: true })
+      assert.equal(result.videoOpt, false)
+    }
+  })
 })
 
 // Published VESA CVT reduced blanking v2 timings, as an independent reference

@@ -8,6 +8,7 @@ import styles from '../style/styles'
 import CalcInputBlanking from './CalcInputBlanking'
 import CalcInputNum from './CalcInputNum'
 import Dropdown from './Dropdown'
+import FractionalToggle from './FractionalToggle'
 import CapacityAndFreq from './CapacityAndFreq'
 import FitSuggestions from './FitSuggestions'
 import MacTab from './MacTab'
@@ -17,7 +18,7 @@ import SectionHeading from './SectionHeading'
 import SegmentedControl from './SegmentedControl'
 import Warnings from './Warnings'
 
-import edid from '../lib/edid'
+import edid, { videoOptApplies } from '../lib/edid'
 import { capacityNotes, connections, PROCESSORS } from '../lib/processors'
 import { fromQuery, initialState, shareUrl, toQuery } from '../lib/params'
 import { resultsText } from '../lib/report'
@@ -77,7 +78,8 @@ export default class Calc extends React.Component {
       this.state.refresh,
       this.state.margins,
       this.state.redBlnk.enabled,
-      this.state.redBlnk.version
+      this.state.redBlnk.version,
+      this.state.videoOpt
     )
   }
 
@@ -145,7 +147,8 @@ export default class Calc extends React.Component {
       refresh: this.state.refresh,
       margins: this.state.margins,
       redBlnk: this.state.redBlnk.enabled,
-      redBlnkV: this.state.redBlnk.version
+      redBlnkV: this.state.redBlnk.version,
+      videoOpt: this.state.videoOpt
     }
   }
 
@@ -155,6 +158,9 @@ export default class Calc extends React.Component {
     const notes = capacityNotes(customFormat, this.state.processor, conns, this.state.bits)
 
     const wide = this.state.wide
+
+    // video optimised is only part of reduced blanking v2
+    const videoOptOn = videoOptApplies({ videoOpt: true, redBlnk: this.state.redBlnk.enabled, redBlnkV: this.state.redBlnk.version })
 
     // kept in the browser, so only on the website and desktop app
     const saved = isWeb ? (
@@ -201,12 +207,20 @@ export default class Calc extends React.Component {
               />
               <CalcInputNum
                 name="refresh"
-                label="Refresh Rate"
+                label={customFormat.videoOpt ? `Refresh Rate · ${customFormat.vRate}` : 'Refresh Rate'}
                 value={this.state.refresh}
                 onChange={value => this.onChange('refresh',value)}
                 min="1"
                 helperText=""
                 style={styles.inputCell}
+                accessory={
+                  <FractionalToggle
+                    // shown off when it doesn't apply, but remembered for going back to v2
+                    value={this.state.videoOpt}
+                    onChange={value => this.onChange('videoOpt',value)}
+                    disabled={!videoOptOn}
+                  />
+                }
               />
             </View>
           </View>

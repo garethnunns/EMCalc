@@ -24,6 +24,13 @@ describe('Saved formats', () => {
     assert.notEqual(formatKey(WALL), formatKey(WALL.replace('rb=2', 'rb=1')))
   })
 
+  it('video optimised only makes a different format with reduced blanking v2', () => {
+    assert.notEqual(formatKey(`${WALL}&vo=1`), formatKey(WALL))
+    assert.equal(formatKey(`${SIDE}&vo=1`), formatKey(SIDE))
+    assert.deepEqual(describeSaved(`${WALL}&vo=1`), { format: '3840 × 2160 @ 60 ÷1.001', detail: 'RB v2' })
+    assert.equal(describeSaved(`${SIDE}&vo=1`).detail, 'RB v1 · 10-bit · E2 Gen 2')
+  })
+
   it('finds and removes a format', () => {
     const list = [{ name: 'Wall', query: WALL }, { name: '', query: SIDE }]
     assert.equal(findSaved(list, `${WALL}&bd=1`).name, 'Wall')

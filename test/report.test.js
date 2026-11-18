@@ -17,6 +17,12 @@ describe('Copy results', () => {
     assert.equal(lines[3], 'Data rate\t2.7 Gbit/s at 8-bit')
   })
 
+  it('says when it is video optimised', () => {
+    const opt = new edid().calcEdid({ hPx: 1920, vPx: 1080, refresh: 60, margins: false, redBlnk: true, redBlnkV: 2, videoOpt: true })
+    const optText = resultsText({ ...inputs, refresh: '60', videoOpt: true }, opt, connections(opt, inputs.processor))
+    assert.equal(optText.split('\n')[0], 'EM Calc: 1920x1080 @ 60Hz ÷1.001 (59.94Hz), reduced blanking v2, no margins, 8-bit')
+  })
+
   it('includes every timing row, tab separated', () => {
     for (const row of timingRows(result)) {
       assert(lines.includes(`${row.name}\t${row.value}`), row.name)
@@ -42,7 +48,7 @@ describe('Copy results', () => {
   })
 
   it('ends with a link to the format', () => {
-    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&b=8&p=e2gen2&mm=mbp&mc=M4+Pro&mo=26&mx=dp12&bd=0')
+    assert.equal(lines.at(-1), 'https://e2.garethnunns.com/?h=1920&v=1080&hz=50&m=0&rb=2&vo=0&b=8&p=e2gen2&mm=mbp&mc=M4+Pro&mo=26&mx=dp12&bd=0')
   })
 
   it('includes warnings when there are any', () => {

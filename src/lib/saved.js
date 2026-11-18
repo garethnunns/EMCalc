@@ -1,5 +1,6 @@
 import { DEFAULTS, fromQuery } from './params.js'
 import { processorById } from './processors.js'
+import { videoOptApplies } from './edid.js'
 
 /**
  * Saved formats: the ones someone uses often, e.g. an LED wall, each kept as
@@ -10,12 +11,15 @@ export const MAX_SAVED = 30
 
 const inputs = (query) => ({ ...DEFAULTS, ...fromQuery(query) })
 
+// video optimised only means anything with reduced blanking v2
+const videoOpt = (s) => videoOptApplies({ videoOpt: s.videoOpt, redBlnk: s.redBlnk.enabled, redBlnkV: s.redBlnk.version })
+
 /** What makes two saved formats the same: everything but the Mac tab's setup */
 export function formatKey(query) {
   const s = inputs(query)
   return [
     Number(s.hPx), Number(s.vPx), Number(s.refresh), s.margins ? 1 : 0,
-    s.redBlnk.enabled ? s.redBlnk.version : 0, s.bits, s.processor,
+    s.redBlnk.enabled ? s.redBlnk.version : 0, videoOpt(s) ? 1 : 0, s.bits, s.processor,
   ].join('|')
 }
 
@@ -60,7 +64,7 @@ export const findSaved = (list, query) => {
 export function describeSaved(query) {
   const s = inputs(query)
   return {
-    format: `${s.hPx} × ${s.vPx} @ ${s.refresh}`,
+    format: `${s.hPx} × ${s.vPx} @ ${s.refresh}${videoOpt(s) ? ' ÷1.001' : ''}`,
     detail: [
       s.redBlnk.enabled ? `RB v${s.redBlnk.version}` : 'No RB',
       s.margins ? 'Margins' : null,

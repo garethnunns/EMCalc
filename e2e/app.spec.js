@@ -92,6 +92,23 @@ test('adds DisplayID to the EDID for formats over 4096 wide', async ({ page }) =
   await expect(page.getByText(/for devices without DisplayID/)).toBeVisible()
 })
 
+test('÷1.001 slows the clock, only with reduced blanking v2', async ({ page }) => {
+  await page.goto('/?h=1920&v=1080&hz=60&rb=2')
+  await expect(page.getByText('133.320')).toBeVisible()
+
+  const fractional = page.getByRole('switch', { name: /Fractional rate/ })
+  await fractional.click()
+  await expect(page.getByText('133.187')).toBeVisible()
+  await expect(page.getByText('59.94', { exact: true })).toBeVisible()
+  await expect(page.getByText('Refresh Rate · 59.94').first()).toBeVisible()
+
+  // v1 has no video optimised variant
+  await page.getByRole('radio', { name: 'Reduced Blanking Version 1' }).click()
+  await expect(fractional).toBeDisabled()
+  await expect(fractional).toHaveAttribute('aria-checked', 'false')
+  await expect(page.getByText('133.187')).toHaveCount(0)
+})
+
 test('saves formats, and keeps them after a reload', async ({ page }) => {
   await page.goto('/?h=3840&v=2160&hz=50&rb=2')
   const saved = page.getByRole('list', { name: 'Saved formats' })
