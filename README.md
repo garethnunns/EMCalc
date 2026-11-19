@@ -68,3 +68,4 @@ Other scripts:
 | `npm run test:e2e` | Run the browser tests against `web-build/` (run `npm run build-web` and `npx playwright install chromium` first) |
 | `npm run build-web` | Export the static website to `web-build/` |
 | `npm run build-desktop` | Package the desktop app into `dist/` |
+| `npm run screenshots` | Retake the README screenshots and `public/social.png` from `web-build/` (the release workflow does this and opens a PR if they changed) |
