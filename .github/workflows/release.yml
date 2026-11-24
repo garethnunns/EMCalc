@@ -166,3 +166,21 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: "artifacts/**"
+
+  # the Generative Noise store (store.generativenoise.com) reads the latest release from
+  # here as it builds: once the downloads are on it, it's told to build again
+  store:
+    name: Rebuild the store
+    needs: desktop
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rebuild the store
+        run: |
+          if [ -z "$STORE_DEPLOY_HOOK" ]; then
+            echo "::warning::No STORE_DEPLOY_HOOK secret, so the store shows this release once it's next built"
+            exit 0
+          fi
+          curl -fsS -X POST "$STORE_DEPLOY_HOOK" > /dev/null
+        env:
+          STORE_DEPLOY_HOOK: ${{ secrets.STORE_DEPLOY_HOOK }}
