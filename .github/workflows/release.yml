@@ -36,26 +36,6 @@ jobs:
     - name: Build
       run: npm run build-web
 
-    # the README screenshots and the share image, which the deploy then
-    # includes; a failure here shouldn't stop the release going out
-    - name: Install the screenshot browser
-      continue-on-error: true
-      run: npx playwright install --with-deps chromium
-
-    - name: Screenshots
-      id: screenshots
-      continue-on-error: true
-      run: npm run screenshots
-
-    - name: Upload screenshots
-      if: steps.screenshots.outcome == 'success'
-      uses: actions/upload-artifact@v7
-      with:
-        name: screenshots
-        path: |
-          README/*.png
-          public/social.png
-
     - name: Deploy over SFTP
       env:
         SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -74,50 +54,6 @@ jobs:
         scripts/sftp-batch.sh web-build e2 > batch.txt
         sftp -b batch.txt -i ~/.ssh/deploy_key \
           -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "$TARGET"
-
-  # a PR with the new screenshots, if they changed
-  screenshots:
-    name: Screenshots PR
-    needs: web
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      pull-requests: write
-
-    steps:
-    - uses: actions/checkout@v7
-      with:
-        ref: ${{ github.event.repository.default_branch }}
-
-    - name: Download screenshots
-      id: download
-      continue-on-error: true
-      uses: actions/download-artifact@v7
-      with:
-        name: screenshots
-
-    - name: Open a PR if they changed
-      if: steps.download.outcome == 'success'
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        VERSION: ${{ github.event.release.tag_name || github.run_number }}
-        BASE: ${{ github.event.repository.default_branch }}
-      run: |
-        if git diff --quiet -- README public/social.png; then
-          echo "Screenshots unchanged"
-          exit 0
-        fi
-        branch="screenshots-$VERSION"
-        git config user.name 'github-actions[bot]'
-        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-        git switch -c "$branch"
-        git add README/*.png public/social.png
-        git commit -m "Screenshots for $VERSION"
-        git push -u origin "$branch"
-        gh pr create --base "$BASE" --head "$branch" \
-          --title "Screenshots for $VERSION" \
-          --body "README screenshots and the share image, retaken from the $VERSION build by the release workflow. The share image is already live; this keeps the repo in step."
 
   desktop:
     name: Desktop Release
